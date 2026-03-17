@@ -3,7 +3,7 @@ import { docs } from 'collections/server';
 
 export const source = loader({
   source: docs.toFumadocsSource(),
-  baseUrl: '/docs',
+  baseUrl: '/blog',
 });
 
 export async function getLLMText(page: InferPageType<typeof source>) {

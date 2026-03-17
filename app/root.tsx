@@ -74,7 +74,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   );
 }
 
-const { rewrite: rewriteLLM } = rewritePath('/docs{/*path}.mdx', '/llms.mdx/docs{/*path}');
+const { rewrite: rewriteLLM } = rewritePath('/blog{/*path}.mdx', '/llms.mdx/blog{/*path}');
 const serverMiddleware: Route.MiddlewareFunction = async ({ request }, next) => {
   const url = new URL(request.url);
   const path = rewriteLLM(url.pathname);
