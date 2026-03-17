@@ -29,15 +29,15 @@ export default function Home() {
           <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-6 text-center">
             <div className="max-w-2xl rounded-3xl bg-black/30 px-8 py-10 backdrop-blur-sm">
               <h1 className="mb-2 text-4xl font-bold text-white sm:text-5xl">
-                Fumadocs on React Router.
+                Welcome to my Website!
               </h1>
-              <p className="mb-6 text-base text-slate-200 sm:text-lg">
-                The truly flexible docs framework on React.js.
-              </p>
               <div className="flex flex-wrap items-center justify-center gap-4">
                 <NaviLink label="Blog" href="/blog" />
                 <NaviLink label="About" href="/about" />
               </div>
+            </div>            
+            <div className="max-w-2xl rounded-3xl bg-black/30 px-8 py-10 backdrop-blur-sm">
+              seconde component
             </div>
           </div>
         </ThreeBackground>
