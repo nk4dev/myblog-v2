@@ -1,7 +1,7 @@
 import type { Route } from './+types/not-found';
 import { HomeLayout } from 'fumadocs-ui/layouts/home';
 import { baseOptions } from '@/lib/layout.shared';
-import { NaviLink } from 'stories/Link';
+import { NaviLink } from '../../stories/Link';
 
 export function meta({ }: Route.MetaArgs) {
   return [{ title: 'Not Found' }];

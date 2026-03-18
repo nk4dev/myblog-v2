@@ -24,7 +24,11 @@ export default defineConfig({
     !isStorybook && reactRouter(),
   ],
   resolve: {
-    tsconfigPaths: true,
+    alias: {
+      "@": path.resolve(dirname, "app"),
+      collections: path.resolve(dirname, ".source"),
+      stories: path.resolve(dirname, "stories"),
+    },
   },
   ssr: {
     external: ["@takumi-rs/image-response"],

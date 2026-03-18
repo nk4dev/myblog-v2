@@ -28,22 +28,28 @@ export const links: Route.LinksFunction = () => [
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <script
-        async
-        src={`https://www.googletagmanager.com/gtag/js?id=${'G-9TG7JEDDCX'}`}
-      />
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-                        window.dataLayer = window.dataLayer || [];
-                        function gtag(){dataLayer.push(arguments);}
-                        gtag('js', new Date());
-                        gtag('config', '${'G-9TG7JEDDCX'}', {
-                            page_path: window.location.pathname,
-                        });
-                    `,
-        }}
-      />
+      {/* Google Analytics (Only Production)*/}
+      {import.meta.env.MODE === 'production' && (
+        <>
+          <script
+            async
+            src={`https://www.googletagmanager.com/gtag/js?id=${'G-9TG7JEDDCX'}`}
+          />
+          <script
+            dangerouslySetInnerHTML={{
+             __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${'G-9TG7JEDDCX'}', {
+                  page_path: window.location.pathname,
+              });
+            `,
+            }}
+          />
+        </>
+      )}
+
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

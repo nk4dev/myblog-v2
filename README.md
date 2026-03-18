@@ -1,14 +1,17 @@
-# my-blog
+# my blog v2
 
 This is a React Router application generated with
 [Create Fumadocs](https://github.com/fuma-nama/fumadocs).
 
-Run development server:
+website https://nk4dev.github.io/ or https://nknighta.me/
 
-```bash
-npm run dev
-# or
-pnpm dev
-# or
-yarn dev
+hosting on GitHub Pages and Cloudflare Workers 
+
+Storybook https://sb.nknighta.me/
+
+## Fixed ts6 config error
+
+https://aka.ms/ts6/
+
+```tsx
 ```

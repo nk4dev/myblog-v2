@@ -4,11 +4,13 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
-    "dev": "concurrently \"react-router dev -p 3000\" \"storybook dev -p 3001\"",
+    "dev": "concurrently \"react-router dev -p 3000\" \"storybook dev -p 3001 --no-open\"",
+    "dev:react": "react-router dev -p 3000",
+    "dev:storybook": "storybook dev -p 3001 --no-open",
     "start": "react-router-serve ./build/server/index.js",
     "types:check": "react-router typegen && fumadocs-mdx && tsc --noEmit",
     "postinstall": "fumadocs-mdx",
-    "sb": "storybook dev -p 3001",
+    "sb": "storybook dev -p 3001 --no-open",
     "sb:build": "storybook build"
   },
   "dependencies": {
