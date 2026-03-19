@@ -1,3 +1,15 @@
 @import 'tailwindcss';
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
+
+* {
+  font-family: 'UDEV Gothic NF', sans-serif;
+}
+::selection::backdrop {
+  background-color: transparent;
+}
+
+@font-face {
+  font-family: 'UDEV Gothic NF';
+  src: url('/UDEVGothicNF-Regular.ttf') format('truetype');
+}

@@ -7,12 +7,10 @@ import { ThreeBackground } from "../../stories/ThreeBackground";
 import { GitHubIcon, XIcon, InstagramIcon } from "../components/githubicon";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { hmeta } from "@/lib/metadata";
 
 export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "Home | Nknight AMAMIYA" },
-    { name: "description", content: "Nknight AMAMIYA - Developer Portfolio" },
-  ];
+  return hmeta({ title: "Home", description: "Nknight AMAMIYA - Developer Portfolio" });
 }
 
 // primary is a reserved prop for the Button component, so we need to rename it here
