@@ -1,0 +1,8 @@
+.Box {
+    font-family: 'UDEV Gothic NF', sans-serif;
+}
+
+@font-face {
+  font-family: 'UDEV Gothic NF';
+  src: url('public/UDEVGothicNF-Regular.ttf') format('truetype');
+}
