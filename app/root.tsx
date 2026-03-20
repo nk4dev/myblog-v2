@@ -62,10 +62,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <ScrollRestoration />
           <Scripts />
         </div>
+
+        <footer className="text-center text-sm p-4 mt-8 text-fd-muted-foreground">
+          &copy; 2021 - {new Date().getFullYear()} Nknight AMAMIYA. All rights reserved.
+        </footer>
       </body>
-      <footer className="text-center text-sm p-4 mt-8 text-fd-muted-foreground">
-        &copy; 2021 - {new Date().getFullYear()} Nknight AMAMIYA. All rights reserved.
-      </footer>
     </html>
   );
 }
