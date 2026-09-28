@@ -1,0 +1,23 @@
+---
+const navItems = [
+  { href: "/", label: "Home" },
+  { href: "/blog", label: "Blog" },
+];
+---
+
+<header class="border-b border-slate-200 bg-white/80 backdrop-blur">
+  <div class="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
+    <a href="/" class="text-lg font-bold tracking-tight text-slate-900">
+      nk4dev
+    </a>
+    <nav class="flex items-center gap-6 text-sm font-medium text-slate-600">
+      {
+        navItems.map((item) => (
+          <a href={item.href} class="transition-colors hover:text-slate-900">
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>

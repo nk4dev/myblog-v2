@@ -1,0 +1,50 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PostCard from "../components/PostCard.astro";
+/*import { getBlogs, isMockMode } from "../lib/microcms";
+
+const { contents: posts } = await getBlogs({ limit: 3 });
+*/
+---
+
+<Layout
+  title="Nknight AMAMIYA@nk4dev | Personal Site"
+  description="Nknight AMAMIYA (nk4dev) の個人サイト兼ブログです。"
+>
+  <section class="mb-16">
+    <h1 class="text-3xl font-bold tracking-tight">
+      Nknight AMAMIYA@nk4dev
+    </h1>
+    <p class="mt-4">
+      新卒一年目
+      <br/>
+      開発・技術について書いています。
+    </p>
+    <!--
+    {isMockMode && (
+      <p class="mt-4 rounded-md bg-amber-50 px-4 py-2 text-sm text-amber-700">
+        現在モックデータで表示中です。<code>.env</code> に
+        <code>MICROCMS_SERVICE_DOMAIN</code> / <code>MICROCMS_API_KEY</code>
+        を設定すると実データに切り替わります。
+      </p>
+      )}
+      -->
+  </section>
+
+  <section>
+    <div class="mb-6 flex items-center justify-between">
+      <h2 class="text-xl font-semibold">Latest Posts</h2>
+      <a href="/blog" class="text-sm font-medium hover:text-slate-900">
+        すべて見る &rarr;
+      </a>
+    </div>
+    <!--
+    <div class="grid gap-4">
+      {
+      isMockMode? null :
+      posts.map((post) => <PostCard post={post} />)
+      }
+      </div>
+      -->
+  </section>
+</Layout>

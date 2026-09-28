@@ -1,0 +1,141 @@
+{
+  "version": "2.19",
+  "children": [
+    {
+      "type": "frame",
+      "id": "bi8Au",
+      "x": 0,
+      "y": 0,
+      "name": "Frame",
+      "clip": true,
+      "width": 800,
+      "height": 600,
+      "fill": "#FFFFFF",
+      "layout": "none",
+      "children": [
+        {
+          "type": "rectangle",
+          "id": "C04pi3",
+          "x": 0,
+          "y": 90,
+          "fill": "#CCCCCC",
+          "width": 800,
+          "height": 285
+        },
+        {
+          "type": "frame",
+          "id": "gvrJY",
+          "x": 52,
+          "y": 0,
+          "name": "Frame 2",
+          "clip": true,
+          "width": 695,
+          "height": 608,
+          "fill": "#ddddff",
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "OJUud",
+              "x": 4,
+              "y": 118,
+              "name": "Frame 1",
+              "clip": true,
+              "width": 685,
+              "height": 198,
+              "fill": "#FFFFFF",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 114,
+                  "id": "HWluT",
+                  "x": 39,
+                  "y": 26,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "SNS%E7%94%A8%E3%82%A2%E3%82%A4%E3%82%B3%E3%83%B3.jpeg",
+                    "mode": "fill"
+                  },
+                  "width": 150,
+                  "height": 150
+                },
+                {
+                  "type": "text",
+                  "id": "h3NNbJ",
+                  "x": 231,
+                  "y": 69,
+                  "fill": "#000000",
+                  "textGrowth": "fixed-width-height",
+                  "width": 424,
+                  "height": 36,
+                  "content": "Nknight AMAMIYA@nk4dev",
+                  "fontFamily": "Inter",
+                  "fontSize": 30,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "xeb6b",
+                  "x": 231.0323901217655,
+                  "y": 113.23024156705,
+                  "fill": "#000000",
+                  "content": "Web / Mobile developer",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "FrXk3",
+                  "x": 231,
+                  "y": 137,
+                  "fill": "#888888",
+                  "content": "React / Astro / Flutter",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "TOfcv",
+              "x": 11,
+              "y": 14,
+              "fill": "#000000",
+              "content": "@nk4dev",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "oTu49",
+              "x": 534,
+              "y": 14,
+              "fill": "#000000",
+              "content": "Blog",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "e04rjS",
+              "x": 606,
+              "y": 14,
+              "fill": "#000000",
+              "content": "Scraps",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "fileToken": "b38a5012-4e9b-406c-92a9-dff637ccde82"
+}

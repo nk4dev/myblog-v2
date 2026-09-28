@@ -1,0 +1,26 @@
+---
+import type { Blog } from "../types/blog";
+
+interface Props {
+  post: Blog;
+}
+
+const { post } = Astro.props;
+const publishedDate = new Date(post.publishedAt ?? post.createdAt).toLocaleDateString("ja-JP");
+---
+
+<a
+  href={`/blog/${post.id}`}
+  class="block rounded-lg border border-slate-200 p-5 transition-shadow hover:shadow-md"
+>
+  <div class="mb-2 flex items-center gap-3 text-xs text-slate-500">
+    <time datetime={post.publishedAt ?? post.createdAt}>{publishedDate}</time>
+    {post.category && (
+      <span class="rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600">
+        {post.category.name}
+      </span>
+    )}
+  </div>
+  <h2 class="text-lg font-semibold text-slate-900">{post.title}</h2>
+  <p class="mt-1 line-clamp-2 text-sm text-slate-600">{post.description}</p>
+</a>
