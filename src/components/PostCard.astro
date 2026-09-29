@@ -1,26 +1,33 @@
 ---
 import type { Blog } from "../types/blog";
+import type { Scrap } from "../types/scrap";
 
 interface Props {
-  post: Blog;
+  post: Blog | Scrap;
+  /** 詳細ページのパス（例: "/blog", "/scraps"） */
+  basePath?: string;
 }
 
-const { post } = Astro.props;
+const { post, basePath = "/blog" } = Astro.props;
+const category = typeof post.category === "string" ? post.category : post.category?.name;
+const description = "description" in post ? post.description : undefined;
 const publishedDate = new Date(post.publishedAt ?? post.createdAt).toLocaleDateString("ja-JP");
 ---
 
 <a
-  href={`/blog/${post.id}`}
+  href={`${basePath}/${post.id}`}
   class="block rounded-lg border border-slate-200 dark:border-slate-700 p-5 transition-shadow hover:shadow-md"
 >
   <div class="mb-2 flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
     <time datetime={post.publishedAt ?? post.createdAt}>{publishedDate}</time>
-    {post.category && (
+    {category && (
       <span class="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 font-medium text-slate-600 dark:text-slate-400">
-        {post.category.name}
+        {category}
       </span>
     )}
   </div>
-  <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">{post.title}</h2>
-  <p class="mt-1 line-clamp-2 text-sm text-slate-600 dark:text-slate-400">{post.description}</p>
+  <h2 lang="ja" class="text-lg font-semibold text-slate-900 dark:text-slate-100">{post.title}</h2>
+  {description && (
+    <p class="mt-1 line-clamp-2 text-sm text-slate-600 dark:text-slate-400">{description}</p>
+  )}
 </a>

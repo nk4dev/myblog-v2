@@ -1,4 +1,5 @@
 import type { Blog } from "../types/blog";
+import type { Scrap } from "../types/scrap";
 
 /**
  * MICROCMS_SERVICE_DOMAIN / MICROCMS_API_KEY 未設定時に使うダミー記事。
@@ -39,5 +40,18 @@ export const mockBlogs: Blog[] = [
     updatedAt: "2026-01-03T00:00:00.000Z",
     publishedAt: "2026-01-03T00:00:00.000Z",
     revisedAt: "2026-01-03T00:00:00.000Z",
+  },
+];
+
+/** MICROCMS_SERVICE_DOMAIN / MICROCMS_API_KEY 未設定時に使うダミーのスクラップ。 */
+export const mockScraps: Scrap[] = [
+  {
+    id: "sample-scrap-1",
+    title: "サンプルスクラップ: 開発メモ",
+    content: "<p>これは microCMS 未接続時に表示されるモックのスクラップです。</p>",
+    createdAt: "2026-01-04T00:00:00.000Z",
+    updatedAt: "2026-01-04T00:00:00.000Z",
+    publishedAt: "2026-01-04T00:00:00.000Z",
+    revisedAt: "2026-01-04T00:00:00.000Z",
   },
 ];

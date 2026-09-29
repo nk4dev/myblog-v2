@@ -1,6 +1,7 @@
 import { createClient } from "microcms-js-sdk";
 import type { Blog, BlogListResponse } from "../types/blog";
-import { mockBlogs } from "./mock-data";
+import type { Scrap } from "../types/scrap";
+import { mockBlogs, mockScraps } from "./mock-data";
 
 const serviceDomain = import.meta.env.MICROCMS_SERVICE_DOMAIN;
 const apiKey = import.meta.env.MICROCMS_API_KEY;
@@ -26,12 +27,38 @@ export const getBlogs = async (queries?: { limit?: number; offset?: number }): P
   return client.getList<Blog>({ endpoint: "blogs", queries });
 };
 
-export const getBlogDetail = async (id: string): Promise<Blog | null> => {
+/** 全件取得（microCMS の limit 上限 100 件を超えても取得できる） */
+export const getAllBlogs = async (): Promise<Blog[]> => {
+  if (!client) {
+    return mockBlogs;
+  }
+  return client.getAllContents<Blog>({ endpoint: "blogs" });
+};
+
+export const getBlogDetail =async (id: string): Promise<Blog | null> => {
   if (!client) {
     return mockBlogs.find((blog) => blog.id === id) ?? null;
   }
   try {
     return await client.getListDetail<Blog>({ endpoint: "blogs", contentId: id });
+  } catch {
+    return null;
+  }
+};
+
+export const getAllScraps = async (): Promise<Scrap[]> => {
+  if (!client) {
+    return mockScraps;
+  }
+  return client.getAllContents<Scrap>({ endpoint: "scraps" });
+};
+
+export const getScrapDetail = async (id: string): Promise<Scrap | null> => {
+  if (!client) {
+    return mockScraps.find((scrap) => scrap.id === id) ?? null;
+  }
+  try {
+    return await client.getListDetail<Scrap>({ endpoint: "scraps", contentId: id });
   } catch {
     return null;
   }

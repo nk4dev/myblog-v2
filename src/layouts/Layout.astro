@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import BaseHead from "../components/BaseHead.astro";
 import Footer from "../components/Footer.astro";
+import { i18nAttrs, ui } from "../i18n/ui";
 
 interface Props {
   title: string;
@@ -14,6 +15,7 @@ const { title, description, image } = Astro.props;
 const navItems = [
   { href: "/", label: "Home" },
   { href: "/blog", label: "Blog" },
+  { href: "/scraps", label: "Scraps" },
   ];
 ---
 
@@ -39,6 +41,17 @@ const navItems = [
           : "light";
       })();
       document.documentElement.dataset.theme = theme;
+
+      // 表示言語: 保存済みの選択 → ブラウザの言語設定の順で決める
+      const lang = (() => {
+        try {
+          const saved = localStorage.getItem("lang");
+          if (saved === "ja" || saved === "en") return saved;
+        } catch {}
+        return navigator.language.toLowerCase().startsWith("ja") ? "ja" : "en";
+      })();
+      document.documentElement.dataset.lang = lang;
+      document.documentElement.lang = lang;
     </script>
   <div class="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
     <a href="/" class="text-lg font-bold tracking-tight">
@@ -52,7 +65,15 @@ const navItems = [
           </a>
         ))
       }
-      <button id="theme-toggle" aria-label="テーマを切り替え">🌓</button>
+      <button
+        id="lang-toggle"
+        class="transition-colors hover:text-slate-900 dark:hover:text-white"
+        aria-label={ui.ja["nav.lang"]}
+        {...i18nAttrs("nav.lang", "aria-label")}
+      >
+        <span data-t="ja">EN</span><span data-t="en">JA</span>
+      </button>
+      <button id="theme-toggle" aria-label={ui.ja["nav.theme"]} {...i18nAttrs("nav.theme", "aria-label")}>🌓</button>
     </nav>
   </div>
   </header>
@@ -69,6 +90,29 @@ const navItems = [
     root.dataset.theme = next;
     try {
       localStorage.setItem("theme", next);
+    } catch {}
+  });
+
+  const applyLang = (lang: "ja" | "en") => {
+    const root = document.documentElement;
+    root.dataset.lang = lang;
+    root.lang = lang;
+    // <T> で囲めない文字列・属性を差し替える（src/i18n/ui.ts の i18nAttrs）
+    document.querySelectorAll<HTMLElement>("[data-i18n-ja]").forEach((el) => {
+      const text = (lang === "en" ? el.dataset.i18nEn : el.dataset.i18nJa) ?? "";
+      const attr = el.dataset.i18nAttr;
+      if (attr) el.setAttribute(attr, text);
+      else el.textContent = text;
+    });
+  };
+
+  applyLang(document.documentElement.dataset.lang === "en" ? "en" : "ja");
+
+  document.getElementById("lang-toggle")?.addEventListener("click", () => {
+    const next = document.documentElement.dataset.lang === "en" ? "ja" : "en";
+    applyLang(next);
+    try {
+      localStorage.setItem("lang", next);
     } catch {}
   });
   </script>

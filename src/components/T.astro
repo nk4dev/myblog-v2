@@ -1,0 +1,11 @@
+---
+import { ui, type UIKey } from "../i18n/ui";
+
+interface Props {
+  k: UIKey;
+}
+
+const { k } = Astro.props;
+---
+
+<span data-t="ja" lang="ja">{ui.ja[k]}</span><span data-t="en" lang="en">{ui.en[k]}</span>

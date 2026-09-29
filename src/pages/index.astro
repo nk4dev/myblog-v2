@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import PostCard from "../components/PostCard.astro";
 import { getBlogs } from "../lib/microcms";
+import T from "../components/T.astro";
 
 const { contents: posts } = await getBlogs({ limit: 3 });
 ---
@@ -15,9 +16,9 @@ const { contents: posts } = await getBlogs({ limit: 3 });
       Nknight AMAMIYA@nk4dev
     </h1>
     <p class="mt-4">
-      新卒一年目
+      <T k="home.bio1" />
       <br/>
-      開発・技術について書いています。
+      <T k="home.bio2" />
     </p>
     <!--
     {isMockMode && (
@@ -34,7 +35,7 @@ const { contents: posts } = await getBlogs({ limit: 3 });
     <div class="mb-6 flex items-center justify-between">
       <h2 class="text-xl font-semibold">Latest Posts</h2>
       <a href="/blog" class="text-sm font-medium hover:text-slate-900 dark:hover:text-white">
-        すべて見る &rarr;
+        <T k="home.seeAll" /> &rarr;
       </a>
     </div>
     <div class="grid gap-4">

@@ -1,14 +1,70 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import PostCard from "../../components/PostCard.astro";
-import { getBlogs } from "../../lib/microcms";
+import { getAllBlogs } from "../../lib/microcms";
+import T from "../../components/T.astro";
+import { i18nAttrs } from "../../i18n/ui";
 
-const { contents: posts } = await getBlogs();
+const posts = await getAllBlogs();
 ---
 
 <Layout title="Blog | Nknight AMAMIYA@nk4dev" description="記事一覧ページです。">
-  <h1 class="mb-8 text-2xl font-bold text-slate-900 dark:text-slate-100">Blog</h1>
-  <div class="grid gap-4">
-    {posts.map((post) => <PostCard post={post} />)}
+  <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
+    <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Blog</h1>
+    <label class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+      <T k="blog.sort" />
+      <select
+        id="sort-select"
+        class="rounded-md border border-slate-200 dark:border-slate-700 bg-transparent px-2 py-1 text-slate-900 dark:text-slate-100"
+      >
+        <option value="newest" {...i18nAttrs("blog.sort.newest")}>新しい順</option>
+        <option value="oldest" {...i18nAttrs("blog.sort.oldest")}>古い順</option>
+        <option value="title" {...i18nAttrs("blog.sort.title")}>タイトル順</option>
+      </select>
+    </label>
+  </div>
+  <div id="post-list" class="grid gap-4">
+    {
+      posts.map((post) => (
+        <div data-date={post.publishedAt ?? post.createdAt} data-title={post.title}>
+          <PostCard post={post} />
+        </div>
+      ))
+    }
   </div>
 </Layout>
+
+<script>
+  type SortKey = "newest" | "oldest" | "title";
+
+  const select = document.getElementById("sort-select") as HTMLSelectElement | null;
+  const list = document.getElementById("post-list");
+
+  const compare: Record<SortKey, (a: HTMLElement, b: HTMLElement) => number> = {
+    newest: (a, b) => (b.dataset.date ?? "").localeCompare(a.dataset.date ?? ""),
+    oldest: (a, b) => (a.dataset.date ?? "").localeCompare(b.dataset.date ?? ""),
+    title: (a, b) => (a.dataset.title ?? "").localeCompare(b.dataset.title ?? "", "ja"),
+  };
+
+  const sortPosts = (key: SortKey) => {
+    if (!list) return;
+    const items = Array.from(list.children) as HTMLElement[];
+    items.sort(compare[key]).forEach((item) => list.appendChild(item));
+  };
+
+  // ?sort=oldest のように URL で並び順を共有できるようにする
+  const initial = new URLSearchParams(location.search).get("sort");
+  if (select && initial && initial in compare) {
+    select.value = initial;
+    sortPosts(initial as SortKey);
+  }
+
+  select?.addEventListener("change", () => {
+    const key = select.value as SortKey;
+    sortPosts(key);
+    const url = new URL(location.href);
+    if (key === "newest") url.searchParams.delete("sort");
+    else url.searchParams.set("sort", key);
+    history.replaceState(null, "", url);
+  });
+</script>

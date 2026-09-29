@@ -1,9 +1,10 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { getBlogs, getBlogDetail } from "../../lib/microcms";
+import { getAllBlogs, getBlogDetail } from "../../lib/microcms";
+import T from "../../components/T.astro";
 
 export async function getStaticPaths() {
-  const { contents: posts } = await getBlogs();
+  const posts = await getAllBlogs();
   return posts.map((post) => ({
     params: { id: post.id },
   }));
@@ -20,7 +21,7 @@ const publishedDate = new Date(post.publishedAt ?? post.createdAt).toLocaleDateS
 ---
 
 <Layout title={`${post.title} | Nknight AMAMIYA@nk4dev`} description={post.description}>
-  <article>
+  <article lang="ja">
     <div class="mb-2 flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
       <time datetime={post.publishedAt ?? post.createdAt}>{publishedDate}</time>
       {post.category && (
@@ -33,6 +34,6 @@ const publishedDate = new Date(post.publishedAt ?? post.createdAt).toLocaleDateS
     <div class="prose prose-slate dark:prose-invert max-w-none" set:html={post.content} />
   </article>
   <a href="/blog" class="mt-10 inline-block text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
-    &larr; 記事一覧に戻る
+    &larr; <T k="blog.back" />
   </a>
 </Layout>

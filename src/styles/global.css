@@ -1,7 +1,14 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 /* dark: を data-theme="dark" に連動させる */
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+/* 表示言語に合わない方の文言を隠す（src/components/T.astro） */
+:root:not([data-lang="en"]) [data-t="en"],
+:root[data-lang="en"] [data-t="ja"] {
+  display: none;
+}
 
 .line-clamp-2 {
   display: -webkit-box;
