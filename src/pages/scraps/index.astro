@@ -7,7 +7,7 @@ const scraps = await getAllScraps();
 ---
 
 <Layout title="Scraps | Nknight AMAMIYA@nk4dev" description="ちょっとしたメモやつぶやきをまとめたスクラップ一覧です。">
-  <h1 class="mb-8 text-2xl font-bold text-slate-900 dark:text-slate-100">Scraps</h1>
+  <h1 class="bp mb-8 p-4 text-2xl font-bold text-slate-900 dark:text-slate-100" data-bp="scraps / index">Scraps</h1>
   <div class="grid gap-4">
     {scraps.map((scrap) => <PostCard post={scrap} basePath="/scraps" />)}
   </div>

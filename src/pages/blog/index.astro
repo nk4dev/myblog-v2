@@ -9,13 +9,13 @@ const posts = await getAllBlogs();
 ---
 
 <Layout title="Blog | Nknight AMAMIYA@nk4dev" description="記事一覧ページです。">
-  <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
+  <div class="bp mb-8 flex flex-wrap items-center justify-between gap-4 p-4" data-bp="blog / index">
     <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Blog</h1>
     <label class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
       <T k="blog.sort" />
       <select
         id="sort-select"
-        class="rounded-md border border-slate-200 dark:border-slate-700 bg-transparent px-2 py-1 text-slate-900 dark:text-slate-100"
+        class="bp-tag bg-[var(--bg)] px-2 py-1 text-slate-900 dark:text-slate-100"
       >
         <option value="newest" {...i18nAttrs("blog.sort.newest")}>新しい順</option>
         <option value="oldest" {...i18nAttrs("blog.sort.oldest")}>古い順</option>

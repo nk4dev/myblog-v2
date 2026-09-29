@@ -11,7 +11,7 @@ const posts = (await getAllBlogs()).slice(0, 3);
   title="Nknight AMAMIYA@nk4dev | Personal Site"
   description="Nknight AMAMIYA (nk4dev) の個人サイト兼ブログです。"
 >
-  <section class="mb-16">
+  <section class="bp mb-12 p-6" data-bp="profile">
     <h1 class="text-3xl font-bold tracking-tight">
       Nknight AMAMIYA@nk4dev
     </h1>
@@ -31,7 +31,7 @@ const posts = (await getAllBlogs()).slice(0, 3);
       -->
   </section>
 
-  <section>
+  <section class="bp p-6" data-bp="latest-posts">
     <div class="mb-6 flex items-center justify-between">
       <h2 class="text-xl font-semibold">Latest Posts</h2>
       <a href="/blog" class="text-sm font-medium hover:text-slate-900 dark:hover:text-white">

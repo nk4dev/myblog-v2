@@ -69,7 +69,7 @@ const isCurrent = (href: string) => (href === "/" ? path === "/" : path.startsWi
       document.documentElement.dataset.lang = lang;
       document.documentElement.lang = lang;
     </script>
-    <nav class="dock" aria-label="Main">
+    <nav class="dock bp" data-bp="nav" aria-label="Main">
       <a href="/" class="dock-brand">nk4dev</a>
       <span class="dock-divider" aria-hidden="true"></span>
       {
@@ -157,19 +157,74 @@ const isCurrent = (href: string) => (href === "/" ? path === "/" : path.startsWi
   :root {
     --bg: #ffffff;
     --fg: #111111;
+    /* 設計図風の線色 */
+    --line: rgb(37 99 235 / 0.35);
+    --line-strong: rgb(37 99 235 / 0.8);
+    --grid: rgb(37 99 235 / 0.07);
   }
   :root[data-theme="dark"] {
     --bg: #111111;
     --fg: #eeeeee;
+    --line: rgb(96 165 250 / 0.3);
+    --line-strong: rgb(96 165 250 / 0.75);
+    --grid: rgb(96 165 250 / 0.06);
     color-scheme: dark;
   }
   body {
-    background: var(--bg);
+    background-color: var(--bg);
+    /* 方眼紙風のグリッド */
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 24px 24px;
     color: var(--fg);
   }
-  footer {
 
+  /* ---- 設計図風の枠（class="bp" data-bp="ラベル"） ---- */
+  .bp {
+    position: relative;
+    border: 1px solid var(--line);
+  }
+  /* 左上のラベル */
+  .bp[data-bp]::before {
+    content: attr(data-bp);
+    position: absolute;
+    top: -0.5rem;
+    left: 10px;
+    padding: 0 4px;
+    font: 500 10px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--line-strong);
     background: var(--bg);
+  }
+  /* 四隅のトンボ（L 字の目印） */
+  .bp::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    pointer-events: none;
+    --c: linear-gradient(var(--line-strong), var(--line-strong));
+    background:
+      var(--c) left top / 8px 1px,
+      var(--c) left top / 1px 8px,
+      var(--c) right top / 8px 1px,
+      var(--c) right top / 1px 8px,
+      var(--c) left bottom / 8px 1px,
+      var(--c) left bottom / 1px 8px,
+      var(--c) right bottom / 8px 1px,
+      var(--c) right bottom / 1px 8px;
+    background-repeat: no-repeat;
+  }
+  .bp-tag {
+    border: 1px solid var(--line);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .prose pre {
+    border-radius: 0;
+    border: 1px solid var(--line);
+  }
+  footer {
     color: var(--fg);
   }
 
@@ -189,12 +244,7 @@ const isCurrent = (href: string) => (href === "/" ? path === "/" : path.startsWi
     align-items: center;
     gap: 4px;
     padding: 6px 10px;
-    border-radius: 20px;
     background: color-mix(in srgb, var(--bg) 70%, transparent);
-    border: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
-    box-shadow:
-      0 10px 30px -10px rgb(0 0 0 / 0.35),
-      inset 0 1px 0 color-mix(in srgb, #fff 15%, transparent);
     backdrop-filter: blur(16px) saturate(1.6);
     -webkit-backdrop-filter: blur(16px) saturate(1.6);
   }
@@ -207,7 +257,7 @@ const isCurrent = (href: string) => (href === "/" ? path === "/" : path.startsWi
     width: 1px;
     height: 24px;
     margin: 0 4px;
-    background: color-mix(in srgb, var(--fg) 15%, transparent);
+    background: var(--line);
   }
   .dock-item {
     position: relative;
@@ -215,7 +265,6 @@ const isCurrent = (href: string) => (href === "/" ? path === "/" : path.startsWi
     place-items: center;
     width: 40px;
     height: 40px;
-    border-radius: 12px;
     color: inherit;
     transform-origin: top center;
     transition:
@@ -237,7 +286,9 @@ const isCurrent = (href: string) => (href === "/" ? path === "/" : path.startsWi
   }
   .dock-item:hover,
   .dock-item:focus-visible {
-    background: color-mix(in srgb, var(--fg) 8%, transparent);
+    background: var(--grid);
+    outline: 1px dashed var(--line-strong);
+    outline-offset: -1px;
   }
   /* ホバーした項目を拡大し、両隣も少し拡大する（macOS の Dock 風） */
   .dock-item:hover {
@@ -254,15 +305,14 @@ const isCurrent = (href: string) => (href === "/" ? path === "/" : path.startsWi
     bottom: 1px;
     width: 4px;
     height: 4px;
-    border-radius: 50%;
-    background: currentColor;
+    background: var(--line-strong);
   }
   .dock-label {
     position: absolute;
     top: calc(100% + 10px);
     padding: 2px 8px;
-    border-radius: 6px;
-    font-size: 0.7rem;
+    font: 500 10px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    letter-spacing: 0.06em;
     white-space: nowrap;
     color: var(--bg);
     background: var(--fg);
