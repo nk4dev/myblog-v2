@@ -19,5 +19,13 @@
   },
   "allowScripts": {
     "esbuild": true
+  },
+  "devDependencies": {
+    "git-cz": "^4.9.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/git-cz"
+    }
   }
 }
