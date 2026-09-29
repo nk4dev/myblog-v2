@@ -1,34 +1,80 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import PostCard from "../components/PostCard.astro";
-import { getAllBlogs } from "../lib/microcms";
+import { getAllBlogs, getAllScraps } from "../lib/microcms";
 import T from "../components/T.astro";
+import { socialLinks } from "../data/social";
 
-const posts = (await getAllBlogs()).slice(0, 3);
+const [allPosts, scraps] = await Promise.all([getAllBlogs(), getAllScraps()]);
+const posts = allPosts.slice(0, 3);
+
+const stats = [
+  { label: "Posts", value: allPosts.length, href: "/blog" },
+  { label: "Scraps", value: scraps.length, href: "/scraps" },
+];
 ---
 
 <Layout
   title="Nknight AMAMIYA@nk4dev | Personal Site"
   description="Nknight AMAMIYA (nk4dev) の個人サイト兼ブログです。"
 >
-  <section class="bp mb-12 p-6" data-bp="profile">
-    <h1 class="text-3xl font-bold tracking-tight">
-      Nknight AMAMIYA@nk4dev
-    </h1>
-    <p class="mt-4">
-      <T k="home.bio1" />
-      <br/>
-      <T k="home.bio2" />
-    </p>
-    <!--
-    {isMockMode && (
-      <p class="mt-4 rounded-md bg-amber-50 px-4 py-2 text-sm text-amber-700">
-        現在モックデータで表示中です。<code>.env</code> に
-        <code>MICROCMS_SERVICE_DOMAIN</code> / <code>MICROCMS_API_KEY</code>
-        を設定すると実データに切り替わります。
-      </p>
-      )}
-      -->
+  <section class="bp mb-12 p-6 sm:p-8" data-bp="profile-card">
+    <div class="flex flex-col items-center gap-6 text-center sm:flex-row sm:items-start sm:text-left">
+      <figure class="shrink-0">
+        <div class="bp p-1" data-bp="avatar">
+          <img
+            src="/icon.jpeg"
+            alt="Nknight AMAMIYA"
+            width="120"
+            height="120"
+            class="block size-[120px] object-cover"
+          />
+        </div>
+        <!-- 寸法線 -->
+        <figcaption class="profile-dim" aria-hidden="true">120 × 120</figcaption>
+      </figure>
+
+      <div class="min-w-0 flex-1">
+        <h1 class="text-3xl font-bold tracking-tight">Nknight AMAMIYA</h1>
+        <p class="mt-1 font-mono text-sm text-slate-500 dark:text-slate-400">@nk4dev</p>
+        <p class="mt-4 leading-relaxed">
+          <T k="home.bio1" />
+          <br />
+          <T k="home.bio2" />
+        </p>
+
+        <dl class="mt-5 flex justify-center gap-3 sm:justify-start">
+          {
+            stats.map((stat) => (
+              <a href={stat.href} class="bp-tag px-3 py-1.5 transition-colors hover:bg-blue-500/5">
+                <dt class="text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">{stat.label}</dt>
+                <dd class="text-lg font-semibold leading-tight">{String(stat.value).padStart(2, "0")}</dd>
+              </a>
+            ))
+          }
+        </dl>
+
+        <ul class="mt-5 flex justify-center gap-2 sm:justify-start">
+          {
+            socialLinks.map((link) => (
+              <li>
+                <a
+                  href={`/${link.slug}`}
+                  class="bp-tag grid size-10 place-items-center transition-colors hover:bg-blue-500/5"
+                  aria-label={link.label}
+                  title={link.label}
+                  rel="me"
+                >
+                  <svg viewBox="0 0 24 24" class="size-[18px] fill-current" aria-hidden="true">
+                    <path d={link.icon} />
+                  </svg>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
   </section>
 
   <section class="bp p-6" data-bp="latest-posts">

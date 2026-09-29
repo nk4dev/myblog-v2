@@ -224,6 +224,28 @@ const isCurrent = (href: string) => (href === "/" ? path === "/" : path.startsWi
     border-radius: 0;
     border: 1px solid var(--line);
   }
+  /* 寸法線（|<---- 120 × 120 ---->|） */
+  .profile-dim {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font: 500 10px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--line-strong);
+    white-space: nowrap;
+  }
+  .profile-dim::before,
+  .profile-dim::after {
+    content: "";
+    flex: 1;
+    height: 7px;
+    border: solid var(--line-strong);
+    border-width: 0 0 0 1px;
+    background: linear-gradient(var(--line-strong), var(--line-strong)) center / 100% 1px no-repeat;
+  }
+  .profile-dim::after {
+    border-width: 0 1px 0 0;
+  }
   footer {
     color: var(--fg);
   }
