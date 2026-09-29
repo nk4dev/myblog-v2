@@ -1,10 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import PostCard from "../components/PostCard.astro";
-import { getBlogs } from "../lib/microcms";
+import { getAllBlogs } from "../lib/microcms";
 import T from "../components/T.astro";
 
-const { contents: posts } = await getBlogs({ limit: 3 });
+const posts = (await getAllBlogs()).slice(0, 3);
 ---
 
 <Layout

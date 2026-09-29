@@ -1,10 +1,12 @@
 import { createClient } from "microcms-js-sdk";
-import type { Blog, BlogListResponse } from "../types/blog";
+import type { Blog } from "../types/blog";
 import type { Scrap } from "../types/scrap";
 import { mockBlogs, mockScraps } from "./mock-data";
 
 const serviceDomain = import.meta.env.MICROCMS_SERVICE_DOMAIN;
 const apiKey = import.meta.env.MICROCMS_API_KEY;
+/** マネジメント API 用のキー（「コンテンツの取得」権限が必要）。未設定時は MICROCMS_API_KEY を使う */
+const managementApiKey = import.meta.env.MICROCMS_MANAGEMENT_API_KEY || apiKey;
 
 /** MOCKMODE=true または環境変数が未設定の場合はモックデータで動作するサンプルモード */
 export const isMockMode = import.meta.env.MOCKMODE === "true" || !serviceDomain || !apiKey;
@@ -13,31 +15,71 @@ const client = isMockMode
   ? null
   : createClient({ serviceDomain, apiKey });
 
-export const getBlogs = async (queries?: { limit?: number; offset?: number }): Promise<BlogListResponse> => {
-  if (!client) {
-    const limit = queries?.limit ?? mockBlogs.length;
-    const offset = queries?.offset ?? 0;
-    return {
-      contents: mockBlogs.slice(offset, offset + limit),
-      totalCount: mockBlogs.length,
-      offset,
-      limit,
-    };
+type Endpoint = "blogs" | "scraps";
+
+/**
+ * 下書きがある（draftKey が発行されている）コンテンツの id 一覧。
+ * コンテンツ API では判別できないため、マネジメント API の status / draftKey を使う。
+ * ビルド中に何度も呼ばれるので endpoint ごとにキャッシュする。
+ */
+const draftIdsCache = new Map<Endpoint, Promise<Set<string>>>();
+
+const fetchDraftIds = async (endpoint: Endpoint): Promise<Set<string>> => {
+  const ids = new Set<string>();
+  const limit = 100;
+  for (let offset = 0; ; offset += limit) {
+    const res = await fetch(
+      `https://${serviceDomain}.microcms-management.io/api/v1/contents/${endpoint}?limit=${limit}&offset=${offset}`,
+      { headers: { "X-MICROCMS-API-KEY": managementApiKey } },
+    );
+    if (!res.ok) {
+      throw new Error(
+        `microCMS management API returned ${res.status} for "${endpoint}". ` +
+          "Set MICROCMS_MANAGEMENT_API_KEY to a key with the content read permission.",
+      );
+    }
+    const data: { contents: { id: string; draftKey: string | null }[]; totalCount: number } = await res.json();
+    for (const content of data.contents) {
+      if (content.draftKey) ids.add(content.id);
+    }
+    if (offset + limit >= data.totalCount) break;
   }
-  return client.getList<Blog>({ endpoint: "blogs", queries });
+  return ids;
 };
 
-/** 全件取得（microCMS の limit 上限 100 件を超えても取得できる） */
+const getDraftIds = (endpoint: Endpoint): Promise<Set<string>> => {
+  let cached = draftIdsCache.get(endpoint);
+  if (!cached) {
+    cached = fetchDraftIds(endpoint).catch((error: unknown) => {
+      // 本番ビルドでは下書きが公開されないよう失敗させる。開発中は警告のみで続行する
+      if (import.meta.env.PROD) throw error;
+      console.warn(`[microcms] draft filtering skipped: ${(error as Error).message}`);
+      return new Set<string>();
+    });
+    draftIdsCache.set(endpoint, cached);
+  }
+  return cached;
+};
+
+const excludeDrafts = async <T extends { id: string }>(endpoint: Endpoint, contents: T[]): Promise<T[]> => {
+  const draftIds = await getDraftIds(endpoint);
+  return contents.filter((content) => !draftIds.has(content.id));
+};
+
+/** 全件取得（microCMS の limit 上限 100 件を超えても取得できる）。下書きがある記事は除く */
 export const getAllBlogs = async (): Promise<Blog[]> => {
   if (!client) {
     return mockBlogs;
   }
-  return client.getAllContents<Blog>({ endpoint: "blogs" });
+  return excludeDrafts("blogs", await client.getAllContents<Blog>({ endpoint: "blogs" }));
 };
 
-export const getBlogDetail =async (id: string): Promise<Blog | null> => {
+export const getBlogDetail = async (id: string): Promise<Blog | null> => {
   if (!client) {
     return mockBlogs.find((blog) => blog.id === id) ?? null;
+  }
+  if ((await getDraftIds("blogs")).has(id)) {
+    return null;
   }
   try {
     return await client.getListDetail<Blog>({ endpoint: "blogs", contentId: id });
@@ -46,16 +88,20 @@ export const getBlogDetail =async (id: string): Promise<Blog | null> => {
   }
 };
 
+/** 全件取得。下書きがあるスクラップは除く */
 export const getAllScraps = async (): Promise<Scrap[]> => {
   if (!client) {
     return mockScraps;
   }
-  return client.getAllContents<Scrap>({ endpoint: "scraps" });
+  return excludeDrafts("scraps", await client.getAllContents<Scrap>({ endpoint: "scraps" }));
 };
 
 export const getScrapDetail = async (id: string): Promise<Scrap | null> => {
   if (!client) {
     return mockScraps.find((scrap) => scrap.id === id) ?? null;
+  }
+  if ((await getDraftIds("scraps")).has(id)) {
+    return null;
   }
   try {
     return await client.getListDetail<Scrap>({ endpoint: "scraps", contentId: id });
