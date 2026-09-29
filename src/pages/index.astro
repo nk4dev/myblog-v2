@@ -1,10 +1,9 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import PostCard from "../components/PostCard.astro";
-/*import { getBlogs, isMockMode } from "../lib/microcms";
+import { getBlogs } from "../lib/microcms";
 
 const { contents: posts } = await getBlogs({ limit: 3 });
-*/
 ---
 
 <Layout
@@ -34,17 +33,12 @@ const { contents: posts } = await getBlogs({ limit: 3 });
   <section>
     <div class="mb-6 flex items-center justify-between">
       <h2 class="text-xl font-semibold">Latest Posts</h2>
-      <a href="/blog" class="text-sm font-medium hover:text-slate-900">
+      <a href="/blog" class="text-sm font-medium hover:text-slate-900 dark:hover:text-white">
         すべて見る &rarr;
       </a>
     </div>
-    <!--
     <div class="grid gap-4">
-      {
-      isMockMode? null :
-      posts.map((post) => <PostCard post={post} />)
-      }
-      </div>
-      -->
+      {posts.map((post) => <PostCard post={post} />)}
+    </div>
   </section>
 </Layout>

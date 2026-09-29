@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* dark: を data-theme="dark" に連動させる */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;

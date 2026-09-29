@@ -7,7 +7,7 @@ const { contents: posts } = await getBlogs();
 ---
 
 <Layout title="Blog | Nknight AMAMIYA@nk4dev" description="記事一覧ページです。">
-  <h1 class="mb-8 text-2xl font-bold text-slate-900">Blog</h1>
+  <h1 class="mb-8 text-2xl font-bold text-slate-900 dark:text-slate-100">Blog</h1>
   <div class="grid gap-4">
     {posts.map((post) => <PostCard post={post} />)}
   </div>

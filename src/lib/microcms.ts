@@ -5,9 +5,8 @@ import { mockBlogs } from "./mock-data";
 const serviceDomain = import.meta.env.MICROCMS_SERVICE_DOMAIN;
 const apiKey = import.meta.env.MICROCMS_API_KEY;
 
-/** 環境変数が未設定の場合はモックデータで動作するサンプルモード */
-//export const isMockMode = !serviceDomain || !apiKey;
-export const isMockMode = import.meta.env.MOCKMODE === true ? true : false;
+/** MOCKMODE=true または環境変数が未設定の場合はモックデータで動作するサンプルモード */
+export const isMockMode = import.meta.env.MOCKMODE === "true" || !serviceDomain || !apiKey;
 
 const client = isMockMode
   ? null
