@@ -1,0 +1,72 @@
+---
+import T from "./T.astro";
+import { pagePath } from "../lib/blog-pages";
+import { i18nAttrs, ui } from "../i18n/ui";
+
+/** Previous / next links and page numbers for a paged list */
+type Props = {
+  /** List URL without the trailing slash, e.g. "/blog" or "/blog/category/tech" */
+  base: string;
+  current: number;
+  last: number;
+};
+
+const { base, current, last } = Astro.props;
+
+// Show the first, last and nearby pages; gaps become "…"
+const numbers: (number | null)[] = [];
+for (let n = 1; n <= last; n++) {
+  if (n === 1 || n === last || Math.abs(n - current) <= 1) numbers.push(n);
+  else if (numbers.at(-1) !== null) numbers.push(null);
+}
+---
+
+{
+  last > 1 && (
+    <nav
+      aria-label={ui.ja["pagination.label"]}
+      {...i18nAttrs("pagination.label", "aria-label")}
+      class="tabular mt-12 flex flex-wrap items-center gap-x-2 gap-y-3 border-t border-[var(--ink-soft)]/30 pt-6"
+    >
+      {current > 1 ? (
+        <a href={pagePath(base, current - 1)} rel="prev" class="mark mr-2 font-medium text-[var(--link)]">
+          ← <T k="pagination.prev" />
+        </a>
+      ) : (
+        <span class="mr-2 text-[var(--ink-soft)]/50" aria-hidden="true">
+          ← <T k="pagination.prev" />
+        </span>
+      )}
+      <ol class="flex flex-wrap items-center gap-1">
+        {numbers.map((n) =>
+          n === null ? (
+            <li aria-hidden="true" class="px-1 text-[var(--ink-soft)]">
+              …
+            </li>
+          ) : n === current ? (
+            <li>
+              <span aria-current="page" class="grid size-9 place-items-center rounded bg-[var(--brand)] font-bold text-white">
+                {n}
+              </span>
+            </li>
+          ) : (
+            <li>
+              <a href={pagePath(base, n)} class="grid size-9 place-items-center rounded hover:bg-[var(--mark)]">
+                {n}
+              </a>
+            </li>
+          ),
+        )}
+      </ol>
+      {current < last ? (
+        <a href={pagePath(base, current + 1)} rel="next" class="mark ml-2 font-medium text-[var(--link)]">
+          <T k="pagination.next" /> →
+        </a>
+      ) : (
+        <span class="ml-2 text-[var(--ink-soft)]/50" aria-hidden="true">
+          <T k="pagination.next" /> →
+        </span>
+      )}
+    </nav>
+  )
+}

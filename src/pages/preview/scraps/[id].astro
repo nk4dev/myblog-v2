@@ -23,6 +23,7 @@ Astro.response.headers.set("Cache-Control", "private, no-store");
     publishedAt={scrap.publishedAt ?? scrap.createdAt}
     revisedAt={scrap.revisedAt}
     category={scrap.category}
+    share={false}
     back={{ href: "/scraps/", label: "scraps.back" }}
   />
 </Layout>

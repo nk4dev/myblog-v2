@@ -1,0 +1,30 @@
+---
+import T from "./T.astro";
+import { SITE_HASHTAGS, xShareURL } from "../lib/share";
+
+/** Link that opens X's post composer with this page's title, URL and hashtags filled in */
+type Props = {
+  text: string;
+  url: string | URL;
+  /** Added after the site-wide hashtags */
+  hashtags?: string[];
+  class?: string;
+};
+
+const { text, url, hashtags = [], class: className } = Astro.props;
+const href = xShareURL({ text, url: String(url), hashtags: [...SITE_HASHTAGS, ...hashtags] });
+---
+
+<a
+  href={href}
+  target="_blank"
+  rel="noopener noreferrer"
+  class:list={["mark inline-flex items-center gap-1.5 font-medium", className]}
+>
+  <svg viewBox="0 0 24 24" class="size-[1em] shrink-0" fill="currentColor" aria-hidden="true">
+    <path
+      d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+    ></path>
+  </svg>
+  <T k="share.x" />
+</a>

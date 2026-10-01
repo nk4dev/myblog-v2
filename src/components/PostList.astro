@@ -1,7 +1,15 @@
 ---
 /** 日付つきの記事一覧。日付を左の列にそろえて、更新の記録として読めるようにする */
 type Props = {
-  posts: { id: string; title: string; publishedAt?: string; createdAt: string; category?: string }[];
+  posts: {
+    id: string;
+    title: string;
+    publishedAt?: string;
+    createdAt: string;
+    category?: string;
+    /** Link for the category label; plain text when omitted */
+    categoryHref?: string;
+  }[];
   basePath: string;
 };
 
@@ -25,7 +33,14 @@ const formatDate = (iso: string) =>
             <a href={`${basePath}/${post.id}/`} class="mark font-medium">
               {post.title}
             </a>
-            {post.category && <span class="ml-3 text-sm text-[var(--ink-soft)]">{post.category}</span>}
+            {post.category &&
+              (post.categoryHref ? (
+                <a href={post.categoryHref} class="ml-3 text-sm text-[var(--ink-soft)] underline-offset-4 hover:underline">
+                  {post.category}
+                </a>
+              ) : (
+                <span class="ml-3 text-sm text-[var(--ink-soft)]">{post.category}</span>
+              ))}
           </p>
         </li>
       );

@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import PostList from "../components/PostList.astro";
 import T from "../components/T.astro";
 import { getAllBlogs, getAllScraps } from "../lib/microcms";
+import { categoryPath } from "../lib/blog-pages";
 
 const [blogs, scraps] = await Promise.all([getAllBlogs(), getAllScraps()]);
 const latest = blogs.slice(0, 5);
@@ -71,7 +72,14 @@ const nameWords = ["Nknight", "AMAMIYA"];
   <div class="space-y-16">
     <section>
       <h2 class="mb-6 text-2xl font-bold"><T k="home.latestPosts" /></h2>
-      <PostList posts={latest.map((post) => ({ ...post, category: post.category?.name }))} basePath="/blog" />
+      <PostList
+        posts={latest.map((post) => ({
+          ...post,
+          category: post.category?.name,
+          categoryHref: post.category && categoryPath(post.category.id),
+        }))}
+        basePath="/blog"
+      />
       <a href="/blog/" class="mark mt-8 inline-block font-medium text-[var(--link)]"><T k="home.allPosts" /></a>
     </section>
     {

@@ -1,5 +1,7 @@
 ---
 import T from "./T.astro";
+import ShareX from "./ShareX.astro";
+import { canonicalURL } from "../lib/share";
 import type { UIKey } from "../i18n/ui";
 
 /**
@@ -13,11 +15,15 @@ type Props = {
   publishedAt: string;
   revisedAt?: string;
   category?: string;
+  /** Link for the category; plain text when omitted */
+  categoryHref?: string;
   eyecatch?: { url: string; width: number; height: number };
   back: { href: string; label: UIKey };
+  /** Show the "Share on X" link under the body. Off for draft previews */
+  share?: boolean;
 };
 
-const { title, content, publishedAt, revisedAt, category, eyecatch, back } = Astro.props;
+const { title, content, publishedAt, revisedAt, category, categoryHref, eyecatch, back, share = true } = Astro.props;
 
 // YYYY-MM-DD（日本時間）
 const formatDate = (iso: string) =>
@@ -57,7 +63,15 @@ const headings = [...content.matchAll(/<h2 id="([^"]+)"[^>]*>(.*?)<\/h2>/g)].map
         category && (
           <div>
             <dt class="sr-only">Category</dt>
-            <dd>{category}</dd>
+            <dd>
+              {categoryHref ? (
+                <a href={categoryHref} class="mark">
+                  {category}
+                </a>
+              ) : (
+                category
+              )}
+            </dd>
           </div>
         )
       }
@@ -79,7 +93,20 @@ const headings = [...content.matchAll(/<h2 id="([^"]+)"[^>]*>(.*?)<\/h2>/g)].map
 
     <div class="prose max-w-none dark:prose-invert prose-a:text-[var(--link)] prose-headings:font-extrabold" set:html={content} />
 
-    <a href={back.href} class="mark mt-14 inline-block font-medium text-[var(--link)]"><T k={back.label} /></a>
+    <!-- Readers decide to share when they finish, so the link sits next to the way back -->
+    <div class="mt-14 flex flex-wrap items-center justify-between gap-4">
+      <a href={back.href} class="mark font-medium text-[var(--link)]"><T k={back.label} /></a>
+      {
+        share && (
+          <ShareX
+            text={title}
+            url={canonicalURL(Astro.url, Astro.site)}
+            hashtags={category ? [category] : []}
+            class="text-[var(--link)]"
+          />
+        )
+      }
+    </div>
   </div>
 
   {

@@ -1,0 +1,88 @@
+---
+import PostList from "./PostList.astro";
+import Pagination from "./Pagination.astro";
+import T from "./T.astro";
+import { categoryPath } from "../lib/blog-pages";
+import type { Blog, Category } from "../types/blog";
+
+/** One page of the blog list, with the category menu in the sidebar */
+type Props = {
+  heading: string;
+  /** Posts on this page */
+  posts: Blog[];
+  /** Posts across all pages of this list */
+  total: number;
+  categories: { category: Category; count: number }[];
+  /** Category being listed; omitted for the full list */
+  activeCategory?: string;
+  /** List URL without the trailing slash, for the page links */
+  base: string;
+  page: number;
+  lastPage: number;
+};
+
+const { heading, posts, total, categories, activeCategory, base, page, lastPage } = Astro.props;
+
+const menuLink = "mark inline-flex gap-2";
+---
+
+<div class="grid grid-cols-1 gap-x-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]">
+  <div class="mb-10 lg:sticky lg:top-8 lg:self-start">
+    <h1 class="text-4xl font-extrabold break-words lg:text-5xl">{heading}</h1>
+    <p class="tabular mt-2 text-[var(--ink-soft)]">
+      {total} <T k="list.count" />
+      {lastPage > 1 && <span class="ml-2">({page} / {lastPage})</span>}
+    </p>
+    {
+      categories.length > 0 && (
+        <nav aria-labelledby="category-menu" class="mt-8">
+          <h2 id="category-menu" class="mb-2 text-sm font-bold tracking-wide text-[var(--ink-soft)] uppercase">
+            <T k="blog.categories" />
+          </h2>
+          <ul class="flex flex-wrap gap-x-5 gap-y-1 lg:flex-col">
+            <li>
+              <a
+                href="/blog/"
+                class:list={[menuLink, !activeCategory && "font-bold text-[var(--link)]"]}
+                aria-current={activeCategory ? undefined : "true"}
+              >
+                <T k="blog.allCategories" />
+              </a>
+            </li>
+            {categories.map(({ category, count }) => (
+              <li>
+                <a
+                  href={categoryPath(category.id)}
+                  class:list={[menuLink, category.id === activeCategory && "font-bold text-[var(--link)]"]}
+                  aria-current={category.id === activeCategory ? "true" : undefined}
+                >
+                  {category.name}
+                  <span class="tabular text-sm leading-7 text-[var(--ink-soft)]">{count}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+  </div>
+  <div>
+    {
+      posts.length > 0 ? (
+        <PostList
+          posts={posts.map((post) => ({
+            ...post,
+            category: post.category?.name,
+            categoryHref: post.category && categoryPath(post.category.id),
+          }))}
+          basePath="/blog"
+        />
+      ) : (
+        <p class="text-[var(--ink-soft)]">
+          <T k="list.empty" />
+        </p>
+      )
+    }
+    <Pagination base={base} current={page} last={lastPage} />
+  </div>
+</div>

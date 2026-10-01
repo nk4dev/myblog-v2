@@ -2,28 +2,32 @@
 type Props = {
   /** 最後の項目の表示名（記事タイトルなど）。省略時は URL から決める */
   current?: string;
+  /** Explicit trail after "Home". Used when URL segments such as /page/ or /category/ have no page of their own */
+  trail?: { href: string; label: string }[];
   class?: string;
 };
 
-const { current, class: className } = Astro.props;
+const { current, trail, class: className } = Astro.props;
 
 // URL の区切りごとの表示名。載っていないものはそのまま表示する
 const labels: Record<string, string> = {
   blog: "Blog",
   scraps: "Scraps",
+  apps: "Apps",
 };
 
 const segments = Astro.url.pathname.split("/").filter(Boolean);
 const items = [
   { href: "/", label: "Home" },
-  ...segments.map((segment, i) => ({
-    href: `/${segments.slice(0, i + 1).join("/")}/`,
-    label: labels[segment] ?? decodeURIComponent(segment),
-  })),
+  ...(trail ??
+    segments.map((segment, i) => ({
+      href: `/${segments.slice(0, i + 1).join("/")}/`,
+      label: labels[segment] ?? decodeURIComponent(segment),
+    }))),
 ];
-if (current) items[items.length - 1].label = current;
+if (current && !trail) items[items.length - 1].label = current;
 
-// パンくずはブログとスクラップの配下だけに出す（トップや 404 では出さない）
+// パンくずはブログ・スクラップ・アプリの配下だけに出す（トップや 404 では出さない）
 const visible = segments[0] in labels;
 ---
 

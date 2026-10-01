@@ -9,7 +9,9 @@ export const bio: Localized = {
 };
 
 // The stack this site is built on (see package.json)
-export const techStack = ["Astro", "TypeScript", "Tailwind CSS", "Hono", "Cloudflare Workers", "microCMS", "Bun"];
+export const techStack = ["Astro", "Tailwind CSS", "Hono", "Cloudflare Workers", "microCMS", "Bun"];
+
+export const langs = ["TypeScript"];
 
 export const repos = [
   {

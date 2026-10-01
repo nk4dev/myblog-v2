@@ -1,0 +1,39 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import BlogList from "../../../components/BlogList.astro";
+import { getAllBlogs } from "../../../lib/microcms";
+import { collectCategories, toPages } from "../../../lib/blog-pages";
+
+// Pages 2 and later of the blog list. Page 1 lives at /blog/
+export async function getStaticPaths() {
+  const posts = await getAllBlogs();
+  const pages = toPages(posts);
+  const categories = collectCategories(posts);
+  return pages.slice(1).map((pagePosts, i) => ({
+    params: { page: String(i + 2) },
+    props: { posts: pagePosts, total: posts.length, categories, lastPage: pages.length },
+  }));
+}
+
+const { posts, total, categories, lastPage } = Astro.props;
+const page = Number(Astro.params.page);
+---
+
+<Layout
+  title={`Blog - Page ${page}`}
+  description={`Nknight AMAMIYA (nk4dev) のブログ記事一覧（${page} ページ目）です。`}
+  breadcrumb={[
+    { href: "/blog/", label: "Blog" },
+    { href: Astro.url.pathname, label: `Page ${page}` },
+  ]}
+>
+  <BlogList
+    heading="Blog"
+    posts={posts}
+    total={total}
+    categories={categories}
+    base="/blog"
+    page={page}
+    lastPage={lastPage}
+  />
+</Layout>

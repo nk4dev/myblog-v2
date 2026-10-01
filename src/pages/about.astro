@@ -1,10 +1,18 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import T from "../components/T.astro";
-import { bio, contacts, history, repos, techStack } from "../data/profile";
+import {
+  bio,
+  contacts,
+  history,
+  repos,
+  techStack,
+  langs,
+} from "../data/profile";
 
 // Sections share one layout: the heading in a left rail on wide screens, the content on the right
-const sectionClass = "grid grid-cols-1 gap-x-12 gap-y-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]";
+const sectionClass =
+  "grid grid-cols-1 gap-x-12 gap-y-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]";
 const headingClass = "text-2xl font-bold";
 ---
 
@@ -24,68 +32,100 @@ const headingClass = "text-2xl font-bold";
       <div class="min-w-0">
         <h1 class="text-4xl font-extrabold lg:text-5xl">Nknight AMAMIYA</h1>
         <p class="mt-1 text-lg text-[var(--ink-soft)]">@nk4dev</p>
-        <p class="mt-4 max-w-[60ch]"><T text={bio} /></p>
+        <p class="mt-4 max-w-[60ch]">
+          <T text={bio} />
+        </p>
       </div>
     </section>
 
     <section class={sectionClass}>
-      <h2 class={headingClass}><T k="about.techStack" /></h2>
+      <h2 class={headingClass}>
+        <T k="about.techStack" />
+      </h2>
       <ul class="flex flex-wrap gap-2">
-        {
-          techStack.map((tech) => (
-            <li class="rounded-md border border-[var(--brand)]/40 px-3 py-1 text-sm font-medium">{tech}</li>
-          ))
-        }
+        {techStack.map((tech: string) => (
+          <li class="rounded-md border border-[var(--brand)]/40 px-3 py-1 text-sm font-medium">
+            {tech}
+          </li>
+        ))}
       </ul>
     </section>
 
     <section class={sectionClass}>
-      <h2 class={headingClass}><T k="about.history" /></h2>
+      <h2 class={headingClass}>
+        <T k="about.languages" />
+      </h2>
+      <ul class="flex flex-wrap gap-2">
+        {langs.map((lang) => (
+          <li class="rounded-md border border-[var(--brand)]/40 px-3 py-1 text-sm font-medium">
+            {lang}
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}>
+        <T k="about.history" />
+      </h2>
       <ol class="space-y-3 border-l-2 border-[var(--brand)] pl-5">
-        {
-          history.map((step) => (
-            <li class="grid gap-x-6 sm:grid-cols-[4rem_1fr]">
-              <span class="tabular font-bold text-[var(--link)]"><T text={step.age} /></span>
-              <span><T text={step.text} /></span>
-            </li>
-          ))
-        }
+        {history.map((step) => (
+          <li class="grid gap-x-6 sm:grid-cols-[4rem_1fr]">
+            <span class="tabular font-bold text-[var(--link)]">
+              <T text={step.age} />
+            </span>
+            <span>
+              <T text={step.text} />
+            </span>
+          </li>
+        ))}
       </ol>
     </section>
 
     <section class={sectionClass}>
-      <h2 class={headingClass}><T k="about.works" /></h2>
+      <h2 class={headingClass}>
+        <T k="about.works" />
+      </h2>
       <ul class="space-y-5">
-        {
-          repos.map((repo) => (
-            <li>
-              <a href={repo.url} target="_blank" rel="noopener noreferrer" class="mark font-bold text-[var(--link)]">
-                {repo.name}
-              </a>
-              <p class="mt-1 text-[var(--ink-soft)]"><T text={repo.desc} /></p>
-            </li>
-          ))
-        }
+        {repos.map((repo) => (
+          <li>
+            <a
+              href={repo.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="mark font-bold text-[var(--link)]"
+            >
+              {repo.name}
+            </a>
+            <p class="mt-1 text-[var(--ink-soft)]">
+              <T text={repo.desc} />
+            </p>
+          </li>
+        ))}
       </ul>
     </section>
 
     <section class={sectionClass}>
-      <h2 class={headingClass}><T k="about.connect" /></h2>
+      <h2 class={headingClass}>
+        <T k="about.contact" />
+      </h2>
       <ul class="grid gap-x-8 gap-y-3 sm:grid-cols-2">
-        {
-          contacts.map((contact) => (
-            <li class="flex flex-wrap items-baseline gap-x-3">
-              <a
-                href={contact.url}
-                class="mark font-bold text-[var(--link)]"
-                {...(contact.url.startsWith("mailto:") ? {} : { target: "_blank", rel: "noopener noreferrer" })}
-              >
-                {contact.label}
-              </a>
-              <span class="text-sm break-all text-[var(--ink-soft)]">{contact.handle}</span>
-            </li>
-          ))
-        }
+        {contacts.map((contact) => (
+          <li class="flex flex-wrap items-baseline gap-x-3">
+            <a
+              href={contact.url}
+              class="mark font-bold text-[var(--link)]"
+              {...(contact.url.startsWith("mailto:")
+                ? {}
+                : { target: "_blank", rel: "noopener noreferrer" })}
+            >
+              {contact.label}
+            </a>
+            <span class="text-sm break-all text-[var(--ink-soft)]">
+              {contact.handle}
+            </span>
+          </li>
+        ))}
       </ul>
     </section>
   </div>

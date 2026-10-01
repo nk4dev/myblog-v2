@@ -1,0 +1,44 @@
+---
+import Layout from "../../../../../layouts/Layout.astro";
+import BlogList from "../../../../../components/BlogList.astro";
+import { getAllBlogs } from "../../../../../lib/microcms";
+import { categoryPath, collectCategories, toPages } from "../../../../../lib/blog-pages";
+
+// Pages 2 and later of a category's posts. Page 1 lives at /blog/category/[id]/
+export async function getStaticPaths() {
+  const posts = await getAllBlogs();
+  const categories = collectCategories(posts);
+  return categories.flatMap(({ category }) => {
+    const inCategory = posts.filter((post) => post.category?.id === category.id);
+    const pages = toPages(inCategory);
+    return pages.slice(1).map((pagePosts, i) => ({
+      params: { id: category.id, page: String(i + 2) },
+      props: { category, posts: pagePosts, total: inCategory.length, categories, lastPage: pages.length },
+    }));
+  });
+}
+
+const { category, posts, total, categories, lastPage } = Astro.props;
+const page = Number(Astro.params.page);
+---
+
+<Layout
+  title={`${category.name} - Blog - Page ${page}`}
+  description={`Nknight AMAMIYA (nk4dev) のブログの「${category.name}」の記事一覧（${page} ページ目）です。`}
+  breadcrumb={[
+    { href: "/blog/", label: "Blog" },
+    { href: categoryPath(category.id), label: category.name },
+    { href: Astro.url.pathname, label: `Page ${page}` },
+  ]}
+>
+  <BlogList
+    heading={category.name}
+    posts={posts}
+    total={total}
+    categories={categories}
+    activeCategory={category.id}
+    base={categoryPath(category.id).slice(0, -1)}
+    page={page}
+    lastPage={lastPage}
+  />
+</Layout>

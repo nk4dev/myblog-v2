@@ -3,7 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import T from "../components/T.astro";
 ---
 
-<Layout title="404 Not Found" description="ページが見つかりませんでした。">
+<Layout title="404 Not Found" description="ページが見つかりませんでした。" share={false}>
   <h1 class="text-[clamp(4rem,20vw,9rem)] leading-none font-extrabold [font-stretch:125%]">404</h1>
   <p class="mt-6"><T k="404.message" /></p>
   <a href="/" class="mark mt-8 inline-block font-medium text-[var(--link)]"><T k="404.back" /></a>

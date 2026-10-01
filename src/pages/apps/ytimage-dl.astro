@@ -1,0 +1,159 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import T from "../../components/T.astro";
+
+const buttonClass =
+  "rounded-md bg-[var(--brand)] px-4 py-2 font-bold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40";
+---
+
+<Layout title="YTImage-dl" description="YouTube の動画 URL からサムネイル画像を取り出してダウンロードするツールです。">
+  <div class="mx-auto max-w-3xl">
+    <h1 class="text-4xl font-extrabold lg:text-5xl">YTImage-dl</h1>
+    <p class="mt-3 text-[var(--ink-soft)]">
+      <T
+        text={{
+          ja: "YouTube の動画 URL（または動画 ID）を入れると、用意されているサイズのサムネイルを一覧にします。",
+          en: "Enter a YouTube video URL (or video ID) to list its thumbnails in every available size.",
+        }}
+      />
+    </p>
+
+    <form id="yt-form" class="mt-8 flex flex-col gap-3 sm:flex-row">
+      <label for="yt-url" class="sr-only">YouTube URL</label>
+      <input
+        id="yt-url"
+        name="url"
+        type="text"
+        inputmode="url"
+        autocomplete="off"
+        required
+        placeholder="https://www.youtube.com/watch?v=..."
+        class="min-w-0 flex-1 rounded-md border border-[var(--ink-soft)]/50 bg-transparent px-3 py-2 focus:border-[var(--link)]"
+      />
+      <button type="submit" class={buttonClass}>
+        <T text={{ ja: "サムネイルを取得", en: "Get thumbnails" }} />
+      </button>
+    </form>
+    <p id="yt-error" role="alert" class="mt-3 hidden font-medium text-red-600 dark:text-red-400">
+      <T text={{ ja: "YouTube の URL として読み取れませんでした。", en: "That does not look like a YouTube URL." }} />
+    </p>
+
+    <section id="yt-result" class="mt-12 hidden" aria-live="polite">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 class="text-2xl font-bold">
+          <T text={{ ja: "サムネイル", en: "Thumbnails" }} />
+        </h2>
+        <button id="yt-best" type="button" class={buttonClass} disabled>
+          <T text={{ ja: "最高画質をダウンロード", en: "Download the highest quality" }} />
+        </button>
+      </div>
+      <ul id="yt-list" class="mt-6 space-y-8"></ul>
+    </section>
+
+    <!-- Copied for each thumbnail by the script -->
+    <template id="yt-item">
+      <li>
+        <figure>
+          <img class="w-full rounded-md border border-[var(--ink-soft)]/30" alt="" />
+          <figcaption class="mt-2 flex flex-wrap items-center justify-between gap-2 text-sm">
+            <span><span class="font-bold" data-name></span> <span class="tabular text-[var(--ink-soft)]" data-size></span></span>
+            <button type="button" class="mark font-medium text-[var(--link)]" data-download>
+              <T text={{ ja: "ダウンロード", en: "Download" }} />
+            </button>
+          </figcaption>
+        </figure>
+      </li>
+    </template>
+  </div>
+</Layout>
+
+<script>
+  // Thumbnail files YouTube may provide, highest resolution first. maxres and sd are missing for some videos
+  const THUMB_TYPES = ["maxresdefault", "sddefault", "hqdefault", "mqdefault", "default"];
+
+  /** Pull the 11-character video ID out of the usual YouTube URL forms, or accept a bare ID */
+  const extractVideoId = (input: string): string | null => {
+    const value = input.trim();
+    if (/^[\w-]{11}$/.test(value)) return value;
+    let url: URL;
+    try {
+      url = new URL(/^https?:\/\//.test(value) ? value : `https://${value}`);
+    } catch {
+      return null;
+    }
+    const host = url.hostname.replace(/^(www|m|music)\./, "");
+    let id: string | null = null;
+    if (host === "youtu.be") id = url.pathname.slice(1);
+    else if (host === "youtube.com" || host === "youtube-nocookie.com") {
+      id = url.searchParams.get("v") ?? url.pathname.match(/^\/(?:embed|v|shorts|live)\/([^/]+)/)?.[1] ?? null;
+    }
+    return id && /^[\w-]{11}$/.test(id) ? id : null;
+  };
+
+  /**
+   * Save an image under a file name. i.ytimg.com allows CORS, so fetch it as a blob;
+   * if that fails, open the image in a new tab so it can still be saved by hand.
+   */
+  const download = async (src: string, filename: string) => {
+    try {
+      const res = await fetch(src);
+      if (!res.ok) throw new Error(String(res.status));
+      const url = URL.createObjectURL(await res.blob());
+      const a = Object.assign(document.createElement("a"), { href: url, download: filename });
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      window.open(src, "_blank", "noopener");
+    }
+  };
+
+  const form = document.getElementById("yt-form") as HTMLFormElement;
+  const input = document.getElementById("yt-url") as HTMLInputElement;
+  const error = document.getElementById("yt-error")!;
+  const result = document.getElementById("yt-result")!;
+  const list = document.getElementById("yt-list")!;
+  const best = document.getElementById("yt-best") as HTMLButtonElement;
+  const template = document.getElementById("yt-item") as HTMLTemplateElement;
+
+  let videoId = "";
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const id = extractVideoId(input.value);
+    error.classList.toggle("hidden", id !== null);
+    if (!id) {
+      result.classList.add("hidden");
+      return;
+    }
+    videoId = id;
+    list.replaceChildren();
+    best.disabled = true;
+    result.classList.remove("hidden");
+
+    for (const type of THUMB_TYPES) {
+      const item = template.content.firstElementChild!.cloneNode(true) as HTMLLIElement;
+      const img = item.querySelector("img")!;
+      const src = `https://i.ytimg.com/vi/${id}/${type}.jpg`;
+      item.dataset.src = src;
+      item.querySelector("[data-name]")!.textContent = type;
+      // Missing sizes answer 404, so drop them; the list keeps the highest-first order
+      img.addEventListener("error", () => item.remove());
+      img.addEventListener("load", () => {
+        item.querySelector("[data-size]")!.textContent = `${img.naturalWidth}×${img.naturalHeight}`;
+        best.disabled = false;
+      });
+      item.querySelector("[data-download]")!.addEventListener("click", () =>
+        download(src, `thumbnail-${id}-${type}.jpg`),
+      );
+      img.src = src;
+      img.alt = `${type} (${id})`;
+      list.append(item);
+    }
+  });
+
+  best.addEventListener("click", () => {
+    // The first remaining item that has loaded is the largest available size
+    const first = [...list.querySelectorAll<HTMLLIElement>("li")].find((li) => li.querySelector("img")!.complete);
+    if (first) download(first.dataset.src!, `thumbnail-${videoId}.jpg`);
+  });
+</script>

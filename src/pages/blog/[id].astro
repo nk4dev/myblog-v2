@@ -3,6 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 import Article from "../../components/Article.astro";
 import { getAllBlogs, getBlogDetail } from "../../lib/microcms";
 import { excerpt } from "../../lib/excerpt";
+import { categoryPath } from "../../lib/blog-pages";
 
 export async function getStaticPaths() {
   const posts = await getAllBlogs();
@@ -26,6 +27,7 @@ if (!post) {
     publishedAt={post.publishedAt ?? post.createdAt}
     revisedAt={post.revisedAt}
     category={post.category?.name}
+    categoryHref={post.category && categoryPath(post.category.id)}
     eyecatch={post.eyecatch}
     back={{ href: "/blog/", label: "blog.back" }}
   />

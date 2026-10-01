@@ -1,0 +1,302 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import T from "../../components/T.astro";
+
+const controlClass =
+  "inline-flex h-9 min-w-9 items-center justify-center gap-1 rounded-md border border-white/20 px-2.5 text-sm font-medium hover:bg-white/15 disabled:pointer-events-none disabled:opacity-40";
+
+// Keyboard shortcuts, shown under the player
+const shortcuts = [
+  { keys: "Space / K", label: { ja: "再生・一時停止", en: "Play / pause" } },
+  { keys: "J / L", label: { ja: "5 秒戻る・進む", en: "Back / forward 5 s" } },
+  { keys: ", / .", label: { ja: "1 コマ戻る・進む", en: "Previous / next frame" } },
+  { keys: "S", label: { ja: "スクリーンショット", en: "Screenshot" } },
+  { keys: "F", label: { ja: "全画面", en: "Fullscreen" } },
+];
+---
+
+<Layout
+  title="Grove Player"
+  description="手元の動画ファイルを再生するプレイヤー。コマ送り、速度変更、スクリーンショットに対応しています。"
+>
+  <div class="mx-auto max-w-5xl">
+    <h1 class="text-4xl font-extrabold lg:text-5xl">Grove Player</h1>
+    <p class="mt-3 text-[var(--ink-soft)]">
+      <T
+        text={{
+          ja: "動画ファイルはブラウザの中だけで再生し、どこにもアップロードしません。",
+          en: "Videos play entirely in your browser and are never uploaded anywhere.",
+        }}
+      />
+    </p>
+
+    <div id="grove" class="mt-8 overflow-hidden rounded-lg bg-black text-white shadow-xl">
+      <div id="grove-stage" class="relative grid min-h-64 place-items-center">
+        <video id="grove-video" class="hidden max-h-[70vh] w-full cursor-pointer object-contain" playsinline preload="metadata"
+        ></video>
+        <!-- Shown until a file is opened; also the drop target hint -->
+        <div id="grove-empty" class="flex flex-col items-center gap-4 p-10 text-center">
+          <p class="text-white/70">
+            <T text={{ ja: "動画ファイルをここにドロップ", en: "Drop a video file here" }} />
+          </p>
+          <button
+            type="button"
+            data-open
+            class="rounded-md bg-[var(--brand)] px-4 py-2 font-bold text-white ring-1 ring-white/30 hover:opacity-90"
+          >
+            <T text={{ ja: "ファイルを開く", en: "Open file" }} />
+          </button>
+        </div>
+        <p id="grove-drop" class="pointer-events-none absolute inset-3 hidden place-items-center rounded-md border-2 border-dashed border-white/60 bg-black/60 text-lg font-bold">
+          <T text={{ ja: "ドロップして再生", en: "Drop to play" }} />
+        </p>
+      </div>
+
+      <div class="space-y-3 border-t border-white/10 bg-neutral-900 p-3 sm:p-4">
+        <div class="flex items-center gap-3 text-sm">
+          <span id="grove-current" class="tabular w-14 text-right">0:00</span>
+          <input id="grove-seek" type="range" min="0" max="0" step="any" value="0" disabled aria-label="Seek" class="grove-range flex-1" />
+          <span id="grove-duration" class="tabular w-14">0:00</span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-3">
+          <div class="flex items-center gap-1.5">
+            <button id="grove-play" type="button" class={controlClass} disabled aria-label="Play">
+              <svg viewBox="0 0 24 24" class="size-5" fill="currentColor" aria-hidden="true" data-icon="play"
+                ><path d="M8 5v14l11-7z"></path></svg
+              >
+              <svg viewBox="0 0 24 24" class="hidden size-5" fill="currentColor" aria-hidden="true" data-icon="pause"
+                ><path d="M6 5h4v14H6zM14 5h4v14h-4z"></path></svg
+              >
+            </button>
+            <button type="button" class={controlClass} disabled data-skip="-5" aria-label="Back 5 seconds">−5s</button>
+            <button type="button" class={controlClass} disabled data-skip="5" aria-label="Forward 5 seconds">+5s</button>
+            <button type="button" class={controlClass} disabled data-frame="-1" aria-label="Previous frame">‹ 1f</button>
+            <button type="button" class={controlClass} disabled data-frame="1" aria-label="Next frame">1f ›</button>
+          </div>
+
+          <div class="flex flex-1 flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+            <label class="flex items-center gap-2">
+              <span class="text-white/70">Vol</span>
+              <input id="grove-volume" type="range" min="0" max="1" step="0.05" value="1" class="grove-range w-24" />
+            </label>
+            <label class="flex items-center gap-2">
+              <span class="text-white/70">Speed</span>
+              <input id="grove-speed" type="range" min="0.25" max="2" step="0.05" value="1" class="grove-range w-24" />
+              <output id="grove-speed-value" for="grove-speed" class="tabular w-12">1.00×</output>
+            </label>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <button id="grove-shot" type="button" class={controlClass} disabled>
+              <T text={{ ja: "スクショ", en: "Screenshot" }} />
+            </button>
+            <button id="grove-full" type="button" class={controlClass} aria-label="Fullscreen">⛶</button>
+            <button type="button" data-open class={controlClass}>
+              <T text={{ ja: "開く", en: "Open" }} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <input id="grove-file" type="file" accept="video/*" class="hidden" />
+
+    <dl class="mt-6 grid grid-cols-[auto_1fr] gap-x-6 gap-y-1 text-sm text-[var(--ink-soft)] sm:grid-cols-[auto_1fr_auto_1fr]">
+      {
+        shortcuts.map(({ keys, label }) => (
+          <>
+            <dt class="font-mono">{keys}</dt>
+            <dd>
+              <T text={label} />
+            </dd>
+          </>
+        ))
+      }
+    </dl>
+  </div>
+</Layout>
+
+<style>
+  .grove-range {
+    accent-color: #b9a8ff;
+  }
+  /* In fullscreen, let the video take all the room the controls leave */
+  #grove:fullscreen {
+    display: flex;
+    flex-direction: column;
+    border-radius: 0;
+  }
+  #grove:fullscreen #grove-stage {
+    flex: 1;
+  }
+  #grove:fullscreen video {
+    max-height: calc(100vh - 8rem);
+    height: 100%;
+  }
+</style>
+
+<script>
+  // Frame stepping assumes 30 fps; browsers do not expose a video's real frame rate
+  const FRAME_RATE = 30;
+
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const player = $("grove");
+  const stage = $("grove-stage");
+  const video = $<HTMLVideoElement>("grove-video");
+  const empty = $("grove-empty");
+  const dropHint = $("grove-drop");
+  const fileInput = $<HTMLInputElement>("grove-file");
+  const playButton = $<HTMLButtonElement>("grove-play");
+  const seek = $<HTMLInputElement>("grove-seek");
+  const current = $("grove-current");
+  const duration = $("grove-duration");
+  const volume = $<HTMLInputElement>("grove-volume");
+  const speed = $<HTMLInputElement>("grove-speed");
+  const speedValue = $<HTMLOutputElement>("grove-speed-value");
+  const shotButton = $<HTMLButtonElement>("grove-shot");
+  const fullButton = $<HTMLButtonElement>("grove-full");
+
+  let objectUrl = "";
+  const hasVideo = () => objectUrl !== "";
+
+  /** m:ss, or h:mm:ss for long videos */
+  const formatTime = (seconds: number) => {
+    const s = Math.floor(seconds % 60).toString().padStart(2, "0");
+    const m = Math.floor(seconds / 60) % 60;
+    const h = Math.floor(seconds / 3600);
+    return h > 0 ? `${h}:${m.toString().padStart(2, "0")}:${s}` : `${m}:${s}`;
+  };
+
+  const loadFile = (file: File | undefined) => {
+    if (!file) return;
+    if (!file.type.startsWith("video/") && !video.canPlayType(file.type)) {
+      alert("動画ファイルを選んでください。\nPlease choose a video file.");
+      return;
+    }
+    if (objectUrl) URL.revokeObjectURL(objectUrl);
+    objectUrl = URL.createObjectURL(file);
+    video.src = objectUrl;
+    video.classList.remove("hidden");
+    empty.classList.add("hidden");
+    player.querySelectorAll<HTMLButtonElement>("button[disabled]").forEach((b) => (b.disabled = false));
+    seek.disabled = false;
+    video.play().catch(() => {});
+  };
+
+  const togglePlay = () => {
+    if (!hasVideo()) return;
+    if (video.paused || video.ended) video.play().catch(() => {});
+    else video.pause();
+  };
+  const skip = (seconds: number) => {
+    if (!hasVideo()) return;
+    video.currentTime = Math.min(Math.max(0, video.currentTime + seconds), video.duration || 0);
+  };
+  const stepFrame = (frames: number) => {
+    if (!hasVideo()) return;
+    video.pause();
+    skip(frames / FRAME_RATE);
+  };
+
+  /** Save the current frame as a PNG named with the local date and time */
+  const screenshot = () => {
+    if (!hasVideo() || !video.videoWidth) return;
+    const canvas = Object.assign(document.createElement("canvas"), {
+      width: video.videoWidth,
+      height: video.videoHeight,
+    });
+    canvas.getContext("2d")!.drawImage(video, 0, 0);
+    const d = new Date();
+    const pad = (n: number) => n.toString().padStart(2, "0");
+    const stamp = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      Object.assign(document.createElement("a"), { href: url, download: `screenshot-${stamp}-groveplayer.png` }).click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }, "image/png");
+  };
+
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    else player.requestFullscreen?.().catch(() => {});
+  };
+
+  // Opening files: buttons, and drag and drop onto the player
+  player.querySelectorAll("[data-open]").forEach((b) => b.addEventListener("click", () => fileInput.click()));
+  fileInput.addEventListener("change", () => {
+    loadFile(fileInput.files?.[0]);
+    fileInput.value = "";
+  });
+  stage.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropHint.classList.replace("hidden", "grid");
+  });
+  stage.addEventListener("dragleave", (e) => {
+    if (!stage.contains(e.relatedTarget as Node)) dropHint.classList.replace("grid", "hidden");
+  });
+  stage.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropHint.classList.replace("grid", "hidden");
+    loadFile(e.dataTransfer?.files[0]);
+  });
+
+  // Controls
+  video.addEventListener("click", togglePlay);
+  playButton.addEventListener("click", togglePlay);
+  player.querySelectorAll<HTMLButtonElement>("[data-skip]").forEach((b) =>
+    b.addEventListener("click", () => skip(Number(b.dataset.skip))),
+  );
+  player.querySelectorAll<HTMLButtonElement>("[data-frame]").forEach((b) =>
+    b.addEventListener("click", () => stepFrame(Number(b.dataset.frame))),
+  );
+  shotButton.addEventListener("click", screenshot);
+  fullButton.addEventListener("click", toggleFullscreen);
+  seek.addEventListener("input", () => (video.currentTime = Number(seek.value)));
+  volume.addEventListener("input", () => (video.volume = Number(volume.value)));
+  speed.addEventListener("input", () => {
+    video.playbackRate = Number(speed.value);
+    speedValue.textContent = `${Number(speed.value).toFixed(2)}×`;
+  });
+
+  // Keep the UI in step with the video
+  const syncPlayIcon = () => {
+    const playing = !video.paused && !video.ended;
+    playButton.querySelector('[data-icon="play"]')!.classList.toggle("hidden", playing);
+    playButton.querySelector('[data-icon="pause"]')!.classList.toggle("hidden", !playing);
+    playButton.setAttribute("aria-label", playing ? "Pause" : "Play");
+  };
+  video.addEventListener("play", syncPlayIcon);
+  video.addEventListener("pause", syncPlayIcon);
+  video.addEventListener("ended", syncPlayIcon);
+  video.addEventListener("loadedmetadata", () => {
+    seek.max = String(video.duration);
+    duration.textContent = formatTime(video.duration);
+    video.playbackRate = Number(speed.value);
+  });
+  video.addEventListener("timeupdate", () => {
+    seek.value = String(video.currentTime);
+    current.textContent = formatTime(video.currentTime);
+  });
+
+  // Shortcuts. Skip them while a form control has focus so Space still presses buttons and arrows move sliders
+  document.addEventListener("keydown", (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if ((e.target as Element).closest("input, select, textarea, button, a")) return;
+    const actions: Record<string, () => void> = {
+      " ": togglePlay,
+      k: togglePlay,
+      j: () => skip(-5),
+      l: () => skip(5),
+      ",": () => stepFrame(-1),
+      ".": () => stepFrame(1),
+      s: screenshot,
+      f: toggleFullscreen,
+    };
+    const action = actions[e.key.toLowerCase()];
+    if (!action || !hasVideo()) return;
+    e.preventDefault();
+    action();
+  });
+</script>

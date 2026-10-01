@@ -1,0 +1,42 @@
+---
+import Layout from "../../../../layouts/Layout.astro";
+import BlogList from "../../../../components/BlogList.astro";
+import { getAllBlogs } from "../../../../lib/microcms";
+import { categoryPath, collectCategories, toPages } from "../../../../lib/blog-pages";
+
+// Page 1 of a category's posts; later pages are category/[id]/page/[page].astro
+export async function getStaticPaths() {
+  const posts = await getAllBlogs();
+  const categories = collectCategories(posts);
+  return categories.map(({ category }) => {
+    const inCategory = posts.filter((post) => post.category?.id === category.id);
+    const pages = toPages(inCategory);
+    return {
+      params: { id: category.id },
+      props: { category, posts: pages[0], total: inCategory.length, categories, lastPage: pages.length },
+    };
+  });
+}
+
+const { category, posts, total, categories, lastPage } = Astro.props;
+---
+
+<Layout
+  title={`${category.name} - Blog`}
+  description={`Nknight AMAMIYA (nk4dev) のブログの「${category.name}」の記事一覧です。`}
+  breadcrumb={[
+    { href: "/blog/", label: "Blog" },
+    { href: categoryPath(category.id), label: category.name },
+  ]}
+>
+  <BlogList
+    heading={category.name}
+    posts={posts}
+    total={total}
+    categories={categories}
+    activeCategory={category.id}
+    base={categoryPath(category.id).slice(0, -1)}
+    page={1}
+    lastPage={lastPage}
+  />
+</Layout>

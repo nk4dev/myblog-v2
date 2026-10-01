@@ -4,6 +4,8 @@ import HeaderLink from "../components/HeaderLink.astro";
 import Breadcrumb from "../components/Breadcrumb.astro";
 import Logo from "../components/Logo.astro";
 import Loader from "../components/Loader.astro";
+import ShareX from "../components/ShareX.astro";
+import { canonicalURL } from "../lib/share";
 import { socialLinks } from "../data/social";
 import { i18nAttrs, ui } from "../i18n/ui";
 
@@ -16,6 +18,10 @@ type Props = {
   type?: "website" | "article";
   /** Keep the page out of search results (used by draft previews) */
   noindex?: boolean;
+  /** Breadcrumb trail after "Home", for URLs whose segments do not map to pages (see Breadcrumb.astro) */
+  breadcrumb?: { href: string; label: string }[];
+  /** Show "Share on X" in the footer. Article pages have their own link under the body instead */
+  share?: boolean;
 };
 
 const siteName = "Nknight AMAMIYA@nk4dev";
@@ -24,14 +30,15 @@ const {
   description = "Nknight AMAMIYA (nk4dev) 's blog",
   type = "website",
   noindex = false,
+  breadcrumb,
+  share = true,
 } = Astro.props;
 
 const fullTitle = title ? `${title} | ${siteName}` : siteName;
 // 配信時は /blog → /blog/ へ転送されるので、og:url もスラッシュ付きに揃える
-const pathname = Astro.url.pathname.endsWith("/")
-  ? Astro.url.pathname
-  : `${Astro.url.pathname}/`;
-const pageURL = new URL(pathname, Astro.site);
+const pageURL = canonicalURL(Astro.url, Astro.site);
+// Article bodies carry their own share link, and drafts should not be shared
+const footerShare = share && type !== "article" && !noindex;
 // 生成画像にはサイト名が入るので、ページ名（トップはサイト名）だけを渡す
 const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? siteName)}`;
 ---
@@ -96,6 +103,7 @@ const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? 
       </a>
       <Breadcrumb
         current={title}
+        trail={breadcrumb}
         class="order-last w-full text-sm sm:order-none sm:w-auto sm:min-w-0 sm:flex-1 sm:text-base"
       />
       <!-- Shows the language it switches to. Mobile: next to the menu button; sm and up: after the links -->
@@ -171,6 +179,17 @@ const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? 
             >
               /
             </span>
+            <HeaderLink href="/apps/" class="py-2 sm:py-1">
+              Apps
+            </HeaderLink>
+          </li>
+          <li>
+            <span
+              aria-hidden="true"
+              class="hidden px-1.5 py-1 opacity-60 sm:inline-block"
+            >
+              /
+            </span>
             <HeaderLink href="/about/" class="py-2 sm:py-1">
               About.me
             </HeaderLink>
@@ -214,7 +233,10 @@ const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? 
       <slot />
     </main>
     <footer class="flex flex-wrap justify-between gap-2 border-t-4 border-[var(--brand)] pt-4 text-sm text-[var(--ink-soft)]">
-      <div>Nknight AMAMIYA@nk4dev</div>
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+        <span>Nknight AMAMIYA@nk4dev</span>
+        {footerShare && <ShareX text={fullTitle} url={pageURL} class="hover:text-[var(--ink)]" />}
+      </div>
       <div>All rights reserved.</div>
     </footer>
     <script>
