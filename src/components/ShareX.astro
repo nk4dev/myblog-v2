@@ -1,6 +1,6 @@
 ---
 import T from "./T.astro";
-import { SITE_HASHTAGS, xShareURL } from "../lib/share";
+import { SITE_HASHTAGS, xShareURL, type SharePlacement } from "../lib/share";
 
 /** Link that opens X's post composer with this page's title, URL and hashtags filled in */
 type Props = {
@@ -8,18 +8,30 @@ type Props = {
   url: string | URL;
   /** Added after the site-wide hashtags */
   hashtags?: string[];
+  /** Sent as utm_content so shares from the article and the footer can be told apart */
+  placement?: SharePlacement;
+  /** "link" blends into text; "button" is a filled pill that stands out */
+  variant?: "link" | "button";
   class?: string;
 };
 
-const { text, url, hashtags = [], class: className } = Astro.props;
-const href = xShareURL({ text, url: String(url), hashtags: [...SITE_HASHTAGS, ...hashtags] });
+const { text, url, hashtags = [], placement, variant = "link", class: className } = Astro.props;
+const href = xShareURL({ text, url: String(url), hashtags: [...SITE_HASHTAGS, ...hashtags], placement });
 ---
 
 <a
   href={href}
+  data-share-method="x"
+  data-share-placement={placement}
   target="_blank"
   rel="noopener noreferrer"
-  class:list={["mark inline-flex items-center gap-1.5 font-medium", className]}
+  class:list={[
+    "inline-flex items-center gap-1.5 font-medium",
+    variant === "button"
+      ? "rounded-full bg-[var(--brand)] px-4 py-1.5 text-white ring-1 ring-white/20 transition-opacity hover:opacity-85"
+      : "mark",
+    className,
+  ]}
 >
   <svg viewBox="0 0 24 24" class="size-[1em] shrink-0" fill="currentColor" aria-hidden="true">
     <path

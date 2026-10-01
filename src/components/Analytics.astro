@@ -1,0 +1,44 @@
+---
+import { GA_MEASUREMENT_ID, GA_SITE_NAME } from "../data/analytics";
+
+/**
+ * Google Analytics 4. Loaded only in production builds and only on indexable pages,
+ * so local development and draft previews are not counted.
+ * UTM parameters on shared links are picked up by GA4 from the page URL automatically.
+ */
+type Props = { enabled?: boolean };
+
+const { enabled = true } = Astro.props;
+const id = GA_MEASUREMENT_ID;
+const siteName = GA_SITE_NAME;
+const active = enabled && import.meta.env.PROD && id !== "";
+---
+
+{
+  active && (
+    <>
+      <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${id}`} />
+      <script is:inline define:vars={{ id, siteName }}>
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () {
+          // gtag.js expects the arguments object itself, not an array
+          window.dataLayer.push(arguments);
+        };
+        window.gtag("js", new Date());
+        // Parameters given to config are attached to every event, including page views and shares
+        window.gtag("config", id, { site_name: siteName });
+
+        // Report clicks on share controls as GA4's recommended "share" event
+        document.addEventListener("click", (e) => {
+          const el = e.target instanceof Element && e.target.closest("[data-share-method]");
+          if (!el) return;
+          window.gtag("event", "share", {
+            method: el.getAttribute("data-share-method"),
+            content_type: el.getAttribute("data-share-placement") || "page",
+            item_id: location.pathname,
+          });
+        });
+      </script>
+    </>
+  )
+}

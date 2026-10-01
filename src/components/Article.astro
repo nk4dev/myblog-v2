@@ -1,6 +1,6 @@
 ---
 import T from "./T.astro";
-import ShareX from "./ShareX.astro";
+import ShareButtons from "./ShareButtons.astro";
 import { canonicalURL } from "../lib/share";
 import type { UIKey } from "../i18n/ui";
 
@@ -79,34 +79,33 @@ const headings = [...content.matchAll(/<h2 id="([^"]+)"[^>]*>(.*?)<\/h2>/g)].map
   </aside>
 
   <div class="lg:col-start-2 lg:mt-10">
+    <!-- The share button sits right under the eyecatch (or at the top of the body) so it is seen before reading -->
     {
-      eyecatch && (
-        <img
-          src={`${eyecatch.url}?w=1600&fm=webp`}
-          alt=""
-          width={eyecatch.width}
-          height={eyecatch.height}
-          class="mb-10 h-auto w-full rounded-md"
-        />
+      (eyecatch || share) && (
+        <div class="mb-10 space-y-4">
+          {eyecatch && (
+            <img
+              src={`${eyecatch.url}?w=1600&fm=webp`}
+              alt=""
+              width={eyecatch.width}
+              height={eyecatch.height}
+              class="h-auto w-full rounded-md"
+            />
+          )}
+          {share && (
+            <ShareButtons
+              text={title}
+              url={canonicalURL(Astro.url, Astro.site)}
+              hashtags={category ? [category] : []}
+            />
+          )}
+        </div>
       )
     }
 
     <div class="prose max-w-none dark:prose-invert prose-a:text-[var(--link)] prose-headings:font-extrabold" set:html={content} />
 
-    <!-- Readers decide to share when they finish, so the link sits next to the way back -->
-    <div class="mt-14 flex flex-wrap items-center justify-between gap-4">
-      <a href={back.href} class="mark font-medium text-[var(--link)]"><T k={back.label} /></a>
-      {
-        share && (
-          <ShareX
-            text={title}
-            url={canonicalURL(Astro.url, Astro.site)}
-            hashtags={category ? [category] : []}
-            class="text-[var(--link)]"
-          />
-        )
-      }
-    </div>
+    <a href={back.href} class="mark mt-14 inline-block font-medium text-[var(--link)]"><T k={back.label} /></a>
   </div>
 
   {

@@ -1,0 +1,195 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+// Update this whenever the policy text changes
+const updated = "2026-10-02";
+const email = "nknighta@varius.technology";
+
+// Same layout as the about page: heading in a left rail on wide screens, text on the right
+const sectionClass = "grid grid-cols-1 gap-x-12 gap-y-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]";
+const headingClass = "text-xl font-bold";
+const bodyClass = "max-w-[72ch] space-y-3";
+const listClass = "list-disc space-y-1 pl-5";
+const linkClass = "mark font-medium text-[var(--link)]";
+---
+
+<Layout
+  title="Privacy Policy"
+  description="Nknight AMAMIYA (nk4dev) のブログのプライバシーポリシー。アクセス解析、Cookie、外部サービスの利用について説明しています。"
+>
+  <!-- The policy is long-form text, so each language is written out in full and switched as a whole -->
+  <div data-t="ja" lang="ja" class="space-y-12">
+    <div>
+      <h1 class="text-4xl font-extrabold lg:text-5xl">プライバシーポリシー</h1>
+      <p class="tabular mt-2 text-[var(--ink-soft)]">最終更新日：{updated}</p>
+      <p class="mt-6 max-w-[72ch]">
+        このページでは、Nknight AMAMIYA（以下「運営者」）が運営するこのサイト（blog.nknighta.me）で、訪問者の情報をどのように扱うかを説明します。
+      </p>
+    </div>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}>アクセス解析</h2>
+      <div class={bodyClass}>
+        <p>
+          サイトの利用状況を把握し、内容の改善に役立てるため、Google LLC が提供する「Google アナリティクス 4」を使用しています。Google アナリティクスは Cookie を使って、次のような情報を収集します。
+        </p>
+        <ul class={listClass}>
+          <li>閲覧したページ、滞在時間、閲覧した日時</li>
+          <li>参照元（どのサイトやリンクから訪れたか）</li>
+          <li>おおよその地域、ブラウザ、OS、端末の種類</li>
+          <li>共有ボタンのクリック（どのサービスで共有したか）</li>
+        </ul>
+        <p>
+          これらの情報は匿名で収集され、個人を特定するものではありません。収集された情報は Google のプライバシーポリシーに基づいて管理されます。詳しくは
+          <a href="https://policies.google.com/technologies/partner-sites?hl=ja" target="_blank" rel="noopener noreferrer" class={linkClass}>Google のサービスを使用するサイトやアプリから収集した情報の Google による使用</a>
+          をご覧ください。
+        </p>
+        <p>
+          Cookie はブラウザの設定で無効にできます。また、
+          <a href="https://tools.google.com/dlpage/gaoptout?hl=ja" target="_blank" rel="noopener noreferrer" class={linkClass}>Google アナリティクス オプトアウト アドオン</a>
+          を使うと、Google アナリティクスによる収集を止められます。
+        </p>
+      </div>
+    </section>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}>共有リンクのパラメータ</h2>
+      <div class={bodyClass}>
+        <p>
+          記事の共有ボタンで共有される URL には、どのサービスから訪れたかを集計するためのパラメータ（<code class="font-mono text-sm">utm_source</code> など）が付きます。個人を識別する情報は含まれません。
+        </p>
+      </div>
+    </section>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}>ブラウザへの保存</h2>
+      <div class={bodyClass}>
+        <p>次の情報をお使いのブラウザの中だけに保存します。運営者のサーバーには送信されません。</p>
+        <ul class={listClass}>
+          <li>表示言語（日本語・英語）の選択</li>
+          <li>ページ移動中の読み込み表示の状態（タブを閉じると消えます）</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}>外部サービス</h2>
+      <div class={bodyClass}>
+        <p>ページの表示のために、次の外部サービスからデータを読み込んでいます。読み込みの際、各サービスにはお使いの IP アドレスやブラウザの情報が送られます。</p>
+        <ul class={listClass}>
+          <li>Google Fonts（フォント）</li>
+          <li>microCMS（記事の画像）</li>
+          <li>OGP 画像の生成サービス（og-img.nknighta.me、SNS で共有されたときの画像）</li>
+          <li>YouTube（YTImage-dl でサムネイルを表示するとき）</li>
+        </ul>
+        <p>
+          共有ボタン（X、Bluesky、はてなブックマーク、LINE）はそれぞれのサービスへの通常のリンクです。ボタンを押すまで、これらのサービスのスクリプトは読み込みません。
+        </p>
+        <p>Grove Player で開いた動画ファイルは、ブラウザの中だけで再生し、どこにもアップロードしません。</p>
+      </div>
+    </section>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}>このポリシーの変更</h2>
+      <div class={bodyClass}>
+        <p>このポリシーは、必要に応じて予告なく変更することがあります。変更後の内容は、このページに掲載した時点から有効になります。</p>
+      </div>
+    </section>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}>お問い合わせ</h2>
+      <div class={bodyClass}>
+        <p>
+          このポリシーについてのお問い合わせは、<a href={`mailto:${email}`} class={linkClass}>{email}</a> までご連絡ください。
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <div data-t="en" lang="en" class="space-y-12">
+    <div>
+      <h1 class="text-4xl font-extrabold lg:text-5xl">Privacy Policy</h1>
+      <p class="tabular mt-2 text-[var(--ink-soft)]">Last updated: {updated}</p>
+      <p class="mt-6 max-w-[72ch]">
+        This page explains how this site (blog.nknighta.me), run by Nknight AMAMIYA ("the operator"), handles information about its visitors.
+      </p>
+    </div>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}>Analytics</h2>
+      <div class={bodyClass}>
+        <p>
+          To understand how the site is used and to improve it, this site uses Google Analytics 4, provided by Google LLC. Google Analytics uses cookies to collect information such as:
+        </p>
+        <ul class={listClass}>
+          <li>The pages you view, how long you stay, and when</li>
+          <li>The referrer (the site or link you came from)</li>
+          <li>Your approximate region, browser, operating system and device type</li>
+          <li>Clicks on the share buttons (which service you shared to)</li>
+        </ul>
+        <p>
+          This information is collected anonymously and does not identify you personally. It is handled under Google's privacy policy; see
+          <a href="https://policies.google.com/technologies/partner-sites?hl=en" target="_blank" rel="noopener noreferrer" class={linkClass}>How Google uses information from sites or apps that use its services</a>
+          for details.
+        </p>
+        <p>
+          You can turn cookies off in your browser settings, or stop Google Analytics from collecting data with the
+          <a href="https://tools.google.com/dlpage/gaoptout?hl=en" target="_blank" rel="noopener noreferrer" class={linkClass}>Google Analytics Opt-out Browser Add-on</a>.
+        </p>
+      </div>
+    </section>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}>Parameters on shared links</h2>
+      <div class={bodyClass}>
+        <p>
+          URLs shared with the article share buttons carry parameters (such as <code class="font-mono text-sm">utm_source</code>) that record which service a visit came from. They contain nothing that identifies you.
+        </p>
+      </div>
+    </section>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}>Storage in your browser</h2>
+      <div class={bodyClass}>
+        <p>The following is stored only in your browser and is never sent to the operator's servers:</p>
+        <ul class={listClass}>
+          <li>Your choice of display language (Japanese or English)</li>
+          <li>Whether the loading indicator is showing while you move between pages (cleared when you close the tab)</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}>External services</h2>
+      <div class={bodyClass}>
+        <p>Pages load data from the following services. When they do, your IP address and browser information are sent to those services.</p>
+        <ul class={listClass}>
+          <li>Google Fonts (fonts)</li>
+          <li>microCMS (article images)</li>
+          <li>The OGP image service (og-img.nknighta.me, for the preview image when a page is shared)</li>
+          <li>YouTube (when YTImage-dl shows thumbnails)</li>
+        </ul>
+        <p>
+          The share buttons (X, Bluesky, Hatena Bookmark, LINE) are plain links to each service. None of their scripts are loaded unless you press a button.
+        </p>
+        <p>Video files opened in Grove Player play entirely in your browser and are never uploaded.</p>
+      </div>
+    </section>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}>Changes to this policy</h2>
+      <div class={bodyClass}>
+        <p>This policy may change without notice when needed. Changes take effect once they are posted on this page.</p>
+      </div>
+    </section>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}>Contact</h2>
+      <div class={bodyClass}>
+        <p>
+          For questions about this policy, please email <a href={`mailto:${email}`} class={linkClass}>{email}</a>.
+        </p>
+      </div>
+    </section>
+  </div>
+</Layout>
