@@ -1,0 +1,188 @@
+---
+/**
+ * Loading indicator with the nk4dev logo drawn by its outline.
+ * Covers the screen from first paint until the window "load" event, and
+ * shows as a small badge in the bottom-right while navigating to another
+ * page of this site.
+ */
+---
+
+<div id="page-loader" class="loader" role="status" aria-live="polite">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 1373 575"
+    class="logo"
+    aria-hidden="true"
+  >
+    <path
+      class="p"
+      pathLength="1"
+      d="M313 80 L405 80 L497 246 L458 300 L370 140 L348 140 L156 485 L225 485 L359 247 L491 485 L514 485 L547 425 L615 425 L549 545 L456 545 L359 370 L261 545 L52 545 Z"
+    ></path>
+    <path
+      class="p p2"
+      pathLength="1"
+      d="M703 37 L874 37 L1000 259 L1127 37 L1336 37 L1047 545 L954 545 L900 448 L938 396 L989 485 L1012 485 L1231 98 L1161 98 L1000 381 L838 98 L734 98 L569 322 L693 322 L693 254 L754 173 L754 322 L826 322 L797 270 L797 149 L916 355 L760 575 L693 575 L693 383 L503 383 L480 340 Z
+         M754 383 L821 383 L754 473 Z"
+    ></path>
+  </svg>
+  <span class="sr-only">Loading</span>
+</div>
+<script is:inline>
+  // Arrived by an in-site link: keep the corner badge from the previous page so it loops on until this page loads
+  try {
+    if (sessionStorage.getItem("loader:nav")) {
+      sessionStorage.removeItem("loader:nav");
+      document.getElementById("page-loader").classList.add("is-nav");
+    }
+  } catch {}
+</script>
+
+<!-- Without JS nothing would ever hide the overlay, so never show it -->
+<noscript><style>#page-loader { display: none; }</style></noscript>
+
+<style>
+  .loader {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    background: var(--paper);
+    /* --link is the brand color in light mode and a lighter tint in dark mode */
+    color: var(--link);
+    transition:
+      opacity 0.4s ease,
+      visibility 0.4s;
+  }
+  .loader.is-done {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  /* While navigating, shrink to a small badge in the bottom-right corner and leave the page usable */
+  .loader.is-nav {
+    inset: auto 1rem 1rem auto;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 16px rgb(0 0 0 / 0.15);
+    pointer-events: none;
+  }
+  .loader.is-nav .logo {
+    width: 6.5rem;
+  }
+
+  .logo {
+    width: min(80vw, 24rem);
+    height: auto;
+  }
+
+  /* pathLength="1" lets the dash values below work on both paths alike */
+  .p {
+    fill: currentColor;
+    fill-opacity: 0;
+    fill-rule: evenodd;
+    stroke: currentColor;
+    stroke-width: 10;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 1;
+    animation: draw 2.8s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+  .p2 {
+    animation-delay: 0.25s;
+  }
+  /* Pause the loop once hidden so it does not keep repainting */
+  .loader.is-done .p {
+    animation-play-state: paused;
+  }
+
+  /* Trace the outline, fill it in, then wipe the stroke away */
+  @keyframes draw {
+    0% {
+      stroke-dashoffset: 1;
+      fill-opacity: 0;
+    }
+    45% {
+      stroke-dashoffset: 0;
+      fill-opacity: 0;
+    }
+    60% {
+      stroke-dashoffset: 0;
+      fill-opacity: 1;
+    }
+    78% {
+      stroke-dashoffset: 0;
+      fill-opacity: 1;
+    }
+    100% {
+      stroke-dashoffset: -1;
+      fill-opacity: 0;
+    }
+  }
+
+  /* global.css turns animations off for reduced motion, so show the filled logo instead */
+  @media (prefers-reduced-motion: reduce) {
+    .p {
+      stroke: none;
+      fill-opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  const loader = document.getElementById("page-loader")!;
+  const hide = () => loader.classList.add("is-done");
+  // Switch to the corner badge and reveal it in the same frame so the full-screen layout never flashes
+  const show = () => {
+    loader.classList.add("is-nav");
+    try {
+      sessionStorage.setItem("loader:nav", "1");
+    } catch {}
+    loader.classList.remove("is-done");
+  };
+
+  if (document.readyState === "complete") hide();
+  else window.addEventListener("load", hide, { once: true });
+  // Do not keep the page covered if a slow asset holds up the load event
+  setTimeout(hide, 5000);
+
+  // A page restored from the back/forward cache keeps the overlay it had when left
+  window.addEventListener("pageshow", (e) => {
+    if (e.persisted) {
+      hide();
+      // The navigation was left unfinished, so do not carry the badge into the next page load
+      try {
+        sessionStorage.removeItem("loader:nav");
+      } catch {}
+    }
+  });
+
+  // Show the overlay again while the browser fetches another page of this site
+  document.addEventListener("click", (e) => {
+    if (
+      e.defaultPrevented ||
+      e.button !== 0 ||
+      e.metaKey ||
+      e.ctrlKey ||
+      e.shiftKey ||
+      e.altKey
+    )
+      return;
+    const link = (e.target as Element).closest?.("a");
+    if (
+      !link ||
+      (link.target && link.target !== "_self") ||
+      link.hasAttribute("download")
+    )
+      return;
+    const url = new URL(link.href, location.href);
+    if (url.origin !== location.origin) return;
+    // In-page anchors do not load a new document
+    if (url.pathname === location.pathname && url.search === location.search)
+      return;
+    show();
+  });
+</script>
