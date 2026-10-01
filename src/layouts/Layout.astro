@@ -20,14 +20,16 @@ type Props = {
 const siteName = "Nknight AMAMIYA@nk4dev";
 const {
   title,
-  description = "Nknight AMAMIYA (nk4dev) の個人サイト兼ブログです。",
+  description = "Nknight AMAMIYA (nk4dev) 's blog",
   type = "website",
   noindex = false,
 } = Astro.props;
 
 const fullTitle = title ? `${title} | ${siteName}` : siteName;
 // 配信時は /blog → /blog/ へ転送されるので、og:url もスラッシュ付きに揃える
-const pathname = Astro.url.pathname.endsWith("/") ? Astro.url.pathname : `${Astro.url.pathname}/`;
+const pathname = Astro.url.pathname.endsWith("/")
+  ? Astro.url.pathname
+  : `${Astro.url.pathname}/`;
 const pageURL = new URL(pathname, Astro.site);
 // 生成画像にはサイト名が入るので、ページ名（トップはサイト名）だけを渡す
 const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? siteName)}`;
@@ -46,7 +48,9 @@ const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? 
           lang = localStorage.getItem("lang");
         } catch {}
         if (lang !== "ja" && lang !== "en") {
-          lang = navigator.language.toLowerCase().startsWith("ja") ? "ja" : "en";
+          lang = navigator.language.toLowerCase().startsWith("ja")
+            ? "ja"
+            : "en";
         }
         document.documentElement.dataset.lang = lang;
         document.documentElement.lang = lang;
@@ -80,10 +84,18 @@ const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? 
     <!-- スマホ: 1 段目にロゴとリンク、2 段目にパンくず。sm 以上: 1 段にまとめる -->
     <!-- スマホ: 1 段目にロゴとメニューボタン、2 段目にパンくず。メニューは開いたときだけ帯の中に縦に並べる -->
     <header class="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-t-md bg-[var(--brand)] px-4 py-3 font-bold text-white">
-      <a href="/" aria-label={ui.ja["nav.home"]} {...i18nAttrs("nav.home", "aria-label")} class="shrink-0">
+      <a
+        href="/"
+        aria-label={ui.ja["nav.home"]}
+        {...i18nAttrs("nav.home", "aria-label")}
+        class="shrink-0"
+      >
         <Logo class="h-6 w-auto sm:h-7" />
       </a>
-      <Breadcrumb current={title} class="order-last w-full text-sm sm:order-none sm:w-auto sm:min-w-0 sm:flex-1 sm:text-base" />
+      <Breadcrumb
+        current={title}
+        class="order-last w-full text-sm sm:order-none sm:w-auto sm:min-w-0 sm:flex-1 sm:text-base"
+      />
       <!-- Shows the language it switches to. Mobile: next to the menu button; sm and up: after the links -->
       <button
         id="lang-toggle"
@@ -92,7 +104,8 @@ const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? 
         aria-label={ui.ja["nav.lang"]}
         {...i18nAttrs("nav.lang", "aria-label")}
       >
-        <span data-t="ja">EN</span><span data-t="en">JA</span>
+        <span data-t="ja">EN</span>
+        <span data-t="en">JA</span>
       </button>
       <button
         id="menu-toggle"
@@ -103,28 +116,90 @@ const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? 
         aria-label={ui.ja["nav.menu"]}
         {...i18nAttrs("nav.menu", "aria-label")}
       >
-        <svg viewBox="0 0 24 24" class="size-6 group-aria-expanded:hidden" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+        <svg
+          viewBox="0 0 24 24"
+          class="size-6 group-aria-expanded:hidden"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
           <path d="M4 7h16M4 12h16M4 17h16"></path>
         </svg>
-        <svg viewBox="0 0 24 24" class="hidden size-6 group-aria-expanded:block" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+        <svg
+          viewBox="0 0 24 24"
+          class="hidden size-6 group-aria-expanded:block"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
           <path d="M6 6l12 12M18 6 6 18"></path>
         </svg>
       </button>
       <!-- ページへのリンクと SNS を分ける。スマホは上下、sm 以上は縦線で左右に区切る -->
-      <nav id="site-menu" aria-label="Site" class="hidden w-full sm:ml-auto sm:flex sm:w-auto sm:items-center">
+      <nav
+        id="site-menu"
+        aria-label="Site"
+        class="hidden w-full sm:ml-auto sm:flex sm:w-auto sm:items-center"
+      >
         <ul class="flex flex-col border-t border-white/25 pt-2 sm:flex-row sm:border-0 sm:pt-0">
-          <li><HeaderLink href="/blog/" class="py-2 sm:py-1">Blog</HeaderLink></li>
-          <li><span aria-hidden="true" class="hidden px-1.5 py-1 opacity-60 sm:inline-block">/</span><HeaderLink href="/scraps/" class="py-2 sm:py-1">Scraps</HeaderLink></li>
-          <li><span aria-hidden="true" class="hidden px-1.5 py-1 opacity-60 sm:inline-block">/</span><HeaderLink href="/about/" class="py-2 sm:py-1">About.me</HeaderLink></li>
+          <li>
+            <HeaderLink href="/blog/" class="py-2 sm:py-1">
+              Blog
+            </HeaderLink>
+          </li>
+          <li>
+            <span
+              aria-hidden="true"
+              class="hidden px-1.5 py-1 opacity-60 sm:inline-block"
+            >
+              /
+            </span>
+            <HeaderLink href="/scraps/" class="py-2 sm:py-1">
+              Scraps
+            </HeaderLink>
+          </li>
+          <li>
+            <span
+              aria-hidden="true"
+              class="hidden px-1.5 py-1 opacity-60 sm:inline-block"
+            >
+              /
+            </span>
+            <HeaderLink href="/about/" class="py-2 sm:py-1">
+              About.me
+            </HeaderLink>
+          </li>
         </ul>
-        <span aria-hidden="true" class="mx-4 hidden h-5 w-px bg-white/40 sm:block"></span>
-        <ul aria-label="SNS" class="mt-2 flex gap-x-5 border-t border-white/25 pt-2 font-medium text-white/85 sm:mt-0 sm:gap-x-0 sm:border-0 sm:pt-0">
+        <span
+          aria-hidden="true"
+          class="mx-4 hidden h-5 w-px bg-white/40 sm:block"
+        ></span>
+        <ul
+          aria-label="SNS"
+          class="mt-2 flex gap-x-5 border-t border-white/25 pt-2 font-medium text-white/85 sm:mt-0 sm:gap-x-0 sm:border-0 sm:pt-0"
+        >
           {
             // SNS は直リンクではなく /g/ や /x/ のリダイレクト（astro.config.mjs）を経由させる
             socialLinks.map(({ slug, label }, i) => (
               <li>
-                {i > 0 && <span aria-hidden="true" class="hidden px-1.5 py-1 opacity-60 sm:inline-block">/</span>}
-                <HeaderLink href={`/${slug}/`} target="_blank" rel="noopener noreferrer" class="py-2 hover:text-white sm:py-1">
+                {i > 0 && (
+                  <span
+                    aria-hidden="true"
+                    class="hidden px-1.5 py-1 opacity-60 sm:inline-block"
+                  >
+                    /
+                  </span>
+                )}
+                <HeaderLink
+                  href={`/${slug}/`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="py-2 hover:text-white sm:py-1"
+                >
                   {label}
                 </HeaderLink>
               </li>
@@ -137,12 +212,8 @@ const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? 
       <slot />
     </main>
     <footer class="flex flex-wrap justify-between gap-2 border-t-4 border-[var(--brand)] pt-4 text-sm text-[var(--ink-soft)]">
-      <div>
-        Nknight AMAMIYA@nk4dev
-      </div>
-      <div>
-        All rights reserved.
-      </div>
+      <div>Nknight AMAMIYA@nk4dev</div>
+      <div>All rights reserved.</div>
     </footer>
     <script>
       // スマホのメニューの開閉。Esc で閉じてボタンにフォーカスを戻す
@@ -152,9 +223,14 @@ const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? 
         toggle.setAttribute("aria-expanded", String(open));
         menu.classList.toggle("hidden", !open);
       };
-      toggle.addEventListener("click", () => setOpen(toggle.getAttribute("aria-expanded") !== "true"));
+      toggle.addEventListener("click", () =>
+        setOpen(toggle.getAttribute("aria-expanded") !== "true"),
+      );
       document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && toggle.getAttribute("aria-expanded") === "true") {
+        if (
+          e.key === "Escape" &&
+          toggle.getAttribute("aria-expanded") === "true"
+        ) {
           setOpen(false);
           toggle.focus();
         }
@@ -165,12 +241,15 @@ const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? 
       const applyLang = (lang: "ja" | "en") => {
         root.dataset.lang = lang;
         root.lang = lang;
-        document.querySelectorAll<HTMLElement>("[data-i18n-ja]").forEach((el) => {
-          const text = (lang === "en" ? el.dataset.i18nEn : el.dataset.i18nJa) ?? "";
-          const attr = el.dataset.i18nAttr;
-          if (attr) el.setAttribute(attr, text);
-          else el.textContent = text;
-        });
+        document
+          .querySelectorAll<HTMLElement>("[data-i18n-ja]")
+          .forEach((el) => {
+            const text =
+              (lang === "en" ? el.dataset.i18nEn : el.dataset.i18nJa) ?? "";
+            const attr = el.dataset.i18nAttr;
+            if (attr) el.setAttribute(attr, text);
+            else el.textContent = text;
+          });
       };
       applyLang(root.dataset.lang === "en" ? "en" : "ja");
       document.getElementById("lang-toggle")!.addEventListener("click", () => {
