@@ -32,12 +32,12 @@ const sheet = Astro.url.pathname.replace(/\/$/, "") || "/";
       <time datetime={builtAt}>{builtAt}</time>
     </div>
     <div class="tb-cell">
-      <span class="tb-key"><T k="tb.scale" /></span>
-      <span>1 : 1</span>
-    </div>
-    <div class="tb-cell">
       <span class="tb-key"><T k="tb.sheet" /></span>
       <span class="truncate">{sheet}</span>
+    </div>
+    <div class="tb-note">
+      <span class="tb-key"><T k="tb.note" /></span>
+      <p><T k="tb.ai" /></p>
     </div>
     <div class="tb-foot">
       <small>&copy; {year} Nknight AMAMIYA@nk4dev</small>
@@ -88,6 +88,17 @@ const sheet = Astro.url.pathname.replace(/\/$/, "") || "/";
     display: flex;
     flex-direction: column;
   }
+  /* スマホの 2 列では、3 つ目の欄（ページ）を横いっぱいにして穴を作らない */
+  .title-block > :nth-child(4) {
+    grid-column: 1 / -1;
+    border-right: 0;
+  }
+  .tb-note {
+    grid-column: 1 / -1;
+    border-right: 0;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+  }
   .tb-foot {
     grid-column: 1 / -1;
     display: flex;
@@ -99,13 +110,13 @@ const sheet = Astro.url.pathname.replace(/\/$/, "") || "/";
   }
   @media (min-width: 768px) {
     .title-block {
-      grid-template-columns: minmax(0, 2.2fr) repeat(4, minmax(0, 1fr));
+      grid-template-columns: minmax(0, 2.2fr) repeat(3, minmax(0, 1fr));
     }
     .tb-name {
       grid-column: auto;
     }
-    .title-block > :nth-child(5) {
-      border-right: 0;
+    .title-block > :nth-child(4) {
+      grid-column: auto;
     }
   }
 </style>
