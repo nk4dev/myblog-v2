@@ -3,12 +3,53 @@ import Layout from "../layouts/Layout.astro";
 import T from "../components/T.astro";
 ---
 
-<Layout title="404 Not Found | Nknight AMAMIYA@nk4dev" description="ページが見つかりませんでした。">
-  <div class="bp py-20 text-center" data-bp="error / 404">
-    <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">404</h1>
-    <p class="mt-4 text-slate-600 dark:text-slate-400"><T k="404.message" /></p>
-    <a href="/" class="mt-6 inline-block text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
-      &larr; <T k="404.back" />
-    </a>
-  </div>
+<Layout title="404 Not Found" description="ページが見つかりませんでした。">
+  <section class="missing">
+    <!-- 寸法線が途中で途切れている＝その先の図面が無い -->
+    <div class="missing-dim" aria-hidden="true">
+      <span class="dim-half"></span>
+      <span class="note">?</span>
+      <span class="dim-half dim-half-end"></span>
+    </div>
+    <h1 class="missing-code">404</h1>
+    <p class="missing-text"><T k="404.message" /></p>
+    <a href="/" class="text-link note mt-8 inline-block"><T k="404.back" /></a>
+  </section>
 </Layout>
+
+<style>
+  .missing {
+    padding: 4rem 0 6rem;
+  }
+  .missing-dim {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .dim-half {
+    flex: 1;
+    height: 9px;
+    border-left: 1px solid var(--line-strong);
+    background: linear-gradient(90deg, var(--line-strong) 60%, transparent 60%) center / 12px 1px repeat-x;
+  }
+  .dim-half-end {
+    border-left: 0;
+    border-right: 1px solid var(--red);
+    background-image: linear-gradient(90deg, var(--red) 60%, transparent 60%);
+  }
+  .missing-code {
+    font-size: clamp(7rem, 34vw, 26rem);
+    font-weight: 800;
+    font-stretch: 125%;
+    line-height: 0.8;
+    letter-spacing: -0.04em;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--line-strong);
+  }
+  .missing-text {
+    margin-top: 2.5rem;
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+</style>

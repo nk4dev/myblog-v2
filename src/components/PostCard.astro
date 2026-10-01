@@ -1,34 +1,34 @@
 ---
+/**
+ * 記事・スクラップ一覧の 1 行（改訂履歴表の行）。<ol class="entries"> の中で使う。
+ * no はその記事が何本目か（公開順）で、並び替えても記事と一緒に動く。
+ */
 import type { Blog } from "../types/blog";
 import type { Scrap } from "../types/scrap";
+import { formatDate } from "../lib/date";
 
 interface Props {
   post: Blog | Scrap;
+  /** 公開順の通し番号 */
+  no: number;
   /** 詳細ページのパス（例: "/blog", "/scraps"） */
   basePath?: string;
 }
 
-const { post, basePath = "/blog" } = Astro.props;
+const { post, no, basePath = "/blog" } = Astro.props;
 const category = typeof post.category === "string" ? post.category : post.category?.name;
 const description = "description" in post ? post.description : undefined;
-const publishedDate = new Date(post.publishedAt ?? post.createdAt).toLocaleDateString("ja-JP");
+const date = post.publishedAt ?? post.createdAt;
 ---
 
-<a
-  href={`${basePath}/${post.id}`}
-  class="bp block p-5 transition-colors hover:bg-blue-500/5"
-  data-bp={basePath === "/scraps" ? "scrap" : "post"}
->
-  <div class="mb-2 flex items-center gap-3 font-mono text-xs text-slate-500 dark:text-slate-400">
-    <time datetime={post.publishedAt ?? post.createdAt}>{publishedDate}</time>
-    {category && (
-      <span class="bp-tag px-2 py-0.5 font-medium text-slate-600 dark:text-slate-400">
-        {category}
-      </span>
-    )}
-  </div>
-  <h2 lang="ja" class="text-lg font-semibold text-slate-900 dark:text-slate-100">{post.title}</h2>
-  {description && (
-    <p class="mt-1 line-clamp-2 text-sm text-slate-600 dark:text-slate-400">{description}</p>
-  )}
-</a>
+<li class="entry" data-date={date} data-title={post.title}>
+  <a href={`${basePath}/${post.id}`}>
+    <span class="entry-no" aria-hidden="true">{String(no).padStart(3, "0")}</span>
+    <div class="entry-meta">
+      <time datetime={date}>{formatDate(date)}</time>
+      {category && <span class="entry-cat">{category}</span>}
+    </div>
+    <h3 lang="ja" class="entry-title">{post.title}</h3>
+    {description && <p lang="ja" class="entry-desc line-clamp-2">{description}</p>}
+  </a>
+</li>
