@@ -1,21 +1,28 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @theme {
   --font-sans: "Archivo", "Zen Kaku Gothic New", system-ui, sans-serif;
   --font-mono: "Martian Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
+/* --brand はヘッダーの帯の色。--mark はリンクにかざす蛍光ペンの色 */
 :root {
-  --paper: #ffffff;
-  --ink: #111111;
-  --ink-soft: #666666;
+  --paper: #f8f7fc;
+  --ink: #1c1a29;
+  --ink-soft: #6b6880;
+  --brand: #2f00ad;
+  --link: #2f00ad;
+  --mark: #e2daff;
   color-scheme: light dark;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #111111;
-    --ink: #eeeeee;
-    --ink-soft: #999999;
+    --paper: #14121c;
+    --ink: #eceaf5;
+    --ink-soft: #a19db5;
+    --link: #b9a8ff;
+    --mark: rgb(159 134 255 / 0.3);
   }
 }
 
@@ -23,5 +30,42 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-sans);
-  line-height: 1.7;
+  line-height: 1.8;
+}
+
+/* 見出しは Archivo の幅を広げて使う */
+h1,
+h2,
+h3 {
+  font-stretch: 112%;
+  line-height: 1.25;
+}
+
+/* リンクのホバーで下から蛍光ペンを引く */
+.mark {
+  background: linear-gradient(var(--mark), var(--mark)) left bottom / 100% 0 no-repeat;
+  transition: background-size 0.2s;
+}
+.mark:hover,
+.mark:focus-visible {
+  background-size: 100% 55%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+}
+
+/* 日付の桁をそろえる */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }

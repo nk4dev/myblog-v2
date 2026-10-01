@@ -1,26 +1,18 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import PostCard from "../../components/PostCard.astro";
-import PageHead from "../../components/PageHead.astro";
-import T from "../../components/T.astro";
+import PostList from "../../components/PostList.astro";
 import { getAllScraps } from "../../lib/microcms";
 
 const scraps = await getAllScraps();
 ---
 
-<Layout title="Scraps" description="ちょっとしたメモやつぶやきをまとめたスクラップ一覧です。">
-  <PageHead title="Scraps" lead="scraps.lead" count={scraps.length} />
+<Layout>
+  <h1 class="mb-10 text-4xl font-extrabold">Scraps</h1>
   {
     scraps.length > 0 ? (
-      <ol class="entries">
-        {scraps.map((scrap, i) => (
-          <PostCard post={scrap} no={scraps.length - i} basePath="/scraps" />
-        ))}
-      </ol>
+      <PostList posts={scraps} basePath="/scraps" />
     ) : (
-      <p class="text-[var(--ink-soft)]">
-        <T k="list.empty" />
-      </p>
+      <p class="text-[var(--ink-soft)]">Nothing here.</p>
     )
   }
 </Layout>

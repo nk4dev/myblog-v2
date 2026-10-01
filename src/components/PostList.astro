@@ -1,0 +1,34 @@
+---
+/** 日付つきの記事一覧。日付を左の列にそろえて、更新の記録として読めるようにする */
+type Props = {
+  posts: { id: string; title: string; publishedAt?: string; createdAt: string; category?: string }[];
+  basePath: string;
+};
+
+const { posts, basePath } = Astro.props;
+
+// YYYY-MM-DD（日本時間）
+const formatDate = (iso: string) =>
+  new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tokyo" }).format(new Date(iso));
+---
+
+<ol class="space-y-3">
+  {
+    posts.map((post) => {
+      const date = post.publishedAt ?? post.createdAt;
+      return (
+        <li class="grid gap-x-6 sm:grid-cols-[7rem_1fr]">
+          <time datetime={date} class="tabular text-sm leading-7 text-[var(--ink-soft)] sm:text-base sm:leading-8">
+            {formatDate(date)}
+          </time>
+          <p class="leading-8">
+            <a href={`${basePath}/${post.id}/`} class="mark font-medium">
+              {post.title}
+            </a>
+            {post.category && <span class="ml-3 text-sm text-[var(--ink-soft)]">{post.category}</span>}
+          </p>
+        </li>
+      );
+    })
+  }
+</ol>

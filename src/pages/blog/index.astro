@@ -1,27 +1,18 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import PostList from "../../components/PostList.astro";
 import { getAllBlogs } from "../../lib/microcms";
 
 const posts = await getAllBlogs();
 ---
 
 <Layout>
-<div>
+  <h1 class="mb-10 text-4xl font-extrabold">Blog</h1>
   {
     posts.length > 0 ? (
-      <ol id="post-list" class="entries">
-        {posts.map((post) => (
-        <div>
-          <p>{post.title}</p>
-          </div>
-        ))}
-      </ol>
+      <PostList posts={posts.map((post) => ({ ...post, category: post.category?.name }))} basePath="/blog" />
     ) : (
-      <p class="text-[var(--ink-soft)]">
-        まだ何も書いていません。
-      </p>
+      <p class="text-[var(--ink-soft)]">Nothing here.</p>
     )
-}
-
-</div>
+  }
 </Layout>

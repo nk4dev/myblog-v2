@@ -13,7 +13,7 @@ const isCurrent = !external && (href === "/" ? path === "/" : path.startsWith(hr
 
 <a
   href={href}
-  class:list={["hover:underline aria-[current=page]:font-bold", className]}
+  class:list={["underline-offset-4 hover:underline aria-[current=page]:underline", className]}
   aria-current={isCurrent ? "page" : undefined}
   {...external && { target: "_blank", rel: "noopener noreferrer" }}
   {...rest}

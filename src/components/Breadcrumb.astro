@@ -29,8 +29,8 @@ if (current) items[items.length - 1].label = current;
       items.map((item, i) =>
         i < items.length - 1 ? (
           <li>
-            <a href={item.href} class="hover:underline">{item.label}</a>
-            <span aria-hidden="true"> / </span>
+            <a href={item.href} class="underline-offset-4 hover:underline">{item.label}</a>
+            <span aria-hidden="true" class="px-2 opacity-60">/</span>
           </li>
         ) : (
           <li aria-current="page">{item.label}</li>

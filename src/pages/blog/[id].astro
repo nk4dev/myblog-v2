@@ -20,13 +20,12 @@ if (!post) {
 
 <Layout title={post.title}>
   <Article
-    kind="article"
     title={post.title}
     content={post.content}
     publishedAt={post.publishedAt ?? post.createdAt}
     revisedAt={post.revisedAt}
     category={post.category?.name}
     eyecatch={post.eyecatch}
-    back={{ href: "/blog/", label: "blog.back" }}
+    back={{ href: "/blog/", label: "Back to posts" }}
   />
 </Layout>

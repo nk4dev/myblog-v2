@@ -2,7 +2,6 @@
 import Layout from "../../layouts/Layout.astro";
 import Article from "../../components/Article.astro";
 import { getAllScraps, getScrapDetail } from "../../lib/microcms";
-import { excerpt } from "../../lib/excerpt";
 
 export async function getStaticPaths() {
   const scraps = await getAllScraps();
@@ -19,20 +18,13 @@ if (!scrap) {
 }
 ---
 
-<Layout
-  title={scrap.title}
-  description={excerpt(scrap.content) || scrap.title}
-  type="article"
-  publishedTime={scrap.publishedAt ?? scrap.createdAt}
-  modifiedTime={scrap.revisedAt}
->
+<Layout title={scrap.title}>
   <Article
-    kind="scrap"
     title={scrap.title}
     content={scrap.content}
     publishedAt={scrap.publishedAt ?? scrap.createdAt}
     revisedAt={scrap.revisedAt}
     category={scrap.category}
-    back={{ href: "/scraps/", label: "scraps.back" }}
+    back={{ href: "/scraps/", label: "Back to scraps" }}
   />
 </Layout>

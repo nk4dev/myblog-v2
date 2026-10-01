@@ -1,15 +1,45 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import PostList from "../components/PostList.astro";
+import { getAllBlogs } from "../lib/microcms";
+
+const latest = (await getAllBlogs()).slice(0, 5);
 ---
 
 <Layout>
-<div class="">
-  <img 
-    class="rounded-full h-40 "
-    src="https://images.microcms-assets.io/assets/a2939c8d25434ae5a1f853f2dc239a0f/9056b34c4c50456a8b43617ca493b720/cms%E7%94%A8.jpeg?fit=crop&w=200&h=200"
+  <section class="flex flex-col gap-6 pb-16 sm:flex-row sm:items-center sm:gap-10">
+    <img
+      class="size-28 shrink-0 rounded-full sm:size-40"
+      src="https://images.microcms-assets.io/assets/a2939c8d25434ae5a1f853f2dc239a0f/9056b34c4c50456a8b43617ca493b720/cms%E7%94%A8.jpeg?fit=crop&w=320&h=320"
+      alt=""
+      width="160"
+      height="160"
     />
-</div>
-<a href="/blog">
-  Blog
-</a>
+    <div class="min-w-0">
+      <h1 class="hero-name font-extrabold">Nknight AMAMIYA</h1>
+      <p class="mt-2 text-lg text-[var(--ink-soft)]">@nk4dev</p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="mb-6 text-2xl font-bold">Latest posts</h2>
+    <PostList posts={latest.map((post) => ({ ...post, category: post.category?.name }))} basePath="/blog" />
+    <a href="/blog/" class="mark mt-8 inline-block font-medium text-[var(--link)]">All posts</a>
+  </section>
 </Layout>
+
+<style>
+  /* 名前を Archivo のいちばん広い字幅で大きく置き、読み込み時に一度だけ字幅を広げる */
+  .hero-name {
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    font-stretch: 125%;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    animation: widen 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  @keyframes widen {
+    from {
+      font-stretch: 70%;
+    }
+  }
+</style>

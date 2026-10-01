@@ -1,0 +1,48 @@
+---
+/** 記事・スクラップ詳細の本文部分 */
+type Props = {
+  title: string;
+  /** microCMS のリッチエディタの HTML */
+  content: string;
+  publishedAt: string;
+  revisedAt?: string;
+  category?: string;
+  eyecatch?: { url: string; width: number; height: number };
+  back: { href: string; label: string };
+};
+
+const { title, content, publishedAt, revisedAt, category, eyecatch, back } = Astro.props;
+
+// YYYY-MM-DD（日本時間）
+const formatDate = (iso: string) =>
+  new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tokyo" }).format(new Date(iso));
+const published = formatDate(publishedAt);
+const revised = revisedAt ? formatDate(revisedAt) : undefined;
+---
+
+<article class="max-w-[68ch]">
+  <header class="mb-8">
+    <h1 class="text-3xl font-extrabold sm:text-4xl">{title}</h1>
+    <p class="tabular mt-3 flex flex-wrap gap-x-4 text-sm text-[var(--ink-soft)]">
+      <time datetime={publishedAt}>{published}</time>
+      {revised && revised !== published && <span>updated <time datetime={revisedAt}>{revised}</time></span>}
+      {category && <span>{category}</span>}
+    </p>
+  </header>
+
+  {
+    eyecatch && (
+      <img
+        src={`${eyecatch.url}?w=1600&fm=webp`}
+        alt=""
+        width={eyecatch.width}
+        height={eyecatch.height}
+        class="mb-10 h-auto w-full rounded-md"
+      />
+    )
+  }
+
+  <div class="prose max-w-none dark:prose-invert prose-a:text-[var(--link)] prose-headings:font-extrabold" set:html={content} />
+
+  <a href={back.href} class="mark mt-14 inline-block font-medium text-[var(--link)]">{back.label}</a>
+</article>
