@@ -1,0 +1,22 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+type Props = HTMLAttributes<"a"> & { href: string };
+
+const { href, class: className, ...rest } = Astro.props;
+
+// 外部リンクは別タブで開く。内部リンクは現在地なら aria-current を付ける
+const external = /^https?:\/\//.test(href);
+const path = Astro.url.pathname.endsWith("/") ? Astro.url.pathname : `${Astro.url.pathname}/`;
+const isCurrent = !external && (href === "/" ? path === "/" : path.startsWith(href));
+---
+
+<a
+  href={href}
+  class:list={["hover:underline aria-[current=page]:font-bold", className]}
+  aria-current={isCurrent ? "page" : undefined}
+  {...external && { target: "_blank", rel: "noopener noreferrer" }}
+  {...rest}
+>
+  <slot />
+</a>

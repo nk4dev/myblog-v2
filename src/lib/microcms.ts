@@ -5,26 +5,15 @@ import { mockBlogs, mockScraps } from "./mock-data";
 
 const serviceDomain = import.meta.env.MICROCMS_SERVICE_DOMAIN;
 const apiKey = import.meta.env.MICROCMS_API_KEY;
-/** マネジメント API 用のキー（「コンテンツの取得」権限が必要）。未設定時は MICROCMS_API_KEY を使う */
-const managementApiKey = import.meta.env.MICROCMS_MANAGEMENT_API_KEY || apiKey;
 
 /** MOCKMODE=true または環境変数が未設定の場合はモックデータで動作するサンプルモード */
-export const isMockMode = import.meta.env.MOCKMODE === "true" || !serviceDomain || !apiKey;
+const isMockMode = import.meta.env.MOCKMODE === "true" || !serviceDomain || !apiKey;
 
 const client = isMockMode
   ? null
   : createClient({ serviceDomain, apiKey });
 
-type Endpoint = "blogs" | "scraps";
-
-/**
- * 下書きがある（draftKey が発行されている）コンテンツの id 一覧。
- * コンテンツ API では判別できないため、マネジメント API の status / draftKey を使う。
- * ビルド中に何度も呼ばれるので endpoint ごとにキャッシュする。
- */
-const draftIdsCache = new Map<Endpoint, Promise<Set<string>>>();
-
-/** 全件取得（microCMS の limit 上限 100 件を超えても取得できる）。下書きがある記事は除く */
+/** 全件取得（microCMS の limit 上限 100 件を超えても取得できる） */
 export const getAllBlogs = async (): Promise<Blog[]> => {
   if (!client) {
     return mockBlogs;
@@ -43,7 +32,7 @@ export const getBlogDetail = async (id: string): Promise<Blog | null> => {
   }
 };
 
-/** 全件取得。下書きがあるスクラップは除く */
+/** 全件取得 */
 export const getAllScraps = async (): Promise<Scrap[]> => {
   if (!client) {
     return mockScraps;

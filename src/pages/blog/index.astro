@@ -1,99 +1,27 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import PostCard from "../../components/PostCard.astro";
-import PageHead from "../../components/PageHead.astro";
 import { getAllBlogs } from "../../lib/microcms";
-import T from "../../components/T.astro";
-import { i18nAttrs } from "../../i18n/ui";
 
 const posts = await getAllBlogs();
 ---
 
-<Layout title="Blog" description="Nknight AMAMIYA (nk4dev) のブログ記事一覧です。">
-  <PageHead title="Blog" lead="blog.lead" count={posts.length}>
-    <label class="sort note">
-      <T k="blog.sort" />
-      <select id="sort-select">
-        <option value="newest" {...i18nAttrs("blog.sort.newest")}>新しい順</option>
-        <option value="oldest" {...i18nAttrs("blog.sort.oldest")}>古い順</option>
-        <option value="title" {...i18nAttrs("blog.sort.title")}>タイトル順</option>
-      </select>
-    </label>
-  </PageHead>
+<Layout>
+<div>
   {
     posts.length > 0 ? (
       <ol id="post-list" class="entries">
-        {posts.map((post, i) => (
-          <PostCard post={post} no={posts.length - i} />
+        {posts.map((post) => (
+        <div>
+          <p>{post.title}</p>
+          </div>
         ))}
       </ol>
     ) : (
       <p class="text-[var(--ink-soft)]">
-        <T k="list.empty" />
+        まだ何も書いていません。
       </p>
     )
-  }
+}
+
+</div>
 </Layout>
-
-<style>
-  .sort {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--ink-soft);
-  }
-  .sort select {
-    padding: 0.3rem 1.6rem 0.3rem 0.5rem;
-    border: 1px solid var(--line);
-    background: var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23d63a22'/%3E%3C/svg%3E") right 0.5rem center / 9px no-repeat;
-    color: var(--ink);
-    appearance: none;
-    font: inherit;
-    cursor: pointer;
-  }
-</style>
-
-<script>
-  type SortKey = "newest" | "oldest" | "title";
-
-  const select = document.getElementById("sort-select") as HTMLSelectElement | null;
-  const list = document.getElementById("post-list");
-
-  const compare: Record<SortKey, (a: HTMLElement, b: HTMLElement) => number> = {
-    newest: (a, b) => (b.dataset.date ?? "").localeCompare(a.dataset.date ?? ""),
-    oldest: (a, b) => (a.dataset.date ?? "").localeCompare(b.dataset.date ?? ""),
-    title: (a, b) => (a.dataset.title ?? "").localeCompare(b.dataset.title ?? "", "ja"),
-  };
-
-  const sortPosts = (key: SortKey) => {
-    if (!list) return;
-    const items = Array.from(list.children) as HTMLElement[];
-    const apply = () => items.sort(compare[key]).forEach((item) => list.appendChild(item));
-    // 対応ブラウザでは並び替えた行が新しい位置へ滑って移動する
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (document.startViewTransition && !reduce) {
-      items.forEach((item, i) => (item.style.viewTransitionName = `entry-${i}`));
-      document.startViewTransition(apply).finished.finally(() => {
-        items.forEach((item) => (item.style.viewTransitionName = ""));
-      });
-    } else {
-      apply();
-    }
-  };
-
-  // ?sort=oldest のように URL で並び順を共有できるようにする
-  const initial = new URLSearchParams(location.search).get("sort");
-  if (select && initial && initial in compare) {
-    select.value = initial;
-    if (list) (Array.from(list.children) as HTMLElement[]).sort(compare[initial as SortKey]).forEach((item) => list.appendChild(item));
-  }
-
-  select?.addEventListener("change", () => {
-    const key = select.value as SortKey;
-    sortPosts(key);
-    const url = new URL(location.href);
-    if (key === "newest") url.searchParams.delete("sort");
-    else url.searchParams.set("sort", key);
-    history.replaceState(null, "", url);
-  });
-</script>

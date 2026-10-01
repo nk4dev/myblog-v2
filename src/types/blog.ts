@@ -1,4 +1,4 @@
-import type { MicroCMSListResponse, MicroCMSDate } from "microcms-js-sdk";
+import type { MicroCMSDate } from "microcms-js-sdk";
 
 export type Category = {
   id: string;
@@ -17,5 +17,3 @@ export type Blog = {
   };
   category?: Category;
 } & MicroCMSDate & { id: string };
-
-export type BlogListResponse = MicroCMSListResponse<Blog>;

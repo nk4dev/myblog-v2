@@ -2,7 +2,6 @@
 import Layout from "../../layouts/Layout.astro";
 import Article from "../../components/Article.astro";
 import { getAllBlogs, getBlogDetail } from "../../lib/microcms";
-import { excerpt } from "../../lib/excerpt";
 
 export async function getStaticPaths() {
   const posts = await getAllBlogs();
@@ -19,16 +18,7 @@ if (!post) {
 }
 ---
 
-<Layout
-  title={post.title}
-  description={post.description || excerpt(post.content)}
-  image={post.eyecatch?.url}
-  imageWidth={post.eyecatch?.width}
-  imageHeight={post.eyecatch?.height}
-  type="article"
-  publishedTime={post.publishedAt ?? post.createdAt}
-  modifiedTime={post.revisedAt}
->
+<Layout title={post.title}>
   <Article
     kind="article"
     title={post.title}
