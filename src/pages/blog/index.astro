@@ -6,7 +6,7 @@ import { getAllBlogs } from "../../lib/microcms";
 const posts = await getAllBlogs();
 ---
 
-<Layout>
+<Layout title="Blog" description="Nknight AMAMIYA (nk4dev) のブログ記事一覧です。">
   <h1 class="mb-10 text-4xl font-extrabold">Blog</h1>
   {
     posts.length > 0 ? (

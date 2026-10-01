@@ -6,7 +6,7 @@ import { getAllScraps } from "../../lib/microcms";
 const scraps = await getAllScraps();
 ---
 
-<Layout>
+<Layout title="Scraps" description="ちょっとしたメモやつぶやきをまとめたスクラップ一覧です。">
   <h1 class="mb-10 text-4xl font-extrabold">Scraps</h1>
   {
     scraps.length > 0 ? (

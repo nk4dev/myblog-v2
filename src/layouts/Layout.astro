@@ -2,14 +2,31 @@
 import "../styles/global.css";
 import HeaderLink from "../components/HeaderLink.astro";
 import Breadcrumb from "../components/Breadcrumb.astro";
+import Logo from "../components/Logo.astro";
 import { socialLinks } from "../data/social";
 
 type Props = {
-  /** パンくずリストの最後に出す名前（記事タイトルなど） */
+  /** ページ名。<title> とパンくずリストの最後に使う。省略時はトップページ扱い */
   title?: string;
+  /** meta description。省略時はサイトの既定の説明文 */
+  description?: string;
+  /** 記事・スクラップの詳細ページは "article" */
+  type?: "website" | "article";
 };
 
-const { title } = Astro.props;
+const siteName = "Nknight AMAMIYA@nk4dev";
+const {
+  title,
+  description = "Nknight AMAMIYA (nk4dev) の個人サイト兼ブログです。",
+  type = "website",
+} = Astro.props;
+
+const fullTitle = title ? `${title} | ${siteName}` : siteName;
+// 配信時は /blog → /blog/ へ転送されるので、og:url もスラッシュ付きに揃える
+const pathname = Astro.url.pathname.endsWith("/") ? Astro.url.pathname : `${Astro.url.pathname}/`;
+const pageURL = new URL(pathname, Astro.site);
+// 生成画像にはサイト名が入るので、ページ名（トップはサイト名）だけを渡す
+const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? siteName)}`;
 ---
 
 <!doctype html>
@@ -17,6 +34,19 @@ const { title } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={pageURL} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="ja_JP" />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@nk4dev" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -26,7 +56,12 @@ const { title } = Astro.props;
   </head>
   <body class="mx-auto max-w-5xl px-4 py-8 sm:px-8">
     <header class="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 rounded-t-md bg-[var(--brand)] px-4 py-3 font-bold text-white">
-      <Breadcrumb current={title} />
+      <div class="flex items-center gap-4">
+        <a href="/" aria-label="nk4dev ホーム" class="shrink-0">
+          <Logo class="h-7 w-auto" />
+        </a>
+        <Breadcrumb current={title} />
+      </div>
       <div>
         <HeaderLink href="/blog/">Blog</HeaderLink>
         <span> / </span>

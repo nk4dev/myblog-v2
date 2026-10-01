@@ -1,0 +1,25 @@
+---
+/** nk4dev のロゴ。色は currentColor（親の文字色）に合わせる */
+type Props = { class?: string };
+
+const { class: className } = Astro.props;
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 1373 575"
+  fill="currentColor"
+  fill-rule="evenodd"
+  class={className}
+  aria-hidden="true"
+>
+  <!-- 左側の形 -->
+  <path
+    d="M313 80 L405 80 L497 246 L458 300 L370 140 L348 140 L156 485 L225 485 L359 247 L491 485 L514 485 L547 425 L615 425 L549 545 L456 545 L359 370 L261 545 L52 545 Z"
+  ></path>
+  <!-- 右側の形（4 + V） -->
+  <path
+    d="M703 37 L874 37 L1000 259 L1127 37 L1336 37 L1047 545 L954 545 L900 448 L938 396 L989 485 L1012 485 L1231 98 L1161 98 L1000 381 L838 98 L734 98 L569 322 L693 322 L693 254 L754 173 L754 322 L826 322 L797 270 L797 149 L916 355 L760 575 L693 575 L693 383 L503 383 L480 340 Z
+       M754 383 L821 383 L754 473 Z"
+  ></path>
+</svg>
