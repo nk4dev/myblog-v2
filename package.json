@@ -8,10 +8,13 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "preview": "bun run build && wrangler dev",
+    "astro": "astro",
+    "generate-types": "wrangler types",
+    "deploy": "bun run build && wrangler deploy"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^14.3.3",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.2",
     "microcms-js-sdk": "^3.5.0",
@@ -22,7 +25,8 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.20",
-    "git-cz": "^4.9.0"
+    "git-cz": "^4.9.0",
+    "wrangler": "^4.145.0"
   },
   "config": {
     "commitizen": {

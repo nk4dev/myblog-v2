@@ -7,7 +7,8 @@ export type Category = {
 
 export type Blog = {
   title: string;
-  description: string;
+  /** microCMS 側で未設定の場合がある */
+  description?: string;
   content: string;
   eyecatch?: {
     url: string;
