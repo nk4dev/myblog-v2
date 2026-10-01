@@ -2,7 +2,8 @@ import { createClient, type MicroCMSListResponse } from "microcms-js-sdk";
 import { MICROCMS_API_KEY, MICROCMS_SERVICE_DOMAIN, MOCKMODE } from "astro:env/server";
 import type { Blog } from "../types/blog";
 import type { Scrap } from "../types/scrap";
-import { mockBlogs, mockScraps } from "./mock-data";
+import type { Project } from "../types/project";
+import { mockBlogs, mockProjects, mockScraps } from "./mock-data";
 
 // Secrets come from astro:env, so on Cloudflare they are read at runtime instead of being inlined at build
 const isMockMode = MOCKMODE === "true" || !MICROCMS_SERVICE_DOMAIN || !MICROCMS_API_KEY;
@@ -11,9 +12,9 @@ const client = isMockMode
   ? null
   : createClient({ serviceDomain: MICROCMS_SERVICE_DOMAIN!, apiKey: MICROCMS_API_KEY! });
 
-type Endpoint = "blogs" | "scraps";
-type Content = { blogs: Blog; scraps: Scrap };
-const mocks: { [E in Endpoint]: Content[E][] } = { blogs: mockBlogs, scraps: mockScraps };
+type Endpoint = "blogs" | "scraps" | "projects";
+type Content = { blogs: Blog; scraps: Scrap; projects: Project };
+const mocks: { [E in Endpoint]: Content[E][] } = { blogs: mockBlogs, scraps: mockScraps, projects: mockProjects };
 
 export type PageOptions = { limit?: number; offset?: number };
 
@@ -62,3 +63,6 @@ export const getBlogDetail = (id: string, draftKey?: string) => getDetail("blogs
 export const getAllScraps = () => getAll("scraps");
 export const getScraps = (options?: PageOptions) => getPage("scraps", options);
 export const getScrapDetail = (id: string, draftKey?: string) => getDetail("scraps", id, draftKey);
+
+export const getAllProjects = () => getAll("projects");
+export const getProjectDetail = (id: string, draftKey?: string) => getDetail("projects", id, draftKey);

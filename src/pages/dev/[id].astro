@@ -1,0 +1,52 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Article from "../../components/Article.astro";
+import { getAllProjects, getProjectDetail } from "../../lib/microcms";
+import { excerpt } from "../../lib/excerpt";
+
+export async function getStaticPaths() {
+  const projects = await getAllProjects();
+  return projects.map((project) => ({
+    params: { id: project.id },
+  }));
+}
+
+const { id } = Astro.params;
+const project = await getProjectDetail(id!);
+
+if (!project) {
+  return Astro.redirect("/404");
+}
+
+const image = project.image?.[0];
+// Some projects link back to their own page here; that link adds nothing
+const ownURL = new URL(`/dev/${project.id}`, Astro.site).href;
+const showURL = project.url && project.url.replace(/\/$/, "") !== ownURL;
+---
+
+<Layout
+  type="article"
+  title={project.name}
+  description={(project.content && excerpt(project.content)) || `${project.name} - Nknight AMAMIYA (nk4dev) の開発プロジェクト`}
+>
+  <Article
+    title={project.name}
+    content={project.content ?? ""}
+    publishedAt={project.publishedAt ?? project.createdAt}
+    revisedAt={project.revisedAt}
+    category={project.category}
+    eyecatch={image}
+    back={{ href: "/dev/", label: "dev.back" }}
+  >
+    {
+      showURL && (
+        <p class="mb-8 break-all">
+          <span class="mr-2 text-sm font-bold text-[var(--ink-soft)]">URL</span>
+          <a href={project.url} target="_blank" rel="noopener noreferrer" class="mark font-medium text-[var(--link)]">
+            {project.url}
+          </a>
+        </p>
+      )
+    }
+  </Article>
+</Layout>

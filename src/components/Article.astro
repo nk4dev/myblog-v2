@@ -103,6 +103,9 @@ const headings = [...content.matchAll(/<h2 id="([^"]+)"[^>]*>(.*?)<\/h2>/g)].map
       )
     }
 
+    <!-- Extra details from the page, such as a project's URL -->
+    <slot />
+
     <div class="prose max-w-none dark:prose-invert prose-a:text-[var(--link)] prose-headings:font-extrabold" set:html={content} />
 
     <a href={back.href} class="mark mt-14 inline-block font-medium text-[var(--link)]"><T k={back.label} /></a>

@@ -1,0 +1,57 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import T from "../../components/T.astro";
+import { getAllProjects } from "../../lib/microcms";
+
+const projects = await getAllProjects();
+---
+
+<Layout title="Dev Projects" description="Nknight AMAMIYA (nk4dev) の開発プロジェクトの一覧です。">
+  <div class="grid grid-cols-1 gap-x-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]">
+    <div class="mb-10 lg:sticky lg:top-8 lg:self-start">
+      <h1 class="text-4xl font-extrabold lg:text-5xl">Dev Projects</h1>
+      <p class="tabular mt-2 text-[var(--ink-soft)]">{projects.length} <T k="list.count" /></p>
+    </div>
+    {
+      projects.length > 0 ? (
+        <ul class="grid gap-10 sm:grid-cols-2">
+          {projects.map((project) => {
+            const image = project.image?.[0];
+            return (
+              <li>
+                <a href={`/dev/${project.id}/`} class="group block">
+                  {image ? (
+                    <img
+                      src={`${image.url}?w=800&h=480&fit=crop&fm=webp`}
+                      alt=""
+                      width="800"
+                      height="480"
+                      loading="lazy"
+                      class="aspect-[5/3] w-full rounded-md object-cover transition-opacity group-hover:opacity-85"
+                    />
+                  ) : (
+                    // No image: show the name on a brand-colored panel, like the apps list
+                    <div
+                      aria-hidden="true"
+                      class="grid aspect-[5/3] w-full place-items-center rounded-md bg-[var(--brand)] p-4 text-center text-3xl font-extrabold text-white transition-opacity [font-stretch:125%] group-hover:opacity-85"
+                    >
+                      {project.name}
+                    </div>
+                  )}
+                  <h2 class="mt-4 text-2xl font-bold">
+                    <span class="mark">{project.name}</span>
+                  </h2>
+                </a>
+                {project.category && <p class="mt-1 text-sm text-[var(--ink-soft)]">{project.category}</p>}
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p class="text-[var(--ink-soft)]">
+          <T k="list.empty" />
+        </p>
+      )
+    }
+  </div>
+</Layout>

@@ -1,0 +1,69 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import T from "../../components/T.astro";
+
+// Markdown files served from public/llmassets/, carried over from the old site
+const files = ["nknighta.md", "nknighta-me-index.md", "blogs.md"];
+
+const sectionClass = "grid grid-cols-1 gap-x-12 gap-y-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]";
+const headingClass = "text-xl font-bold";
+const linkClass = "mark font-mono text-sm font-medium text-[var(--link)]";
+---
+
+<Layout title="LLM Assets" description="Nknight AMAMIYA (nk4dev) のサイトの内容を LLM で使いやすい形にまとめたファイルの一覧です。">
+  <div class="space-y-12">
+    <div>
+      <h1 class="text-4xl font-extrabold lg:text-5xl">LLM Assets</h1>
+      <p class="mt-6 max-w-[72ch]">
+        <T
+          text={{
+            ja: "このサイトの内容を、LLM やノートブック型の AI ツールに読み込ませやすい形でまとめたファイルです。",
+            en: "Files that sum up this site in a form that is easy to load into LLMs and notebook-style AI tools.",
+          }}
+        />
+      </p>
+    </div>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}>llms.txt</h2>
+      <p>
+        <a href="/llms.txt" class={linkClass}>/llms.txt</a>
+        <span class="ml-2 text-[var(--ink-soft)]">
+          <T text={{ ja: "サイトの概要と全ページの一覧", en: "Site overview and a list of every page" }} />
+        </span>
+      </p>
+    </section>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}>Markdown</h2>
+      <ul class="space-y-1">
+        {
+          files.map((file) => (
+            <li>
+              <a href={`/llmassets/${file}`} class={linkClass}>
+                /llmassets/{file}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}><T text={{ ja: "使い道", en: "Use cases" }} /></h2>
+      <p>NotebookLM, Gemini, ChatGPT <T text={{ ja: "など", en: "and more" }} /></p>
+    </section>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}><T text={{ ja: "注意", en: "Note" }} /></h2>
+      <p>
+        <T
+          text={{
+            ja: "サイトの外で使うときは、クレジット（(c)nknighta）を記載してください。",
+            en: "If you use these files outside this site, please include the credit (c)nknighta.",
+          }}
+        />
+      </p>
+    </section>
+  </div>
+</Layout>

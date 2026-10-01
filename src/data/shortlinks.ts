@@ -15,7 +15,7 @@ export const shortLinks: Record<string, string> = {
   "/vrcmeikan": "https://vrc-meikan.com/profile/11e503fa-63d2-445f-9b6a-812853492eb4",
   "/l/vx": "https://github.com/nk4dev/vx3",
   "/l/vx/sdk": "https://github.com/nk4dev/vx",
-  "/l/vx/docs": "https://nknighta.me/vx",
+  "/l/vx/docs": "https://apps.nknighta.me/vx/",
   "/l/vx/searchrepo": "https://github.com/nk4dev?tab=repositories&q=vx",
   "/l/xnv": "https://github.com/nknighta/xnv",
   "/dev/vx3-mcp": "https://nk4dev.gitmcp.io/vx3",

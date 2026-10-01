@@ -14,6 +14,7 @@ const labels: Record<string, string> = {
   blog: "Blog",
   scraps: "Scraps",
   apps: "Apps",
+  dev: "Dev",
 };
 
 const segments = Astro.url.pathname.split("/").filter(Boolean);
@@ -27,7 +28,7 @@ const items = [
 ];
 if (current && !trail) items[items.length - 1].label = current;
 
-// パンくずはブログ・スクラップ・アプリの配下だけに出す（トップや 404 では出さない）
+// パンくずはブログ・スクラップ・アプリ・プロジェクトの配下だけに出す（トップや 404 では出さない）
 const visible = segments[0] in labels;
 ---
 

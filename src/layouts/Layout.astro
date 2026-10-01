@@ -70,6 +70,8 @@ const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? 
     <meta name="description" content={description} />
     <!-- Shared links carry UTM parameters; point search engines at the plain URL -->
     <link rel="canonical" href={pageURL} />
+    <!-- Google Search Console ownership check, carried over from the old nknighta.me -->
+    <meta name="google-site-verification" content="FadhJDiAEFAdginv7Ttd1S3Ord4FWPtK3dnlKRAKeJo" />
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
@@ -186,6 +188,17 @@ const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? 
             </span>
             <HeaderLink href="/apps/" class="py-2 sm:py-1">
               Apps
+            </HeaderLink>
+          </li>
+          <li>
+            <span
+              aria-hidden="true"
+              class="hidden px-1.5 py-1 opacity-60 sm:inline-block"
+            >
+              /
+            </span>
+            <HeaderLink href="/dev/" class="py-2 sm:py-1">
+              Dev
             </HeaderLink>
           </li>
           <li>

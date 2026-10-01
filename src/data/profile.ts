@@ -24,7 +24,7 @@ export const repos = [
   },
   {
     name: "OSS-WEATHER",
-    url: "https://nknighta.me/oss-map-weather/",
+    url: "https://apps.nknighta.me/oss-map-weather/",
     desc: { ja: "地図の上に天気を重ねて見られる小さなOSSツール。", en: "A small OSS tool that overlays weather info on a map." },
   },
   {

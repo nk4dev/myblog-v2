@@ -1,5 +1,6 @@
 import type { Blog } from "../types/blog";
 import type { Scrap } from "../types/scrap";
+import type { Project } from "../types/project";
 
 /**
  * MICROCMS_SERVICE_DOMAIN / MICROCMS_API_KEY 未設定時に使うダミー記事。
@@ -53,5 +54,20 @@ export const mockScraps: Scrap[] = [
     updatedAt: "2026-01-04T00:00:00.000Z",
     publishedAt: "2026-01-04T00:00:00.000Z",
     revisedAt: "2026-01-04T00:00:00.000Z",
+  },
+];
+
+/** Dummy project used when MICROCMS_SERVICE_DOMAIN / MICROCMS_API_KEY are not set */
+export const mockProjects: Project[] = [
+  {
+    id: "sample-project",
+    name: "Sample Project",
+    content: "<p>This mock project is shown while microCMS is not connected.</p>",
+    url: "https://github.com/nk4dev",
+    category: "development",
+    createdAt: "2026-01-05T00:00:00.000Z",
+    updatedAt: "2026-01-05T00:00:00.000Z",
+    publishedAt: "2026-01-05T00:00:00.000Z",
+    revisedAt: "2026-01-05T00:00:00.000Z",
   },
 ];

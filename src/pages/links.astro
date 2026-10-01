@@ -1,0 +1,23 @@
+---
+import Layout from "../layouts/Layout.astro";
+import T from "../components/T.astro";
+
+// Placeholder carried over from the old site, which also showed "coming soon" here
+---
+
+<Layout title="Links" description="リンク集のページは準備中です。">
+  <div class="grid min-h-[40vh] place-content-center text-center">
+    <h1 class="text-4xl font-extrabold lg:text-5xl">Links</h1>
+    <p class="mt-4 text-[var(--ink-soft)]">
+      <T
+        text={{
+          ja: "リンク集のページは準備中です。しばらくお待ちください。",
+          en: "The links page is coming soon. Stay tuned!",
+        }}
+      />
+    </p>
+    <a href="/about/" class="mark mt-8 font-medium text-[var(--link)]">
+      <T text={{ ja: "連絡先は About へ", en: "Contacts are on the About page" }} />
+    </a>
+  </div>
+</Layout>

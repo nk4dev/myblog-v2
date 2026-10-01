@@ -7,8 +7,9 @@ import cloudflare from '@astrojs/cloudflare';
 
 // https://astro.build/config
 export default defineConfig({
-  // Base URL for og:url; the site is served on blog.nknighta.me
-  site: 'https://blog.nknighta.me',
+  // Base URL for canonical, og:url, share links, the sitemap and robots.txt.
+  // The site is served on nknighta.me; blog.nknighta.me redirects here (src/worker.ts)
+  site: 'https://nknighta.me',
 
   // Short URLs such as /g and /x are redirected by the Hono worker (src/server/shortlinks.ts)
 
