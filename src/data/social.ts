@@ -13,4 +13,9 @@ export const socialLinks = [
     label: "X",
     url: "https://x.com/nk4dev",
   },
+  {
+    slug: "i",
+    label: "Instagram",
+    url: "https://www.instagram.com/nk4dev/",
+  },
 ] as const;

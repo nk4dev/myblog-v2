@@ -1,18 +1,24 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import PostList from "../../components/PostList.astro";
+import T from "../../components/T.astro";
 import { getAllBlogs } from "../../lib/microcms";
 
 const posts = await getAllBlogs();
 ---
 
 <Layout title="Blog" description="Nknight AMAMIYA (nk4dev) のブログ記事一覧です。">
-  <h1 class="mb-10 text-4xl font-extrabold">Blog</h1>
+  <div class="grid grid-cols-1 gap-x-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]">
+  <div class="mb-10 lg:sticky lg:top-8 lg:self-start">
+    <h1 class="text-4xl font-extrabold lg:text-5xl">Blog</h1>
+    <p class="tabular mt-2 text-[var(--ink-soft)]">{posts.length} <T k="list.count" /></p>
+  </div>
   {
     posts.length > 0 ? (
       <PostList posts={posts.map((post) => ({ ...post, category: post.category?.name }))} basePath="/blog" />
     ) : (
-      <p class="text-[var(--ink-soft)]">Nothing here.</p>
+      <p class="text-[var(--ink-soft)]"><T k="list.empty" /></p>
     )
   }
+  </div>
 </Layout>

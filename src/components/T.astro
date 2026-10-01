@@ -1,0 +1,11 @@
+---
+import { ui, type Localized, type UIKey } from "../i18n/ui";
+
+/** Renders both languages; CSS shows the one matching <html data-lang> */
+type Props = { k: UIKey } | { text: Localized };
+
+const text: Localized =
+  "k" in Astro.props ? { ja: ui.ja[Astro.props.k], en: ui.en[Astro.props.k] } : Astro.props.text;
+---
+
+<span data-t="ja" lang="ja">{text.ja}</span><span data-t="en" lang="en">{text.en}</span>

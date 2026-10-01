@@ -1,16 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import T from "../components/T.astro";
 ---
 
 <Layout title="404 Not Found" description="ページが見つかりませんでした。">
-  <section class="missing">
-    <div class="missing-dim" aria-hidden="true">
-      <span class="dim-half"></span>
-      <span class="note">?</span>
-      <span class="dim-half dim-half-end"></span>
-    </div>
-    <h1 class="missing-code">404</h1>
-    <p class="missing-text">お探しのページは見つかりませんでした。</p>
-    <a href="/" class="text-link note mt-8 inline-block">トップに戻る</a>
-  </section>
+  <h1 class="text-[clamp(4rem,20vw,9rem)] leading-none font-extrabold [font-stretch:125%]">404</h1>
+  <p class="mt-6"><T k="404.message" /></p>
+  <a href="/" class="mark mt-8 inline-block font-medium text-[var(--link)]"><T k="404.back" /></a>
 </Layout>

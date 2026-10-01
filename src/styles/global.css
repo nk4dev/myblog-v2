@@ -56,6 +56,24 @@ h3 {
   outline-offset: 2px;
 }
 
+/* 本文の埋め込みや長い URL で横にはみ出さないようにする */
+.prose {
+  overflow-wrap: anywhere;
+}
+.prose :is(img, video, iframe) {
+  max-width: 100%;
+}
+.prose table {
+  display: block;
+  overflow-x: auto;
+}
+
+/* Show only the text in the active language (see Layout.astro and T.astro) */
+:root:not([data-lang="en"]) [data-t="en"],
+:root[data-lang="en"] [data-t="ja"] {
+  display: none;
+}
+
 /* 日付の桁をそろえる */
 .tabular {
   font-variant-numeric: tabular-nums;

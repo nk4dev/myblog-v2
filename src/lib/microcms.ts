@@ -1,52 +1,64 @@
-import { createClient } from "microcms-js-sdk";
+import { createClient, type MicroCMSListResponse } from "microcms-js-sdk";
+import { MICROCMS_API_KEY, MICROCMS_SERVICE_DOMAIN, MOCKMODE } from "astro:env/server";
 import type { Blog } from "../types/blog";
 import type { Scrap } from "../types/scrap";
 import { mockBlogs, mockScraps } from "./mock-data";
 
-const serviceDomain = import.meta.env.MICROCMS_SERVICE_DOMAIN;
-const apiKey = import.meta.env.MICROCMS_API_KEY;
-
-/** MOCKMODE=true または環境変数が未設定の場合はモックデータで動作するサンプルモード */
-const isMockMode = import.meta.env.MOCKMODE === "true" || !serviceDomain || !apiKey;
+// Secrets come from astro:env, so on Cloudflare they are read at runtime instead of being inlined at build
+const isMockMode = MOCKMODE === "true" || !MICROCMS_SERVICE_DOMAIN || !MICROCMS_API_KEY;
 
 const client = isMockMode
   ? null
-  : createClient({ serviceDomain, apiKey });
+  : createClient({ serviceDomain: MICROCMS_SERVICE_DOMAIN!, apiKey: MICROCMS_API_KEY! });
 
-/** 全件取得（microCMS の limit 上限 100 件を超えても取得できる） */
-export const getAllBlogs = async (): Promise<Blog[]> => {
-  if (!client) {
-    return mockBlogs;
-  }
-  return await client.getAllContents<Blog>({ endpoint: "blogs" });
+type Endpoint = "blogs" | "scraps";
+type Content = { blogs: Blog; scraps: Scrap };
+const mocks: { [E in Endpoint]: Content[E][] } = { blogs: mockBlogs, scraps: mockScraps };
+
+export type PageOptions = { limit?: number; offset?: number };
+
+/** Fetch every item, even beyond microCMS's 100-item limit per request */
+const getAll = async <E extends Endpoint>(endpoint: E): Promise<Content[E][]> => {
+  if (!client) return mocks[endpoint];
+  return await client.getAllContents<Content[E]>({ endpoint });
 };
 
-export const getBlogDetail = async (id: string): Promise<Blog | null> => {
+/** Fetch one page of items, in the same shape as a microCMS list response */
+const getPage = async <E extends Endpoint>(
+  endpoint: E,
+  { limit = 10, offset = 0 }: PageOptions = {},
+): Promise<MicroCMSListResponse<Content[E]>> => {
   if (!client) {
-    return mockBlogs.find((blog) => blog.id === id) ?? null;
+    const all = mocks[endpoint];
+    return { contents: all.slice(offset, offset + limit), totalCount: all.length, limit, offset };
+  }
+  return await client.getList<Content[E]>({ endpoint, queries: { limit, offset } });
+};
+
+/** Fetch one item. Passing a draftKey returns the draft version; returns null when it does not exist */
+const getDetail = async <E extends Endpoint>(
+  endpoint: E,
+  id: string,
+  draftKey?: string,
+): Promise<Content[E] | null> => {
+  if (!client) {
+    return (mocks[endpoint] as Content[E][]).find((item) => item.id === id) ?? null;
   }
   try {
-    return await client.getListDetail<Blog>({ endpoint: "blogs", contentId: id });
+    return await client.getListDetail<Content[E]>({
+      endpoint,
+      contentId: id,
+      queries: draftKey ? { draftKey } : undefined,
+    });
   } catch {
     return null;
   }
 };
 
-/** 全件取得 */
-export const getAllScraps = async (): Promise<Scrap[]> => {
-  if (!client) {
-    return mockScraps;
-  }
-  return await client.getAllContents<Scrap>({ endpoint: "scraps" });
-};
+export const getAllBlogs = () => getAll("blogs");
+export const getBlogs = (options?: PageOptions) => getPage("blogs", options);
+export const getBlogDetail = (id: string, draftKey?: string) => getDetail("blogs", id, draftKey);
 
-export const getScrapDetail = async (id: string): Promise<Scrap | null> => {
-  if (!client) {
-    return mockScraps.find((scrap) => scrap.id === id) ?? null;
-  }
-  try {
-    return await client.getListDetail<Scrap>({ endpoint: "scraps", contentId: id });
-  } catch {
-    return null;
-  }
-};
+export const getAllScraps = () => getAll("scraps");
+export const getScraps = (options?: PageOptions) => getPage("scraps", options);
+export const getScrapDetail = (id: string, draftKey?: string) => getDetail("scraps", id, draftKey);

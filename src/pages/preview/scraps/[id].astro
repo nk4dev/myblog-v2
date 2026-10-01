@@ -1,0 +1,28 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import Article from "../../../components/Article.astro";
+import { getScrapDetail } from "../../../lib/microcms";
+
+// Rendered on demand so microCMS drafts can be previewed with ?draftKey= (see preview/blog/[id].astro)
+export const prerender = false;
+
+const { id } = Astro.params;
+const draftKey = Astro.url.searchParams.get("draftKey") ?? undefined;
+const scrap = await getScrapDetail(id!, draftKey);
+
+if (!scrap) {
+  return new Response("Not found", { status: 404 });
+}
+Astro.response.headers.set("Cache-Control", "private, no-store");
+---
+
+<Layout type="article" title={`[Preview] ${scrap.title}`} noindex>
+  <Article
+    title={scrap.title}
+    content={scrap.content}
+    publishedAt={scrap.publishedAt ?? scrap.createdAt}
+    revisedAt={scrap.revisedAt}
+    category={scrap.category}
+    back={{ href: "/scraps/", label: "scraps.back" }}
+  />
+</Layout>

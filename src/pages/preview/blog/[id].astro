@@ -1,0 +1,30 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import Article from "../../../components/Article.astro";
+import { getBlogDetail } from "../../../lib/microcms";
+
+// Rendered on demand so microCMS drafts can be previewed with ?draftKey=.
+// /blog/:id itself is a static file served before the worker runs, so it cannot read the query.
+export const prerender = false;
+
+const { id } = Astro.params;
+const draftKey = Astro.url.searchParams.get("draftKey") ?? undefined;
+const post = await getBlogDetail(id!, draftKey);
+
+if (!post) {
+  return new Response("Not found", { status: 404 });
+}
+Astro.response.headers.set("Cache-Control", "private, no-store");
+---
+
+<Layout type="article" title={`[Preview] ${post.title}`} noindex>
+  <Article
+    title={post.title}
+    content={post.content}
+    publishedAt={post.publishedAt ?? post.createdAt}
+    revisedAt={post.revisedAt}
+    category={post.category?.name}
+    eyecatch={post.eyecatch}
+    back={{ href: "/blog/", label: "blog.back" }}
+  />
+</Layout>

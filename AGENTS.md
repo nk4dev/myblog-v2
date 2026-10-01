@@ -1,3 +1,6 @@
+## Important things
+code comment is must using English
+
 ## Development
 
 When starting the dev server, use background mode:

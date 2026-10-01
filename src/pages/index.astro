@@ -1,13 +1,21 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import PostList from "../components/PostList.astro";
-import { getAllBlogs } from "../lib/microcms";
+import T from "../components/T.astro";
+import { getAllBlogs, getAllScraps } from "../lib/microcms";
 
-const latest = (await getAllBlogs()).slice(0, 5);
+const [blogs, scraps] = await Promise.all([getAllBlogs(), getAllScraps()]);
+const latest = blogs.slice(0, 5);
+const latestScraps = scraps.slice(0, 3);
+
+// 名前は 1 文字ずつ span に分けてアニメーションさせる（単語の途中では折り返さない）
+const nameWords = ["Nknight", "AMAMIYA"];
 ---
 
 <Layout>
-  <section class="flex flex-col gap-6 pb-16 sm:flex-row sm:items-center sm:gap-10">
+  <!-- 広い画面ではプロフィールを左に固定し、右に新着を並べる -->
+  <div class="grid grid-cols-1 gap-16 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+  <section class="flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-10 lg:sticky lg:top-8 lg:flex-col lg:items-start lg:self-start">
     <img
       class="size-28 shrink-0 rounded-full sm:size-40"
       src="https://images.microcms-assets.io/assets/a2939c8d25434ae5a1f853f2dc239a0f/9056b34c4c50456a8b43617ca493b720/cms%E7%94%A8.jpeg?fit=crop&w=320&h=320"
@@ -16,30 +24,133 @@ const latest = (await getAllBlogs()).slice(0, 5);
       height="160"
     />
     <div class="min-w-0">
-      <h1 class="hero-name font-extrabold">Nknight AMAMIYA</h1>
+      <h1 id="hero-name" class="hero-name font-extrabold" aria-label={nameWords.join(" ")}>
+        {
+          nameWords.map((word, i) => {
+            const offset = nameWords.slice(0, i).join("").length;
+            return (
+              <>
+                {i > 0 && " "}
+                <span class="whitespace-nowrap" aria-hidden="true">
+                  {[...word].map((char, j) => (
+                    <span class="hero-char" style={`--i: ${offset + j}`}>
+                      {char}
+                    </span>
+                  ))}
+                </span>
+              </>
+            );
+          })
+        }
+      </h1>
+      <script is:inline>
+        // 描画前にアニメーションのパターンをランダムに選ぶ。名前をクリックすると別のパターンでもう一度動かす
+        (() => {
+          const name = document.getElementById("hero-name");
+          const patterns = ["fade", "blur", "rise", "flip", "scale", "scatter"];
+          const play = () => {
+            const choices = patterns.filter((p) => p !== name.dataset.pattern);
+            const next = choices[Math.floor(Math.random() * choices.length)];
+            // scatter は文字ごとにばらばらの順番で出す
+            for (const c of name.querySelectorAll(".hero-char")) {
+              c.style.setProperty("--r", String(Math.random()));
+            }
+            // 属性を外して描き直させてから付け直し、アニメーションを最初から再生する
+            delete name.dataset.pattern;
+            void name.offsetWidth;
+            name.dataset.pattern = next;
+          };
+          play();
+          name.addEventListener("click", play);
+        })();
+      </script>
       <p class="mt-2 text-lg text-[var(--ink-soft)]">@nk4dev</p>
     </div>
   </section>
 
-  <section>
-    <h2 class="mb-6 text-2xl font-bold">Latest posts</h2>
-    <PostList posts={latest.map((post) => ({ ...post, category: post.category?.name }))} basePath="/blog" />
-    <a href="/blog/" class="mark mt-8 inline-block font-medium text-[var(--link)]">All posts</a>
-  </section>
+  <div class="space-y-16">
+    <section>
+      <h2 class="mb-6 text-2xl font-bold"><T k="home.latestPosts" /></h2>
+      <PostList posts={latest.map((post) => ({ ...post, category: post.category?.name }))} basePath="/blog" />
+      <a href="/blog/" class="mark mt-8 inline-block font-medium text-[var(--link)]"><T k="home.allPosts" /></a>
+    </section>
+    {
+      latestScraps.length > 0 && (
+        <section>
+          <h2 class="mb-6 text-2xl font-bold"><T k="home.latestScraps" /></h2>
+          <PostList posts={latestScraps} basePath="/scraps" />
+          <a href="/scraps/" class="mark mt-8 inline-block font-medium text-[var(--link)]"><T k="home.allScraps" /></a>
+        </section>
+      )
+    }
+  </div>
+  </div>
 </Layout>
 
 <style>
-  /* 名前を Archivo のいちばん広い字幅で大きく置き、読み込み時に一度だけ字幅を広げる */
+  /* 名前を Archivo のいちばん広い字幅で大きく置く。読み込み時はランダムに選んだパターンで 1 文字ずつ出す */
   .hero-name {
-    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    font-size: clamp(2.25rem, 10vw, 5.5rem);
+    @media (width >= 64rem) {
+      font-size: clamp(2.75rem, 4vw, 4.25rem);
+    }
     font-stretch: 125%;
     line-height: 1;
     letter-spacing: -0.02em;
-    animation: widen 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    cursor: pointer;
+    user-select: none;
   }
-  @keyframes widen {
+  .hero-char {
+    display: inline-block;
+    animation: 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--i) * 45ms) both;
+  }
+  [data-pattern="fade"] .hero-char {
+    animation-name: fade;
+  }
+  [data-pattern="blur"] .hero-char {
+    animation-name: blur;
+    animation-duration: 0.9s;
+  }
+  [data-pattern="rise"] .hero-char {
+    animation-name: rise;
+  }
+  [data-pattern="flip"] .hero-char {
+    animation-name: flip;
+  }
+  [data-pattern="scale"] .hero-char {
+    animation-name: scale;
+  }
+  [data-pattern="scatter"] .hero-char {
+    animation-name: fade;
+    animation-delay: calc(var(--r) * 600ms);
+  }
+  @keyframes fade {
     from {
-      font-stretch: 70%;
+      opacity: 0;
+    }
+  }
+  @keyframes blur {
+    from {
+      opacity: 0;
+      filter: blur(12px);
+    }
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(0.5em);
+    }
+  }
+  @keyframes flip {
+    from {
+      opacity: 0;
+      transform: perspective(400px) rotateX(-90deg);
+    }
+  }
+  @keyframes scale {
+    from {
+      opacity: 0;
+      transform: scale(1.8);
     }
   }
 </style>

@@ -2,9 +2,10 @@
 type Props = {
   /** 最後の項目の表示名（記事タイトルなど）。省略時は URL から決める */
   current?: string;
+  class?: string;
 };
 
-const { current } = Astro.props;
+const { current, class: className } = Astro.props;
 
 // URL の区切りごとの表示名。載っていないものはそのまま表示する
 const labels: Record<string, string> = {
@@ -21,21 +22,26 @@ const items = [
   })),
 ];
 if (current) items[items.length - 1].label = current;
+
+// パンくずはブログとスクラップの配下だけに出す（トップや 404 では出さない）
+const visible = segments[0] in labels;
 ---
 
-<nav aria-label="Breadcrumb">
-  <ol class="flex flex-wrap">
+{visible && (
+<nav aria-label="Breadcrumb" class={className}>
+  <ol class="flex min-w-0">
     {
       items.map((item, i) =>
         i < items.length - 1 ? (
-          <li>
+          <li class="shrink-0">
             <a href={item.href} class="underline-offset-4 hover:underline">{item.label}</a>
             <span aria-hidden="true" class="px-2 opacity-60">/</span>
           </li>
         ) : (
-          <li aria-current="page">{item.label}</li>
+          <li aria-current="page" class="min-w-0 truncate" title={item.label}>{item.label}</li>
         ),
       )
     }
   </ol>
 </nav>
+)}

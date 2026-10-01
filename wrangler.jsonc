@@ -3,7 +3,9 @@
 	"compatibility_date": "2026-09-30",
 	"compatibility_flags": ["global_fetch_strictly_public"],
 	"name": "blog-v2",
-	"main": "@astrojs/cloudflare/entrypoints/server",
+	"main": "./src/worker.ts",
+	// Serve the site on blog.nknighta.me (replaces the old GitHub Pages site)
+	"routes": [{ "pattern": "blog.nknighta.me", "custom_domain": true }],
 	"assets": {
 		"directory": "./dist",
 		"binding": "ASSETS"

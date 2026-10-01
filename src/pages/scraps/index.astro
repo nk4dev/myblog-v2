@@ -1,18 +1,24 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import PostList from "../../components/PostList.astro";
+import T from "../../components/T.astro";
 import { getAllScraps } from "../../lib/microcms";
 
 const scraps = await getAllScraps();
 ---
 
 <Layout title="Scraps" description="ちょっとしたメモやつぶやきをまとめたスクラップ一覧です。">
-  <h1 class="mb-10 text-4xl font-extrabold">Scraps</h1>
+  <div class="grid grid-cols-1 gap-x-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]">
+  <div class="mb-10 lg:sticky lg:top-8 lg:self-start">
+    <h1 class="text-4xl font-extrabold lg:text-5xl">Scraps</h1>
+    <p class="tabular mt-2 text-[var(--ink-soft)]">{scraps.length} <T k="list.count" /></p>
+  </div>
   {
     scraps.length > 0 ? (
       <PostList posts={scraps} basePath="/scraps" />
     ) : (
-      <p class="text-[var(--ink-soft)]">Nothing here.</p>
+      <p class="text-[var(--ink-soft)]"><T k="list.empty" /></p>
     )
   }
+  </div>
 </Layout>

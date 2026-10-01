@@ -17,7 +17,10 @@
     "@astrojs/cloudflare": "^14.3.3",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.2",
+    "hono": "^4.13.12",
     "microcms-js-sdk": "^3.5.0",
+    "prettier": "^3.9.9",
+    "prettier-plugin-astro": "^1.1.0",
     "tailwindcss": "^4.3.3"
   },
   "allowScripts": {

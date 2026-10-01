@@ -1,5 +1,11 @@
 ---
-/** 記事・スクラップ詳細の本文部分 */
+import T from "./T.astro";
+import type { UIKey } from "../i18n/ui";
+
+/**
+ * 記事・スクラップ詳細の本文部分。
+ * 広い画面では左に日付などの情報、右に目次を置き、本文の行の長さは読みやすい幅に保つ。
+ */
 type Props = {
   title: string;
   /** microCMS のリッチエディタの HTML */
@@ -8,7 +14,7 @@ type Props = {
   revisedAt?: string;
   category?: string;
   eyecatch?: { url: string; width: number; height: number };
-  back: { href: string; label: string };
+  back: { href: string; label: UIKey };
 };
 
 const { title, content, publishedAt, revisedAt, category, eyecatch, back } = Astro.props;
@@ -18,31 +24,80 @@ const formatDate = (iso: string) =>
   new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tokyo" }).format(new Date(iso));
 const published = formatDate(publishedAt);
 const revised = revisedAt ? formatDate(revisedAt) : undefined;
+
+// microCMS は h2 に id を付けて出力するので、それを目次にする
+const headings = [...content.matchAll(/<h2 id="([^"]+)"[^>]*>(.*?)<\/h2>/g)].map(([, id, html]) => ({
+  id,
+  text: html.replace(/<[^>]*>/g, ""),
+}));
 ---
 
-<article class="max-w-[68ch]">
-  <header class="mb-8">
-    <h1 class="text-3xl font-extrabold sm:text-4xl">{title}</h1>
-    <p class="tabular mt-3 flex flex-wrap gap-x-4 text-sm text-[var(--ink-soft)]">
-      <time datetime={publishedAt}>{published}</time>
-      {revised && revised !== published && <span>updated <time datetime={revisedAt}>{revised}</time></span>}
-      {category && <span>{category}</span>}
-    </p>
-  </header>
+<article
+  class="grid grid-cols-1 gap-x-12 lg:grid-cols-[10rem_minmax(0,72ch)] xl:grid-cols-[10rem_minmax(0,72ch)_minmax(0,1fr)]"
+>
+  <h1 class="text-3xl font-extrabold sm:text-4xl lg:col-start-2 lg:text-5xl">{title}</h1>
+
+  <aside class="mt-3 mb-10 lg:row-span-3 lg:row-start-1 lg:mt-0">
+    <dl class="tabular flex flex-wrap gap-x-4 text-sm text-[var(--ink-soft)] lg:sticky lg:top-8 lg:flex-col lg:gap-y-3">
+      <div>
+        <dt class="sr-only">Published</dt>
+        <dd><time datetime={publishedAt}>{published}</time></dd>
+      </div>
+      {
+        revised && revised !== published && (
+          <div>
+            <dt class="sr-only">Updated</dt>
+            <dd>
+              <T k="article.updated" /> <time datetime={revisedAt}>{revised}</time>
+            </dd>
+          </div>
+        )
+      }
+      {
+        category && (
+          <div>
+            <dt class="sr-only">Category</dt>
+            <dd>{category}</dd>
+          </div>
+        )
+      }
+    </dl>
+  </aside>
+
+  <div class="lg:col-start-2 lg:mt-10">
+    {
+      eyecatch && (
+        <img
+          src={`${eyecatch.url}?w=1600&fm=webp`}
+          alt=""
+          width={eyecatch.width}
+          height={eyecatch.height}
+          class="mb-10 h-auto w-full rounded-md"
+        />
+      )
+    }
+
+    <div class="prose max-w-none dark:prose-invert prose-a:text-[var(--link)] prose-headings:font-extrabold" set:html={content} />
+
+    <a href={back.href} class="mark mt-14 inline-block font-medium text-[var(--link)]"><T k={back.label} /></a>
+  </div>
 
   {
-    eyecatch && (
-      <img
-        src={`${eyecatch.url}?w=1600&fm=webp`}
-        alt=""
-        width={eyecatch.width}
-        height={eyecatch.height}
-        class="mb-10 h-auto w-full rounded-md"
-      />
+    headings.length >= 2 && (
+      <nav aria-labelledby="toc-heading" class="hidden xl:col-start-3 xl:row-span-2 xl:row-start-2 xl:mt-10 xl:block">
+        <div class="sticky top-8 border-l-2 border-[var(--brand)] pl-4 text-sm">
+          <p id="toc-heading" class="mb-3 font-bold"><T k="article.toc" /></p>
+          <ol class="space-y-2">
+            {headings.map((h) => (
+              <li>
+                <a href={`#${h.id}`} class="text-[var(--ink-soft)] hover:text-[var(--ink)] hover:underline">
+                  {h.text}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </nav>
     )
   }
-
-  <div class="prose max-w-none dark:prose-invert prose-a:text-[var(--link)] prose-headings:font-extrabold" set:html={content} />
-
-  <a href={back.href} class="mark mt-14 inline-block font-medium text-[var(--link)]">{back.label}</a>
 </article>
