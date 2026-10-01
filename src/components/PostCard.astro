@@ -22,7 +22,7 @@ const date = post.publishedAt ?? post.createdAt;
 ---
 
 <li class="entry" data-date={date} data-title={post.title}>
-  <a href={`${basePath}/${post.id}`}>
+  <a href={`${basePath}/${post.id}/`}>
     <span class="entry-no" aria-hidden="true">{String(no).padStart(3, "0")}</span>
     <div class="entry-meta">
       <time datetime={date}>{formatDate(date)}</time>

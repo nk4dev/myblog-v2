@@ -35,7 +35,9 @@ const {
 } = Astro.props;
 
 const fullTitle = title ? `${title} | ${siteName}` : `${siteName} | Personal Site`;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+// 配信時は /blog → /blog/ へ転送されるので、canonical / og:url もスラッシュ付きに揃える
+const pathname = Astro.url.pathname.endsWith("/") ? Astro.url.pathname : `${Astro.url.pathname}/`;
+const canonicalURL = new URL(pathname, Astro.site);
 
 // 生成画像にはサイト名が入るので、ページ名（トップはサイト名）だけを渡す
 const ogImage = image

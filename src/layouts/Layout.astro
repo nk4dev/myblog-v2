@@ -17,18 +17,19 @@ const navItems = [
     icon: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" />',
   },
   {
-    href: "/blog",
+    href: "/blog/",
     label: "Blog",
     icon: '<path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z" /><path d="M14 3v5h5M9 13h6M9 17h6" />',
   },
   {
-    href: "/scraps",
+    href: "/scraps/",
     label: "Scraps",
     icon: '<path d="M4 4h16v11l-5 5H4z" /><path d="M15 20v-5h5" />',
   },
 ];
 
-const path = Astro.url.pathname;
+// リンクはスラッシュ付き（/blog/）なので、現在地もスラッシュ付きにして比べる
+const path = Astro.url.pathname.endsWith("/") ? Astro.url.pathname : `${Astro.url.pathname}/`;
 const isCurrent = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
 
 // 図面枠の区域記号（横は数字、縦はアルファベット）

@@ -10,8 +10,8 @@ const latest = allPosts.slice(0, 3);
 const latestScraps = scraps.slice(0, 3);
 
 const stats = [
-  { key: "home.posts", value: allPosts.length, href: "/blog" },
-  { key: "home.scraps", value: scraps.length, href: "/scraps" },
+  { key: "home.posts", value: allPosts.length, href: "/blog/" },
+  { key: "home.scraps", value: scraps.length, href: "/scraps/" },
 ] as const;
 ---
 
@@ -89,7 +89,7 @@ const stats = [
   <section class="mt-24" aria-labelledby="latest-heading">
     <div class="section-head">
       <h2 id="latest-heading" class="section-title"><T k="home.latest" /></h2>
-      <a href="/blog" class="text-link note"><T k="home.seeAll" /></a>
+      <a href="/blog/" class="text-link note"><T k="home.seeAll" /></a>
     </div>
     <ol class="entries">
       {latest.map((post) => <PostCard post={post} no={allPosts.length - allPosts.indexOf(post)} />)}
@@ -103,7 +103,7 @@ const stats = [
           <h2 id="scraps-heading" class="section-title">
             <T k="home.scraps" />
           </h2>
-          <a href="/scraps" class="text-link note">
+          <a href="/scraps/" class="text-link note">
             <T k="home.seeAll" />
           </a>
         </div>
