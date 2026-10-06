@@ -5,13 +5,10 @@
 	"name": "blog-v2",
 	"main": "./src/worker.ts",
 	// Serve the site on nknighta.me (replacing the old Next.js worker there).
-	// blog.nknighta.me stays attached so its DNS keeps resolving; a Cloudflare Redirect Rule on the
-	// zone sends it to nknighta.me. Static pages are served before the Worker runs, so the Worker
-	// cannot do that redirect itself (and run_worker_first would break `astro dev`)
-	"routes": [
-		{ "pattern": "nknighta.me", "custom_domain": true },
-		{ "pattern": "blog.nknighta.me", "custom_domain": true }
-	],
+	// blog.nknighta.me is not attached here: it has its own DNS record, and a Cloudflare Redirect
+	// Rule on the zone sends it to nknighta.me. Attaching it as a custom domain fails while that
+	// record exists (API error 100117)
+	"routes": [{ "pattern": "nknighta.me", "custom_domain": true }],
 	"assets": {
 		"directory": "./dist",
 		"binding": "ASSETS"
