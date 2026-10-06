@@ -1,21 +1,17 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import Article from "../../components/Article.astro";
-import { getAllScraps, getScrapDetail } from "../../lib/microcms";
+import { getScrapDetail } from "../../lib/microcms";
 import { excerpt } from "../../lib/excerpt";
 
-export async function getStaticPaths() {
-  const scraps = await getAllScraps();
-  return scraps.map((scrap) => ({
-    params: { id: scrap.id },
-  }));
-}
+// Rendered on demand so content changes in microCMS show up without a rebuild
+export const prerender = false;
 
 const { id } = Astro.params;
 const scrap = await getScrapDetail(id!);
 
 if (!scrap) {
-  return Astro.redirect("/404");
+  return new Response(null, { status: 404 });
 }
 ---
 

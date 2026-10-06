@@ -3,6 +3,9 @@ import Layout from "../../layouts/Layout.astro";
 import T from "../../components/T.astro";
 import { getAllProjects } from "../../lib/microcms";
 
+// Rendered on demand so content changes in microCMS show up without a rebuild
+export const prerender = false;
+
 const projects = await getAllProjects();
 ---
 

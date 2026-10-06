@@ -5,21 +5,27 @@ import { getAllBlogs } from "../../../../../lib/microcms";
 import { categoryPath, collectCategories, toPages } from "../../../../../lib/blog-pages";
 
 // Pages 2 and later of a category's posts. Page 1 lives at /blog/category/[id]/
-export async function getStaticPaths() {
-  const posts = await getAllBlogs();
-  const categories = collectCategories(posts);
-  return categories.flatMap(({ category }) => {
-    const inCategory = posts.filter((post) => post.category?.id === category.id);
-    const pages = toPages(inCategory);
-    return pages.slice(1).map((pagePosts, i) => ({
-      params: { id: category.id, page: String(i + 2) },
-      props: { category, posts: pagePosts, total: inCategory.length, categories, lastPage: pages.length },
-    }));
-  });
+// Rendered on demand so content changes in microCMS show up without a rebuild
+export const prerender = false;
+
+// Only canonical numbers from 2 up: page 1 has its own URL and "02" would duplicate page 2
+const page = Number(Astro.params.page);
+const allPosts = await getAllBlogs();
+const categories = collectCategories(allPosts);
+const category = categories.find((c) => c.category.id === Astro.params.id)?.category;
+if (!category) {
+  return new Response(null, { status: 404 });
 }
 
-const { category, posts, total, categories, lastPage } = Astro.props;
-const page = Number(Astro.params.page);
+const inCategory = allPosts.filter((post) => post.category?.id === category.id);
+const pages = toPages(inCategory);
+if (String(page) !== Astro.params.page || page < 2 || page > pages.length) {
+  return new Response(null, { status: 404 });
+}
+
+const posts = pages[page - 1];
+const total = inCategory.length;
+const lastPage = pages.length;
 ---
 
 <Layout

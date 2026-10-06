@@ -4,6 +4,9 @@ import BlogList from "../../components/BlogList.astro";
 import { getAllBlogs } from "../../lib/microcms";
 import { collectCategories, toPages } from "../../lib/blog-pages";
 
+// Rendered on demand so content changes in microCMS show up without a rebuild
+export const prerender = false;
+
 // Page 1 of the list; later pages are blog/page/[page].astro
 const posts = await getAllBlogs();
 const pages = toPages(posts);

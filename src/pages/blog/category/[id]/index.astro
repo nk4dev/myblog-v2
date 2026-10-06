@@ -5,20 +5,22 @@ import { getAllBlogs } from "../../../../lib/microcms";
 import { categoryPath, collectCategories, toPages } from "../../../../lib/blog-pages";
 
 // Page 1 of a category's posts; later pages are category/[id]/page/[page].astro
-export async function getStaticPaths() {
-  const posts = await getAllBlogs();
-  const categories = collectCategories(posts);
-  return categories.map(({ category }) => {
-    const inCategory = posts.filter((post) => post.category?.id === category.id);
-    const pages = toPages(inCategory);
-    return {
-      params: { id: category.id },
-      props: { category, posts: pages[0], total: inCategory.length, categories, lastPage: pages.length },
-    };
-  });
+// Rendered on demand so content changes in microCMS show up without a rebuild
+export const prerender = false;
+
+const allPosts = await getAllBlogs();
+const categories = collectCategories(allPosts);
+// Only categories that have posts get a page
+const category = categories.find((c) => c.category.id === Astro.params.id)?.category;
+if (!category) {
+  return new Response(null, { status: 404 });
 }
 
-const { category, posts, total, categories, lastPage } = Astro.props;
+const inCategory = allPosts.filter((post) => post.category?.id === category.id);
+const pages = toPages(inCategory);
+const posts = pages[0];
+const total = inCategory.length;
+const lastPage = pages.length;
 ---
 
 <Layout

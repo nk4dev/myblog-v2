@@ -1,7 +1,10 @@
 import type { APIRoute } from "astro";
 import { getSitePages } from "../lib/site-pages";
 
-// Update when the hand-written parts below change (the page lists are rebuilt on every build)
+// Rendered on demand so new posts are listed without a rebuild
+export const prerender = false;
+
+// Update when the hand-written parts below change (the page lists are fetched on every request)
 const UPDATED = "2026-10-02";
 
 /** llms.txt: a plain-text guide to this site for LLMs, carried over from the old nknighta.me */

@@ -4,6 +4,9 @@ import PostList from "../../components/PostList.astro";
 import T from "../../components/T.astro";
 import { getAllScraps } from "../../lib/microcms";
 
+// Rendered on demand so content changes in microCMS show up without a rebuild
+export const prerender = false;
+
 const scraps = await getAllScraps();
 ---
 
