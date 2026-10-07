@@ -1,93 +1,65 @@
 import type { APIRoute } from "astro";
-import { getSitePages } from "../lib/site-pages";
+import { getSitePages, type SitePage } from "../lib/site-pages";
+import { markdownPath } from "../lib/markdown";
 
-// Update when the hand-written parts below change (the page lists are rebuilt on every build)
-const UPDATED = "2026-10-02";
+// Rendered on demand so new posts are listed without a rebuild
+export const prerender = false;
 
-/** llms.txt: a plain-text guide to this site for LLMs, carried over from the old nknighta.me */
+// Update when the hand-written parts below change (the page lists are fetched on every request)
+const UPDATED = "2026-10-08";
+
+/**
+ * llms.txt: a guide to this site for LLMs, in the format of https://llmstxt.org/
+ * (a title, a summary, notes, then one list of links per section).
+ * Posts, scraps and projects link to their Markdown versions (src/server/markdown.ts).
+ */
 export const GET: APIRoute = async ({ site }) => {
-  const { posts, scraps, projects } = await getSitePages();
+  const { fixed, posts, scraps, projects } = await getSitePages();
   const url = (path: string) => new URL(path, site).href;
   const host = new URL(site!).host;
-  const list = (pages: { path: string; title: string }[]) =>
-    pages.map((p) => `- [${p.title}](${url(p.path)})`).join("\n");
+  const item = (title: string, href: string, note?: string) =>
+    `- [${title.replace(/[\\[\]]/g, "\\$&")}](${href})${note ? `: ${note}` : ""}`;
+  const markdownList = (pages: SitePage[]) =>
+    pages.map((p) => item(p.title, url(markdownPath(p.path)), p.description)).join("\n");
 
-  const body = `# llms.txt for ${host}
+  const body = `# ${host}
 
-## 1. Site Overview
-- **Site Name**: ${host}
-- **Operator**: Nknight AMAMIYA@nk4dev
-- **URL**: ${url("/")}
-- **Site Purpose**: The personal site of developer Nknight AMAMIYA (nk4dev). It publishes technical blog posts, short notes (scraps) and small web apps made by the owner.
-- **Languages**: Posts are mostly in Japanese. The site's interface can be shown in Japanese or English.
+> The personal site of developer Nknight AMAMIYA (nk4dev). It publishes technical blog posts, short notes (scraps), development projects and small web apps made by the owner. Posts are mostly in Japanese; the site's interface can be shown in Japanese or English.
 
----
+- **Operator**: Nknight AMAMIYA@nk4dev, a developer and VRChat user. Another website: https://varius.technology
+- **Markdown**: Every blog post, scrap and dev project, and the list of each, is also served as Markdown. Add \`.md\` to the URL in place of the trailing slash (${url("/blog.md")}, \`${url("/blog/")}<id>.md\`), or request the page itself with \`Accept: text/markdown\`.
+- **Usage**: Content under /blog/, /scraps/, /dev/ and /apps/ may be used for answer generation, summarization and mentions. Do not use /preview/ (unpublished drafts) or /api/.
+- **Citation**: When mentioning posts or apps from this site, please state the site name "${host}" and the operator name "Nknight AMAMIYA", and link to the HTML page (the \`url\` field at the top of each Markdown page) where possible.
+- **Accuracy**: Posts are based on the operator's own learning, development experience and research, and reflect the author's knowledge at the time of writing (see \`published\` and \`updated\`). Technical details may have changed since.
+- **Contact**: nknighta@varius.technology, https://github.com/nk4dev, https://x.com/nk4dev
+- **Last updated**: ${UPDATED} (the lists below are always current)
 
-## 2. Instructions for LLMs
+## Blog
 
-### User-Agent: *
-The instructions in this section apply to all LLMs (Large Language Models).
+${item("All blog posts", url("/blog.md"), "programming, web development, VRChat and other topics")}
+${markdownList(posts)}
 
-#### Content Usage Policy
-- **Allow**: /
-- **Allow**: /blog/
-- **Allow**: /scraps/
-- **Allow**: /apps/
-- **Allow**: /dev/
-  - Content under the above paths may be used for your services (answer generation, summarization, mentions, etc.).
-- **Disallow**: /preview/ (unpublished drafts) and /api/
+## Scraps
 
-#### Preferred Usage
-- **Citation/Mention**: When mentioning posts or apps from this site, please state the site name "${host}" and the operator name "Nknight AMAMIYA", and link to the page where possible.
-- **App Introduction**: When introducing the apps (/apps/), describe their functions based on the overview on each app page.
-- **Information Accuracy**: Posts reflect the author's knowledge at the time of writing. Technical details may have changed since.
+${item("All scraps", url("/scraps.md"), "short notes and development logs")}
+${markdownList(scraps)}
 
----
+## Dev projects
 
-## 3. Site Structure
-- **Top Page**: ${url("/")} — latest posts and scraps
-- **Blog**: ${url("/blog/")} — programming, web development, VRChat and other topics; also listed by category
-- **Scraps**: ${url("/scraps/")} — short notes and development logs
-- **Apps**: ${url("/apps/")} — web apps and tools made by the operator
-- **Dev Projects**: ${url("/dev/")} — development projects with their repositories
-- **About**: ${url("/about/")} — profile, tech stack, history and contact
-- **LLM Assets**: ${url("/llmassets/")} — Markdown summaries of this site for LLM tools
-- **Sitemap**: ${url("/sitemap.xml")}
+${item("All dev projects", url("/dev.md"), "development projects with their repositories")}
+${markdownList(projects)}
 
-### Blog posts
-${list(posts)}
+## Pages
 
-### Scraps
-${list(scraps)}
+${fixed.map((p) => item(p.title, url(p.path))).join("\n")}
 
-### Dev projects
-${list(projects)}
+## Optional
 
----
-
-## 4. Content Credibility
-- **Author/Developer**: Nknight AMAMIYA
-- **Editorial Policy**: All content is based on the operator's own learning, development experience and research, shared as practical notes.
-
----
-
-## 5. Contact Information
-- **Email**: nknighta@varius.technology
-- **GitHub**: https://github.com/nk4dev
-- **X**: https://x.com/nk4dev
-
-## 6. My Assets
-- **My Icon**: ${url("/icon.jpeg")}
-
-## 7. Owner Information
-This site is made by Nknight AMAMIYA@nk4dev
-url: ${url("/")}
-another website: https://varius.technology
-llms.txt is ${url("/llms.txt")}
-
-VRChat User
-
-Last Updated: ${UPDATED}
+${item("Old top page", url("/llmassets/nknighta.md"), "Markdown snapshot of the old site's top page")}
+${item("Old site index", url("/llmassets/nknighta-me-index.md"), "Markdown snapshot of the old site's profile, skills and repositories")}
+${item("Old blog list", url("/llmassets/blogs.md"), "Markdown snapshot of the old site's blog list")}
+${item("Sitemap", url("/sitemap.xml"), "every public HTML page")}
+${item("Icon", url("/icon.jpeg"), "the operator's icon")}
 `;
   return new Response(body, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
 };

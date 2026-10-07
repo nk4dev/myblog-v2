@@ -4,7 +4,7 @@ import Article from "../../../components/Article.astro";
 import { getBlogDetail } from "../../../lib/microcms";
 
 // Rendered on demand so microCMS drafts can be previewed with ?draftKey=.
-// /blog/:id itself is a static file served before the worker runs, so it cannot read the query.
+// Kept apart from /blog/:id so drafts stay out of the public URLs and are never indexed or cached.
 export const prerender = false;
 
 const { id } = Astro.params;

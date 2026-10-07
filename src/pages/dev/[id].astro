@@ -1,21 +1,17 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import Article from "../../components/Article.astro";
-import { getAllProjects, getProjectDetail } from "../../lib/microcms";
+import { getProjectDetail } from "../../lib/microcms";
 import { excerpt } from "../../lib/excerpt";
 
-export async function getStaticPaths() {
-  const projects = await getAllProjects();
-  return projects.map((project) => ({
-    params: { id: project.id },
-  }));
-}
+// Rendered on demand so content changes in microCMS show up without a rebuild
+export const prerender = false;
 
 const { id } = Astro.params;
 const project = await getProjectDetail(id!);
 
 if (!project) {
-  return Astro.redirect("/404");
+  return new Response(null, { status: 404 });
 }
 
 const image = project.image?.[0];
@@ -25,6 +21,7 @@ const showURL = project.url && project.url.replace(/\/$/, "") !== ownURL;
 ---
 
 <Layout
+  markdown
   type="article"
   title={project.name}
   description={(project.content && excerpt(project.content)) || `${project.name} - Nknight AMAMIYA (nk4dev) の開発プロジェクト`}

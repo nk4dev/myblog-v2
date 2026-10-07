@@ -1,26 +1,22 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import Article from "../../components/Article.astro";
-import { getAllBlogs, getBlogDetail } from "../../lib/microcms";
+import { getBlogDetail } from "../../lib/microcms";
 import { excerpt } from "../../lib/excerpt";
 import { categoryPath } from "../../lib/blog-pages";
 
-export async function getStaticPaths() {
-  const posts = await getAllBlogs();
-  return posts.map((post) => ({
-    params: { id: post.id },
-  }));
-}
+// Rendered on demand so content changes in microCMS show up without a rebuild
+export const prerender = false;
 
 const { id } = Astro.params;
 const post = await getBlogDetail(id!);
 
 if (!post) {
-  return Astro.redirect("/404");
+  return new Response(null, { status: 404 });
 }
 ---
 
-<Layout type="article" title={post.title} description={post.description || excerpt(post.content)}>
+<Layout markdown type="article" title={post.title} description={post.description || excerpt(post.content)}>
   <Article
     title={post.title}
     content={post.content}

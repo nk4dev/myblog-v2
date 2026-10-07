@@ -1,7 +1,10 @@
 import type { APIRoute } from "astro";
 import { getSitePages } from "../lib/site-pages";
 
-/** XML sitemap of every public page, generated at build time */
+// Rendered on demand so new posts are listed without a rebuild
+export const prerender = false;
+
+/** XML sitemap of every public page */
 export const GET: APIRoute = async ({ site }) => {
   const { fixed, lists, posts, scraps, projects } = await getSitePages();
   const escape = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");

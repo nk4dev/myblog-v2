@@ -4,10 +4,13 @@ import PostList from "../../components/PostList.astro";
 import T from "../../components/T.astro";
 import { getAllScraps } from "../../lib/microcms";
 
+// Rendered on demand so content changes in microCMS show up without a rebuild
+export const prerender = false;
+
 const scraps = await getAllScraps();
 ---
 
-<Layout title="Scraps" description="ちょっとしたメモやつぶやきをまとめたスクラップ一覧です。">
+<Layout markdown title="Scraps" description="ちょっとしたメモやつぶやきをまとめたスクラップ一覧です。">
   <div class="grid grid-cols-1 gap-x-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]">
   <div class="mb-10 lg:sticky lg:top-8 lg:self-start">
     <h1 class="text-4xl font-extrabold lg:text-5xl">Scraps</h1>

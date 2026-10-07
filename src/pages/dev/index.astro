@@ -3,10 +3,13 @@ import Layout from "../../layouts/Layout.astro";
 import T from "../../components/T.astro";
 import { getAllProjects } from "../../lib/microcms";
 
+// Rendered on demand so content changes in microCMS show up without a rebuild
+export const prerender = false;
+
 const projects = await getAllProjects();
 ---
 
-<Layout title="Dev Projects" description="Nknight AMAMIYA (nk4dev) の開発プロジェクトの一覧です。">
+<Layout markdown title="Dev Projects" description="Nknight AMAMIYA (nk4dev) の開発プロジェクトの一覧です。">
   <div class="grid grid-cols-1 gap-x-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]">
     <div class="mb-10 lg:sticky lg:top-8 lg:self-start">
       <h1 class="text-4xl font-extrabold lg:text-5xl">Dev Projects</h1>

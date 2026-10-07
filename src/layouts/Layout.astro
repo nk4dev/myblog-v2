@@ -8,6 +8,7 @@ import ShareX from "../components/ShareX.astro";
 import Analytics from "../components/Analytics.astro";
 import T from "../components/T.astro";
 import { canonicalURL } from "../lib/share";
+import { markdownPath } from "../lib/markdown";
 import { socialLinks } from "../data/social";
 import { i18nAttrs, ui } from "../i18n/ui";
 
@@ -24,6 +25,8 @@ type Props = {
   breadcrumb?: { href: string; label: string }[];
   /** Show "Share on X" in the footer. Article pages have their own link under the body instead */
   share?: boolean;
+  /** The page also has a Markdown version for AI agents (src/server/markdown.ts) */
+  markdown?: boolean;
 };
 
 const siteName = "Nknight AMAMIYA@nk4dev";
@@ -34,6 +37,7 @@ const {
   noindex = false,
   breadcrumb,
   share = true,
+  markdown = false,
 } = Astro.props;
 
 const fullTitle = title ? `${title} | ${siteName}` : siteName;
@@ -70,6 +74,7 @@ const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? 
     <meta name="description" content={description} />
     <!-- Shared links carry UTM parameters; point search engines at the plain URL -->
     <link rel="canonical" href={pageURL} />
+    {markdown && <link rel="alternate" type="text/markdown" href={new URL(markdownPath(pageURL.pathname), pageURL)} />}
     <!-- Google Search Console ownership check, carried over from the old nknighta.me -->
     <meta
       name="google-site-verification"

@@ -5,6 +5,9 @@ import T from "../components/T.astro";
 import { getAllBlogs, getAllScraps } from "../lib/microcms";
 import { categoryPath } from "../lib/blog-pages";
 
+// Rendered on demand so content changes in microCMS show up without a rebuild
+export const prerender = false;
+
 const [blogs, scraps] = await Promise.all([getAllBlogs(), getAllScraps()]);
 const latest = blogs.slice(0, 5);
 const latestScraps = scraps.slice(0, 3);
