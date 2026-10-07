@@ -1,0 +1,23 @@
+---
+import Layout from "../layouts/Layout.astro";
+// The page body lives in MDX, one file per language. Edit those files to change the content
+import { Content as Ja } from "../content/social/ja.mdx";
+import { Content as En } from "../content/social/en.mdx";
+
+// Same typography as article bodies (see Article.astro)
+const proseClass =
+  "prose max-w-[72ch] dark:prose-invert prose-a:text-[var(--link)] prose-headings:font-extrabold";
+---
+
+<Layout
+  title="Social"
+  description="Nknight AMAMIYA (nk4dev) の SNS アカウントと連絡先をまとめたページです。"
+>
+  <!-- Each language is written out in full and switched as a whole, like the privacy policy -->
+  <div data-t="ja" lang="ja" class={proseClass}>
+    <Ja />
+  </div>
+  <div data-t="en" lang="en" class={proseClass}>
+    <En />
+  </div>
+</Layout>

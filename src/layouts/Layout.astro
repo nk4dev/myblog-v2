@@ -76,7 +76,10 @@ const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? 
     <link rel="canonical" href={pageURL} />
     {markdown && <link rel="alternate" type="text/markdown" href={new URL(markdownPath(pageURL.pathname), pageURL)} />}
     <!-- Google Search Console ownership check, carried over from the old nknighta.me -->
-    <meta name="google-site-verification" content="FadhJDiAEFAdginv7Ttd1S3Ord4FWPtK3dnlKRAKeJo" />
+    <meta
+      name="google-site-verification"
+      content="FadhJDiAEFAdginv7Ttd1S3Ord4FWPtK3dnlKRAKeJo"
+    />
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
@@ -88,9 +91,16 @@ const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? 
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:locale" content="ja_JP" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Nknight AMAMIYA (nk4dev) 's blog" />
     <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@nk4dev" />
+    <meta name="twitter:site" content="nknighta.me" />
+    <meta name="twitter:creator" content="@nk4dev" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -217,6 +227,17 @@ const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? 
               About.me
             </HeaderLink>
           </li>
+          <li>
+            <span
+              aria-hidden="true"
+              class="hidden px-1.5 py-1 opacity-60 sm:inline-block"
+            >
+              /
+            </span>
+            <HeaderLink href="/social/" class="py-2 sm:py-1">
+              Social
+            </HeaderLink>
+          </li>
         </ul>
         <span
           aria-hidden="true"
@@ -258,10 +279,22 @@ const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? 
     <footer class="flex flex-wrap justify-between gap-2 border-t-4 border-[var(--brand)] pt-4 text-sm text-[var(--ink-soft)]">
       <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
         <span>Nknight AMAMIYA@nk4dev</span>
-        {footerShare && <ShareX text={fullTitle} url={pageURL} placement="footer" class="hover:text-[var(--ink)]" />}
+        {footerShare && (
+          <ShareX
+            text={fullTitle}
+            url={pageURL}
+            placement="footer"
+            class="hover:text-[var(--ink)]"
+          />
+        )}
       </div>
       <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
-        <a href="/privacy/" class="hover:text-[var(--ink)] hover:underline underline-offset-4"><T k="footer.privacy" /></a>
+        <a
+          href="/privacy/"
+          class="hover:text-[var(--ink)] hover:underline underline-offset-4"
+        >
+          <T k="footer.privacy" />
+        </a>
         <span>All rights reserved.</span>
       </div>
     </footer>

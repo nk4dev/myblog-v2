@@ -22,6 +22,7 @@ export const getSitePages = async () => {
     { path: "/links/", title: "Links" },
     { path: "/llmassets/", title: "LLM Assets" },
     { path: "/privacy/", title: "Privacy Policy" },
+    { path: "/social/", title: "Social" },
   ];
 
   // Blog list pages, overall and per category
