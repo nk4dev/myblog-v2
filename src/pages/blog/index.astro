@@ -12,7 +12,7 @@ const posts = await getAllBlogs();
 const pages = toPages(posts);
 ---
 
-<Layout title="Blog" description="Nknight AMAMIYA (nk4dev) のブログ記事一覧です。">
+<Layout markdown title="Blog" description="Nknight AMAMIYA (nk4dev) のブログ記事一覧です。">
   <BlogList
     heading="Blog"
     posts={pages[0]}

@@ -21,6 +21,7 @@ const showURL = project.url && project.url.replace(/\/$/, "") !== ownURL;
 ---
 
 <Layout
+  markdown
   type="article"
   title={project.name}
   description={(project.content && excerpt(project.content)) || `${project.name} - Nknight AMAMIYA (nk4dev) の開発プロジェクト`}

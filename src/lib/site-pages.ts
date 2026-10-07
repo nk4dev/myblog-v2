@@ -3,7 +3,7 @@ import { categoryPath, collectCategories, pagePath, toPages } from "./blog-pages
 import { apps } from "../data/apps";
 
 /** A public page for the sitemap and llms.txt. path is site-relative and ends with "/" */
-export type SitePage = { path: string; title: string; lastmod?: string };
+export type SitePage = { path: string; title: string; lastmod?: string; description?: string };
 
 /**
  * Every indexable page of the site. Drafts (/preview/), the API and the 404 page are left out.
@@ -42,6 +42,7 @@ export const getSitePages = async () => {
     path: `/blog/${post.id}/`,
     title: post.title,
     lastmod: post.revisedAt ?? post.updatedAt,
+    description: post.description,
   }));
   const scrapPages: SitePage[] = scraps.map((scrap) => ({
     path: `/scraps/${scrap.id}/`,

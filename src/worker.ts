@@ -1,12 +1,13 @@
 import { Hono } from "hono";
 import { handle } from "@astrojs/cloudflare/handler";
 import { api } from "./server/api";
+import { markdownRoutes } from "./server/markdown";
 import { shortLinkRoutes } from "./server/shortlinks";
 
 /**
  * Cloudflare Worker entry (wrangler.jsonc "main").
- * Hono handles the API and short URLs; every other request goes to the adapter's
- * default Astro handler.
+ * Hono handles the API, short URLs and the Markdown pages for AI agents; every other request
+ * goes to the adapter's default Astro handler.
  *
  * We delegate to handle() instead of using the astro/hono middlewares because those
  * never resolve prerendered routes in `astro dev`, so every static page returned 404
@@ -16,6 +17,7 @@ const app = new Hono<{ Bindings: Env }>({ strict: false });
 
 app.route("/api", api);
 app.route("/", shortLinkRoutes);
+app.route("/", markdownRoutes);
 
 /**
  * Old URLs whose page no longer exists but whose list does: blog pages past the last one

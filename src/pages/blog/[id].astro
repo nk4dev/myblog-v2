@@ -16,7 +16,7 @@ if (!post) {
 }
 ---
 
-<Layout type="article" title={post.title} description={post.description || excerpt(post.content)}>
+<Layout markdown type="article" title={post.title} description={post.description || excerpt(post.content)}>
   <Article
     title={post.title}
     content={post.content}

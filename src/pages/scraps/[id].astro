@@ -15,7 +15,7 @@ if (!scrap) {
 }
 ---
 
-<Layout type="article" title={scrap.title} description={excerpt(scrap.content) || scrap.title}>
+<Layout markdown type="article" title={scrap.title} description={excerpt(scrap.content) || scrap.title}>
   <Article
     title={scrap.title}
     content={scrap.content}
