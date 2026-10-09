@@ -3,10 +3,12 @@ import { handle } from "@astrojs/cloudflare/handler";
 import { api } from "./server/api";
 import { markdownRoutes } from "./server/markdown";
 import { shortLinkRoutes } from "./server/shortlinks";
+import { wellKnownRoutes } from "./server/wellknown";
 
 /**
  * Cloudflare Worker entry (wrangler.jsonc "main").
- * Hono handles the API, short URLs and the Markdown pages for AI agents; every other request
+ * Hono handles the API, short URLs, the agent discovery documents under /.well-known/ and the
+ * Markdown pages for AI agents; every other request
  * goes to the adapter's default Astro handler.
  *
  * We delegate to handle() instead of using the astro/hono middlewares because those
@@ -17,6 +19,7 @@ const app = new Hono<{ Bindings: Env }>({ strict: false });
 
 app.route("/api", api);
 app.route("/", shortLinkRoutes);
+app.route("/", wellKnownRoutes);
 app.route("/", markdownRoutes);
 
 /**

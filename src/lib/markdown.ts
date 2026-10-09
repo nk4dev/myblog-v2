@@ -25,6 +25,9 @@ const decodeEntities = (text: string) =>
     return code > 0 && code <= 0x10ffff ? String.fromCodePoint(code) : match;
   });
 
+/** Decode the character references in an HTML text or attribute value */
+export const decodeHTML = (text: string) => decodeEntities(text);
+
 const parseAttrs = (source: string) => {
   const attrs: Record<string, string> = {};
   for (const [, name, dq, sq, bare] of source.matchAll(/([^\s=/]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"']+)))?/g)) {
@@ -87,7 +90,11 @@ const wrap = (text: string, mark: string) => {
   return `${lead}${mark}${inner}${mark}${trail}`;
 };
 
-type Context = { base?: URL };
+type Context = {
+  base?: URL;
+  /** Elements to leave out entirely, e.g. the second language of a bilingual label */
+  ignore?: (element: Element) => boolean;
+};
 
 const resolveURL = (href: string, { base }: Context) => {
   let url = href.trim();
@@ -106,7 +113,7 @@ const inline = (nodes: Node[], ctx: Context): string =>
     .map((node): string => {
       if (typeof node === "string") return escapeText(decodeEntities(node).replace(/\s+/g, " "));
       const { tag, attrs, children } = node;
-      if (DROPPED_TAGS.has(tag)) return "";
+      if (DROPPED_TAGS.has(tag) || ctx.ignore?.(node)) return "";
       switch (tag) {
         case "br":
           // Text nodes have their newlines collapsed, so "\n" only ever means a line break here
@@ -220,6 +227,7 @@ const blocks = (nodes: Node[], ctx: Context): string[] => {
   };
 
   for (const node of nodes) {
+    if (typeof node !== "string" && ctx.ignore?.(node)) continue;
     if (!isBlock(node)) {
       run.push(node);
       continue;
@@ -257,5 +265,17 @@ const blocks = (nodes: Node[], ctx: Context): string[] => {
  * Convert rich editor HTML to Markdown. Relative links and image URLs are resolved against base
  * so they still work when the Markdown is read away from the page.
  */
-export const htmlToMarkdown = (html: string, base?: URL | string): string =>
-  blocks(parse(html), { base: base ? new URL(base) : undefined }).join("\n\n");
+export const htmlToMarkdown = (
+  html: string,
+  base?: URL | string,
+  ignore?: (element: { tag: string; attrs: Record<string, string> }) => boolean,
+): string => blocks(parse(html), { base: base ? new URL(base) : undefined, ignore }).join("\n\n");
+
+/**
+ * Rough token count of a text, sent as x-markdown-tokens.
+ * CJK characters are about one token each; other text is about four characters per token.
+ */
+export const estimateTokens = (text: string) => {
+  const cjk = text.match(/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/gu)?.length ?? 0;
+  return cjk + Math.ceil((text.length - cjk) / 4);
+};

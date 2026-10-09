@@ -18,11 +18,18 @@ const buttonClass =
       />
     </p>
 
-    <form id="yt-form" class="mt-8 flex flex-col gap-3 sm:flex-row">
+    <!-- toolname / tooldescription / toolparamdescription expose this form to AI agents (declarative WebMCP) -->
+    <form
+      id="yt-form"
+      class="mt-8 flex flex-col gap-3 sm:flex-row"
+      toolname="get_youtube_thumbnails"
+      tooldescription="Show the thumbnail images of a YouTube video, in every available size, with download links."
+    >
       <label for="yt-url" class="sr-only">YouTube URL</label>
       <input
         id="yt-url"
         name="url"
+        toolparamdescription="URL of the YouTube video (youtube.com/watch?v=..., youtu.be/..., or /shorts/...)"
         type="text"
         inputmode="url"
         autocomplete="off"
