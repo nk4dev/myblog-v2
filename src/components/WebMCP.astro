@@ -1,0 +1,183 @@
+---
+// WebMCP (https://webmachinelearning.github.io/webmcp/): exposes the site's main actions as tools
+// to AI agents running in the browser. Included on every page by Layout.astro.
+// Forms can also be exposed declaratively with toolname / tooldescription attributes
+// (see src/pages/apps/ytimage-dl.astro).
+---
+
+<script>
+  type Input = Record<string, unknown>;
+  type Tool = {
+    name: string;
+    title?: string;
+    description: string;
+    inputSchema: object;
+    annotations?: { readOnlyHint?: boolean };
+    execute: (input: Input, options?: { signal?: AbortSignal }) => Promise<unknown>;
+  };
+  type ModelContext = {
+    registerTool: (tool: Tool, options?: { signal?: AbortSignal }) => Promise<void> | void;
+  };
+
+  type Item = {
+    id: string;
+    title: string;
+    description?: string;
+    category?: string | { name: string };
+    publishedAt?: string;
+  };
+
+  // The spec puts the API on document; older Chrome builds exposed it on navigator
+  const modelContext: ModelContext | undefined =
+    (document as unknown as { modelContext?: ModelContext }).modelContext ??
+    (navigator as unknown as { modelContext?: ModelContext }).modelContext;
+
+  const SECTIONS = ["blog", "scraps"] as const;
+  type Section = (typeof SECTIONS)[number];
+  // The JSON API names blog posts "blogs"
+  const apiPath = (section: Section) => (section === "blog" ? "/api/blogs" : "/api/scraps");
+
+  const pageURL = (section: Section, id: string) => new URL(`/${section}/${id}/`, location.origin).href;
+
+  /** Fields an agent needs to pick a post, without the HTML body */
+  const summarize = (section: Section) => (item: Item) => ({
+    id: item.id,
+    title: item.title,
+    description: item.description,
+    category: typeof item.category === "object" ? item.category?.name : item.category,
+    publishedAt: item.publishedAt,
+    url: pageURL(section, item.id),
+    markdownUrl: new URL(`/${section}/${item.id}.md`, location.origin).href,
+  });
+
+  const fetchList = async (section: Section, limit: number, signal?: AbortSignal) => {
+    const res = await fetch(`${apiPath(section)}?limit=${limit}`, { signal });
+    if (!res.ok) throw new Error(`Failed to fetch ${section} (${res.status})`);
+    const { contents } = (await res.json()) as { contents: Item[] };
+    return contents.map(summarize(section));
+  };
+
+  const sectionOf = (value: unknown): Section[] =>
+    SECTIONS.includes(value as Section) ? [value as Section] : [...SECTIONS];
+
+  const clampLimit = (value: unknown, fallback: number) => {
+    const n = Number(value);
+    return Number.isInteger(n) ? Math.min(Math.max(n, 1), 100) : fallback;
+  };
+
+  const sectionSchema = {
+    type: "string",
+    enum: SECTIONS,
+    description: '"blog" for blog posts, "scraps" for short notes and development logs. Omit for both.',
+  };
+
+  const tools: Tool[] = [
+    {
+      name: "search_posts",
+      title: "Search posts",
+      description:
+        "Search the blog posts and scraps on nknighta.me by keyword (matched against title, description and category, case-insensitive). Returns matching posts with their URLs.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          query: { type: "string", description: "Keyword to search for. Posts are mostly in Japanese." },
+          section: sectionSchema,
+        },
+        required: ["query"],
+      },
+      annotations: { readOnlyHint: true },
+      execute: async ({ query, section }, options) => {
+        const words = String(query ?? "").toLowerCase().split(/\s+/).filter(Boolean);
+        const lists = await Promise.all(sectionOf(section).map((s) => fetchList(s, 100, options?.signal)));
+        const results = lists.flat().filter((item) => {
+          const text = [item.title, item.description, item.category].join(" ").toLowerCase();
+          return words.every((word) => text.includes(word));
+        });
+        return { count: results.length, results };
+      },
+    },
+    {
+      name: "list_latest_posts",
+      title: "List latest posts",
+      description: "List the newest blog posts and/or scraps on nknighta.me, newest first.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          section: sectionSchema,
+          limit: { type: "integer", minimum: 1, maximum: 100, description: "How many per section (default 10)" },
+        },
+      },
+      annotations: { readOnlyHint: true },
+      execute: async ({ section, limit }, options) => {
+        const sections = sectionOf(section);
+        const lists = await Promise.all(sections.map((s) => fetchList(s, clampLimit(limit, 10), options?.signal)));
+        return Object.fromEntries(sections.map((s, i) => [s, lists[i]]));
+      },
+    },
+    {
+      name: "get_post_markdown",
+      title: "Read a post",
+      description:
+        "Get the full text of a blog post, scrap or dev project on nknighta.me as Markdown, with YAML front matter (title, url, published, updated).",
+      inputSchema: {
+        type: "object",
+        properties: {
+          section: { type: "string", enum: ["blog", "scraps", "dev"], description: "Where the item lives" },
+          id: { type: "string", description: "The item id, the last part of its URL (/blog/<id>/)" },
+        },
+        required: ["section", "id"],
+      },
+      annotations: { readOnlyHint: true },
+      execute: async ({ section, id }, options) => {
+        if (!["blog", "scraps", "dev"].includes(String(section))) throw new Error("Unknown section");
+        const res = await fetch(`/${section}/${encodeURIComponent(String(id))}.md`, { signal: options?.signal });
+        if (!res.ok) throw new Error(res.status === 404 ? "No such post" : `Failed to fetch (${res.status})`);
+        return { markdown: await res.text() };
+      },
+    },
+    {
+      name: "open_page",
+      title: "Open a page",
+      description:
+        "Navigate this tab to a page on nknighta.me, e.g. /, /blog/, /scraps/, /dev/, /apps/, /about/, /social/, /developers/ or a post URL.",
+      inputSchema: {
+        type: "object",
+        properties: { path: { type: "string", description: "A path or URL on nknighta.me" } },
+        required: ["path"],
+      },
+      execute: async ({ path }) => {
+        const target = new URL(String(path ?? "/"), location.origin);
+        // Only pages on this site; never follow an agent to another origin
+        if (target.origin !== location.origin) throw new Error("Only pages on this site can be opened");
+        location.assign(target.href);
+        return { navigatedTo: target.href };
+      },
+    },
+    {
+      name: "set_language",
+      title: "Switch language",
+      description: "Switch the site's interface language between Japanese (ja) and English (en). Post bodies are not translated.",
+      inputSchema: {
+        type: "object",
+        properties: { lang: { type: "string", enum: ["ja", "en"] } },
+        required: ["lang"],
+      },
+      execute: async ({ lang }) => {
+        if (lang !== "ja" && lang !== "en") throw new Error('lang must be "ja" or "en"');
+        // The header button owns the switch (Layout.astro), so press it when the language differs
+        if (document.documentElement.dataset.lang !== lang) document.getElementById("lang-toggle")?.click();
+        return { lang: document.documentElement.dataset.lang };
+      },
+    },
+  ];
+
+  if (modelContext) {
+    // controller.abort() unregisters every tool at once
+    const controller = new AbortController();
+    for (const tool of tools) {
+      Promise.resolve(modelContext.registerTool(tool, { signal: controller.signal })).catch((error) =>
+        console.warn(`WebMCP: could not register ${tool.name}`, error),
+      );
+    }
+  }
+</script>
