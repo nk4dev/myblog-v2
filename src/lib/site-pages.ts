@@ -19,6 +19,7 @@ export const getSitePages = async () => {
     { path: "/apps/", title: "Apps" },
     ...apps.map((app) => ({ path: app.href, title: app.name })),
     { path: "/dev/", title: "Dev Projects" },
+    { path: "/developers/", title: "Developers" },
     { path: "/links/", title: "Links" },
     { path: "/llmassets/", title: "LLM Assets" },
     { path: "/privacy/", title: "Privacy Policy" },

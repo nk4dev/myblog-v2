@@ -6,6 +6,7 @@ import {
   getScraps,
   type PageOptions,
 } from "../lib/microcms";
+import { openapi } from "./openapi";
 
 /** JSON API for the microCMS content, mounted at /api by src/worker.ts */
 export const api = new Hono({ strict: false });
@@ -37,6 +38,18 @@ const detail =
     if (!item) return c.json({ error: "Not found" }, 404);
     return c.json(item);
   };
+
+// Machine-readable description and health check, linked from /.well-known/api-catalog
+api.get("/openapi.json", (c) => {
+  c.header("Cache-Control", PUBLIC_CACHE);
+  c.header("Content-Type", "application/vnd.oai.openapi+json;version=3.1");
+  return c.body(JSON.stringify(openapi(import.meta.env.SITE ?? new URL(c.req.url).origin), null, 2));
+});
+api.get("/health", (c) => {
+  c.header("Cache-Control", "no-store");
+  c.header("Content-Type", "application/health+json");
+  return c.body(JSON.stringify({ status: "pass" }));
+});
 
 api.get("/blogs", list(getBlogs));
 api.get("/blogs/:id", detail(getBlogDetail));

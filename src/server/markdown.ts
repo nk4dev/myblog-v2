@@ -7,16 +7,17 @@ import {
   getProjectDetail,
   getScrapDetail,
 } from "../lib/microcms";
-import { htmlToMarkdown, markdownPath } from "../lib/markdown";
+import { decodeHTML, estimateTokens, htmlToMarkdown, markdownPath } from "../lib/markdown";
 import type { Blog } from "../types/blog";
 import type { Scrap } from "../types/scrap";
 import type { Project } from "../types/project";
 
 /**
- * Markdown versions of the microCMS pages for AI agents, mounted at / by src/worker.ts.
- * A page is returned as text/markdown when its URL ends with ".md" (/blog/foo.md, /blog.md)
- * or when the request for the page itself prefers it (Accept: text/markdown).
- * Draft previews and the paged or per-category lists have no Markdown version.
+ * Markdown versions of the pages for AI agents, mounted at / by src/worker.ts.
+ * Posts, scraps and projects (and their lists) are built from microCMS and are also served at
+ * URLs ending with ".md" (/blog/foo.md, /blog.md). Every other HTML page is converted from its
+ * rendered HTML when the request prefers Markdown (Accept: text/markdown).
+ * Draft previews have no Markdown version.
  */
 export const markdownRoutes = new Hono({ strict: false });
 
@@ -187,9 +188,70 @@ markdownRoutes.get("*", async (c, next) => {
   return c.body(body, 200, {
     "Content-Type": "text/markdown; charset=utf-8",
     "Cache-Control": PUBLIC_CACHE,
+    "x-markdown-tokens": String(estimateTokens(body)),
     // Point search engines at the HTML page instead of indexing this copy
     Link: `<${pageURL}>; rel="canonical"`,
     ...(explicit ? {} : { Vary: "Accept" }),
+  });
+});
+
+/** Paths that are not HTML pages, or have no Markdown version */
+const NOT_A_PAGE = /^\/(?:api|preview|_astro|\.well-known)(?:\/|$)|\.[^/]*$/;
+
+const firstMatch = (html: string, pattern: RegExp) => {
+  const value = pattern.exec(html)?.[1];
+  return value === undefined ? undefined : decodeHTML(value).trim();
+};
+
+/**
+ * Any other page: render the HTML as usual, then convert its <main> to Markdown.
+ * The UI labels are rendered in both languages (T.astro); the English copy and decorative
+ * elements are left out so the text is not doubled.
+ */
+const pageMarkdown = (html: string, fallbackURL: string) => {
+  const pageURL = firstMatch(html, /<link rel="canonical" href="([^"]*)"/) ?? fallbackURL;
+  const title = firstMatch(html, /<title>([\s\S]*?)<\/title>/);
+  const description = firstMatch(html, /<meta name="description" content="([^"]*)"/);
+  const main = /<main\b[^>]*>([\s\S]*)<\/main>/.exec(html)?.[1] ?? html;
+  const content = htmlToMarkdown(
+    main,
+    pageURL,
+    ({ tag, attrs }) =>
+      attrs["data-t"] === "en" || attrs["aria-hidden"] === "true" || ["svg", "button", "dialog"].includes(tag),
+  );
+  // Most pages have their own <h1>; fall back to the document title for those that do not
+  const heading = /^# /m.test(content) || !title ? undefined : `# ${title}`;
+  const parts = [frontMatter({ title, url: pageURL, description }), heading, content];
+  return { body: `${parts.filter(Boolean).join("\n\n")}\n`, pageURL };
+};
+
+markdownRoutes.get("*", async (c, next) => {
+  const { path } = c.req;
+  if (PAGE.test(path) || NOT_A_PAGE.test(path)) return next();
+
+  const wantsMarkdown = prefersMarkdown(c.req.header("Accept"));
+  await next();
+  const isHTML = c.res.headers.get("Content-Type")?.startsWith("text/html");
+  if (!isHTML) return;
+
+  if (!wantsMarkdown || c.res.status !== 200) {
+    // The HTML page shares its URL with the Markdown version, so caches must keep them apart
+    c.res = new Response(c.res.body, c.res);
+    c.res.headers.append("Vary", "Accept");
+    return;
+  }
+
+  const fallbackURL = new URL(path, import.meta.env.SITE ?? c.req.url).href;
+  const { body, pageURL } = pageMarkdown(await c.res.text(), fallbackURL);
+  c.res = new Response(body, {
+    status: 200,
+    headers: {
+      "Content-Type": "text/markdown; charset=utf-8",
+      "Cache-Control": PUBLIC_CACHE,
+      "x-markdown-tokens": String(estimateTokens(body)),
+      Link: `<${pageURL}>; rel="canonical"`,
+      Vary: "Accept",
+    },
   });
 });
 

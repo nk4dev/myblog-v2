@@ -1,0 +1,106 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+// Human-readable docs for the JSON API and the agent endpoints; listed as "service-doc" in
+// /.well-known/api-catalog (src/server/wellknown.ts). Keep in step with src/server/openapi.ts
+const site = Astro.site!;
+const url = (path: string) => new URL(path, site).href;
+
+const sectionClass = "grid grid-cols-1 gap-x-12 gap-y-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]";
+const headingClass = "text-xl font-bold";
+const bodyClass = "max-w-[72ch] space-y-3";
+const listClass = "list-disc space-y-1 pl-5";
+const linkClass = "mark font-medium text-[var(--link)]";
+const codeClass = "font-mono text-sm";
+
+const endpoints = [
+  { path: "/api/blogs", note: "Blog posts, newest first. Query: limit (1-100, default 10), offset" },
+  { path: "/api/blogs/{id}", note: "One blog post" },
+  { path: "/api/scraps", note: "Scraps (short notes), newest first. Query: limit, offset" },
+  { path: "/api/scraps/{id}", note: "One scrap" },
+  { path: "/api/health", note: "Health check: {\"status\":\"pass\"}" },
+];
+
+const discovery = [
+  { path: "/api/openapi.json", note: "OpenAPI 3.1 description of the API" },
+  { path: "/.well-known/api-catalog", note: "API catalog (RFC 9727)" },
+  { path: "/.well-known/agent-skills/index.json", note: "Agent Skills discovery index" },
+  { path: "/llms.txt", note: "Guide to the site for LLMs, with links to every Markdown page" },
+];
+---
+
+<Layout
+  title="Developers"
+  description="nknighta.me の JSON API と、AI エージェント向けの Markdown・ディスカバリーエンドポイントの説明です。"
+>
+  <div class="space-y-12">
+    <div>
+      <h1 class="text-4xl font-extrabold lg:text-5xl">Developers</h1>
+      <p class="mt-6 max-w-[72ch]">
+        A read-only JSON API and Markdown versions of the pages are available for tools and AI agents. No authentication is needed.
+      </p>
+    </div>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}>JSON API</h2>
+      <div class={bodyClass}>
+        <p>
+          All endpoints answer <code class={codeClass}>GET</code> with JSON. Lists have the shape
+          <code class={codeClass}>{"{ contents, totalCount, limit, offset }"}</code>; item bodies (<code class={codeClass}>content</code>) are HTML. Unknown items return 404.
+        </p>
+        <ul class={listClass}>
+          {
+            endpoints.map(({ path, note }) => (
+              <li>
+                <code class={codeClass}>{url(path)}</code>: {note}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}>Markdown</h2>
+      <div class={bodyClass}>
+        <p>
+          Request any page with <code class={codeClass}>Accept: text/markdown</code> to get it as Markdown
+          (<code class={codeClass}>Content-Type: text/markdown</code>, with an approximate token count in
+          <code class={codeClass}>x-markdown-tokens</code>). Browsers still get HTML.
+        </p>
+        <p>
+          Posts, scraps and projects are also served at their URL with <code class={codeClass}>.md</code> in place of the trailing slash, e.g.
+          <a href={url("/blog.md")} class={linkClass}>{url("/blog.md")}</a>.
+        </p>
+      </div>
+    </section>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}>Discovery</h2>
+      <div class={bodyClass}>
+        <ul class={listClass}>
+          {
+            discovery.map(({ path, note }) => (
+              <li>
+                <a href={url(path)} class={linkClass}>{path}</a>: {note}
+              </li>
+            ))
+          }
+        </ul>
+        <p>
+          Pages also register WebMCP tools (<code class={codeClass}>document.modelContext</code>) for searching and reading posts in the browser.
+        </p>
+      </div>
+    </section>
+
+    <section class={sectionClass}>
+      <h2 class={headingClass}>Usage</h2>
+      <div class={bodyClass}>
+        <p>
+          Please keep requests moderate, do not use /preview/, and link to the HTML page when quoting. Contact:
+          <a href="mailto:nknighta@varius.technology" class={linkClass}>nknighta@varius.technology</a>
+        </p>
+      </div>
+    </section>
+  </div>
+</Layout>

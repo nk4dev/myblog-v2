@@ -25,6 +25,9 @@ const decodeEntities = (text: string) =>
     return code > 0 && code <= 0x10ffff ? String.fromCodePoint(code) : match;
   });
 
+/** Decode the character references in an HTML text or attribute value */
+export const decodeHTML = (text: string) => decodeEntities(text);
+
 const parseAttrs = (source: string) => {
   const attrs: Record<string, string> = {};
   for (const [, name, dq, sq, bare] of source.matchAll(/([^\s=/]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"']+)))?/g)) {
@@ -87,7 +90,11 @@ const wrap = (text: string, mark: string) => {
   return `${lead}${mark}${inner}${mark}${trail}`;
 };
 
-type Context = { base?: URL };
+type Context = {
+  base?: URL;
+  /** Elements to leave out entirely, e.g. the second language of a bilingual label */
+  ignore?: (element: Element) => boolean;
+};
 
 const resolveURL = (href: string, { base }: Context) => {
   let url = href.trim();
@@ -101,46 +108,60 @@ const resolveURL = (href: string, { base }: Context) => {
   return url.replace(/ /g, "%20").replace(/\(/g, "%28").replace(/\)/g, "%29");
 };
 
-const inline = (nodes: Node[], ctx: Context): string =>
-  nodes
+/**
+ * Inline content. A link directly followed by another element (e.g. a title link and its category
+ * label, spaced only by CSS) gets a space after it so the two do not run together. Text right after
+ * a link is left alone, since prose such as "[link](url)から" must not gain a space.
+ */
+const inline = (nodes: Node[], ctx: Context): string => {
+  let afterLink = false;
+  return nodes
     .map((node): string => {
-      if (typeof node === "string") return escapeText(decodeEntities(node).replace(/\s+/g, " "));
-      const { tag, attrs, children } = node;
-      if (DROPPED_TAGS.has(tag)) return "";
-      switch (tag) {
-        case "br":
-          // Text nodes have their newlines collapsed, so "\n" only ever means a line break here
-          return "\n";
-        case "strong":
-        case "b":
-          return wrap(inline(children, ctx), "**");
-        case "em":
-        case "i":
-          return wrap(inline(children, ctx), "*");
-        case "s":
-        case "del":
-        case "strike":
-          return wrap(inline(children, ctx), "~~");
-        case "code": {
-          const code = rawText(children).replace(/\s+/g, " ");
-          if (!code.trim()) return code;
-          const fence = fenceFor(code, 1);
-          const pad = code.startsWith("`") || code.endsWith("`") ? " " : "";
-          return `${fence}${pad}${code}${pad}${fence}`;
-        }
-        case "a": {
-          const text = inline(children, ctx).trim();
-          if (!attrs.href) return text;
-          const url = resolveURL(attrs.href, ctx);
-          return `[${text || escapeText(url)}](${url})`;
-        }
-        case "img":
-          return attrs.src ? `![${escapeText(attrs.alt ?? "")}](${resolveURL(attrs.src, ctx)})` : "";
-        default:
-          return inline(children, ctx);
-      }
+      const text = inlineNode(node, ctx);
+      const separated = afterLink && typeof node !== "string" && text && !/^\s/.test(text) ? ` ${text}` : text;
+      if (text) afterLink = typeof node !== "string" && node.tag === "a" && !/\s$/.test(text);
+      return separated;
     })
     .join("");
+};
+
+const inlineNode = (node: Node, ctx: Context): string => {
+  if (typeof node === "string") return escapeText(decodeEntities(node).replace(/\s+/g, " "));
+  const { tag, attrs, children } = node;
+  if (DROPPED_TAGS.has(tag) || ctx.ignore?.(node)) return "";
+  switch (tag) {
+    case "br":
+      // Text nodes have their newlines collapsed, so "\n" only ever means a line break here
+      return "\n";
+    case "strong":
+    case "b":
+      return wrap(inline(children, ctx), "**");
+    case "em":
+    case "i":
+      return wrap(inline(children, ctx), "*");
+    case "s":
+    case "del":
+    case "strike":
+      return wrap(inline(children, ctx), "~~");
+    case "code": {
+      const code = rawText(children).replace(/\s+/g, " ");
+      if (!code.trim()) return code;
+      const fence = fenceFor(code, 1);
+      const pad = code.startsWith("`") || code.endsWith("`") ? " " : "";
+      return `${fence}${pad}${code}${pad}${fence}`;
+    }
+    case "a": {
+      const text = inline(children, ctx).trim();
+      if (!attrs.href) return text;
+      const url = resolveURL(attrs.href, ctx);
+      return `[${text || escapeText(url)}](${url})`;
+    }
+    case "img":
+      return attrs.src ? `![${escapeText(attrs.alt ?? "")}](${resolveURL(attrs.src, ctx)})` : "";
+    default:
+      return inline(children, ctx);
+  }
+};
 
 /** Keep a line of text from being read as a heading, list item or quote */
 const escapeLineStart = (text: string) =>
@@ -220,6 +241,7 @@ const blocks = (nodes: Node[], ctx: Context): string[] => {
   };
 
   for (const node of nodes) {
+    if (typeof node !== "string" && ctx.ignore?.(node)) continue;
     if (!isBlock(node)) {
       run.push(node);
       continue;
@@ -257,5 +279,17 @@ const blocks = (nodes: Node[], ctx: Context): string[] => {
  * Convert rich editor HTML to Markdown. Relative links and image URLs are resolved against base
  * so they still work when the Markdown is read away from the page.
  */
-export const htmlToMarkdown = (html: string, base?: URL | string): string =>
-  blocks(parse(html), { base: base ? new URL(base) : undefined }).join("\n\n");
+export const htmlToMarkdown = (
+  html: string,
+  base?: URL | string,
+  ignore?: (element: { tag: string; attrs: Record<string, string> }) => boolean,
+): string => blocks(parse(html), { base: base ? new URL(base) : undefined, ignore }).join("\n\n");
+
+/**
+ * Rough token count of a text, sent as x-markdown-tokens.
+ * CJK characters are about one token each; other text is about four characters per token.
+ */
+export const estimateTokens = (text: string) => {
+  const cjk = text.match(/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/gu)?.length ?? 0;
+  return cjk + Math.ceil((text.length - cjk) / 4);
+};
