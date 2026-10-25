@@ -19,18 +19,21 @@ const nameWords = ["Nknight", "AMAMIYA"];
 <Layout>
   <!-- 広い画面ではプロフィールを左に固定し、右に新着を並べる -->
   <div class="grid grid-cols-1 gap-16 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-  <section class="flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-10 lg:sticky lg:top-8 lg:flex-col lg:items-start lg:self-start">
-    <img
-      class="size-28 shrink-0 rounded-full sm:size-40"
-      src="https://images.microcms-assets.io/assets/a2939c8d25434ae5a1f853f2dc239a0f/9056b34c4c50456a8b43617ca493b720/cms%E7%94%A8.jpeg?fit=crop&w=320&h=320"
-      alt=""
-      width="160"
-      height="160"
-    />
-    <div class="min-w-0">
-      <h1 id="hero-name" class="hero-name font-extrabold" aria-label={nameWords.join(" ")}>
-        {
-          nameWords.map((word, i) => {
+    <section class="flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-10 lg:sticky lg:top-8 lg:flex-col lg:items-start lg:self-start">
+      <img
+        class="size-28 shrink-0 rounded-full sm:size-40"
+        src="https://images.microcms-assets.io/assets/a2939c8d25434ae5a1f853f2dc239a0f/9056b34c4c50456a8b43617ca493b720/cms%E7%94%A8.jpeg?fit=crop&w=320&h=320&=50"
+        alt=""
+        width="160"
+        height="160"
+      />
+      <div class="min-w-0">
+        <h1
+          id="hero-name"
+          class="hero-name font-extrabold"
+          aria-label={nameWords.join(" ")}
+        >
+          {nameWords.map((word, i) => {
             const offset = nameWords.slice(0, i).join("").length;
             return (
               <>
@@ -44,57 +47,80 @@ const nameWords = ["Nknight", "AMAMIYA"];
                 </span>
               </>
             );
-          })
-        }
-      </h1>
-      <script is:inline>
-        // 描画前にアニメーションのパターンをランダムに選ぶ。名前をクリックすると別のパターンでもう一度動かす
-        (() => {
-          const name = document.getElementById("hero-name");
-          const patterns = ["fade", "blur", "rise", "flip", "scale", "scatter"];
-          const play = () => {
-            const choices = patterns.filter((p) => p !== name.dataset.pattern);
-            const next = choices[Math.floor(Math.random() * choices.length)];
-            // scatter は文字ごとにばらばらの順番で出す
-            for (const c of name.querySelectorAll(".hero-char")) {
-              c.style.setProperty("--r", String(Math.random()));
-            }
-            // 属性を外して描き直させてから付け直し、アニメーションを最初から再生する
-            delete name.dataset.pattern;
-            void name.offsetWidth;
-            name.dataset.pattern = next;
-          };
-          play();
-          name.addEventListener("click", play);
-        })();
-      </script>
-      <p class="mt-2 text-lg text-[var(--ink-soft)]">@nk4dev</p>
-    </div>
-  </section>
-
-  <div class="space-y-16">
-    <section>
-      <h2 class="mb-6 text-2xl font-bold"><T k="home.latestPosts" /></h2>
-      <PostList
-        posts={latest.map((post) => ({
-          ...post,
-          category: post.category?.name,
-          categoryHref: post.category && categoryPath(post.category.id),
-        }))}
-        basePath="/blog"
-      />
-      <a href="/blog/" class="mark mt-8 inline-block font-medium text-[var(--link)]"><T k="home.allPosts" /></a>
+          })}
+        </h1>
+        <script is:inline>
+          // 描画前にアニメーションのパターンをランダムに選ぶ。名前をクリックすると別のパターンでもう一度動かす
+          (() => {
+            const name = document.getElementById("hero-name");
+            const patterns = [
+              "fade",
+              "blur",
+              "rise",
+              "flip",
+              "scale",
+              "scatter",
+            ];
+            const play = () => {
+              const choices = patterns.filter(
+                (p) => p !== name.dataset.pattern,
+              );
+              const next = choices[Math.floor(Math.random() * choices.length)];
+              // scatter は文字ごとにばらばらの順番で出す
+              for (const c of name.querySelectorAll(".hero-char")) {
+                c.style.setProperty("--r", String(Math.random()));
+              }
+              // 属性を外して描き直させてから付け直し、アニメーションを最初から再生する
+              delete name.dataset.pattern;
+              void name.offsetWidth;
+              name.dataset.pattern = next;
+            };
+            play();
+            name.addEventListener("click", play);
+          })();
+        </script>
+        <p class="mt-2 text-lg text-[var(--ink-soft)]">@nk4dev</p>
+        <p class="mt-2 text-lg text-[var(--ink-soft)]">
+          I&apos;m web developer
+        </p>
+      </div>
     </section>
-    {
-      latestScraps.length > 0 && (
+
+    <div class="space-y-16">
+      <section>
+        <h2 class="mb-6 text-2xl font-bold">
+          <T k="home.latestPosts" />
+        </h2>
+        <PostList
+          posts={latest.map((post) => ({
+            ...post,
+            category: post.category?.name,
+            categoryHref: post.category && categoryPath(post.category.id),
+          }))}
+          basePath="/blog"
+        />
+        <a
+          href="/blog/"
+          class="mark mt-8 inline-block font-medium text-[var(--link)]"
+        >
+          <T k="home.allPosts" />
+        </a>
+      </section>
+      {latestScraps.length > 0 && (
         <section>
-          <h2 class="mb-6 text-2xl font-bold"><T k="home.latestScraps" /></h2>
+          <h2 class="mb-6 text-2xl font-bold">
+            <T k="home.latestScraps" />
+          </h2>
           <PostList posts={latestScraps} basePath="/scraps" />
-          <a href="/scraps/" class="mark mt-8 inline-block font-medium text-[var(--link)]"><T k="home.allScraps" /></a>
+          <a
+            href="/scraps/"
+            class="mark mt-8 inline-block font-medium text-[var(--link)]"
+          >
+            <T k="home.allScraps" />
+          </a>
         </section>
-      )
-    }
-  </div>
+      )}
+    </div>
   </div>
 </Layout>
 
