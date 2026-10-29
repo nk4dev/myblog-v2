@@ -1,5 +1,5 @@
 /** HTML からタグを除去し、空白を詰めたプレーンテキストにする */
-export const stripHtml = (html: string): string =>
+export const stripHtml = (html = ""): string =>
   html
     .replace(/<[^>]*>/g, " ")
     .replace(/&nbsp;/g, " ")
@@ -12,7 +12,7 @@ export const stripHtml = (html: string): string =>
     .trim();
 
 /** HTML 本文から meta description 用の抜粋を作る（length 文字で切る） */
-export const excerpt = (html: string, length = 120): string => {
+export const excerpt = (html = "", length = 120): string => {
   const text = stripHtml(html);
   return text.length > length ? `${text.slice(0, length)}…` : text;
 };

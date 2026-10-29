@@ -4,8 +4,8 @@
 import type { Localized } from "../i18n/ui";
 
 export const bio: Localized = {
-  ja: "個人ブログ兼プレイグラウンドの管理人です。ゲームがきっかけでプログラミングを始めて、今はWebを中心にいろいろ作っています。最近はVRChatにも足を踏み入れました。",
-  en: "I run this personal blog and playground. Games got me into programming, and these days I mostly build things for the web. Lately I've also been getting into VRChat.",
+  ja: "個人でWeb3方面をメインにWebアプリケーション開発やLLMの開発をやっています。",
+  en: "I work independently, focusing primarily on Web3-related projects, including the development of web applications and LLMs."
 };
 
 // The stack this site is built on (see package.json)

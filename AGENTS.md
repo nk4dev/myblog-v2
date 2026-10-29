@@ -3,13 +3,12 @@ code comment is must using English
 
 ## Development
 
-When starting the dev server, use background mode:
-
+When starting the dev server, this command
 ```
-astro dev --background
+astro dev
 ```
-
-Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
+Avoid unnecessary secondary labels or explanations. Let the layout speak for itself.
+As a general rule, do not alter existing text.
 
 ## Git
 

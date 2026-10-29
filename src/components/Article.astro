@@ -11,7 +11,7 @@ import type { UIKey } from "../i18n/ui";
 type Props = {
   title: string;
   /** microCMS のリッチエディタの HTML */
-  content: string;
+  content?: string;
   publishedAt: string;
   revisedAt?: string;
   category?: string;
@@ -23,7 +23,7 @@ type Props = {
   share?: boolean;
 };
 
-const { title, content, publishedAt, revisedAt, category, categoryHref, eyecatch, back, share = true } = Astro.props;
+const { title, content = "", publishedAt, revisedAt, category, categoryHref, eyecatch, back, share = true } = Astro.props;
 
 // YYYY-MM-DD（日本時間）
 const formatDate = (iso: string) =>

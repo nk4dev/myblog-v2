@@ -25,7 +25,9 @@ export default defineConfig({
   },
 
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    // Allow the dev server to be reached through the Cloudflare Tunnel
+    server: { allowedHosts: ['pctunnel.nknighta.me'] },
   },
 
   adapter: cloudflare(),

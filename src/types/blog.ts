@@ -9,7 +9,7 @@ export type Blog = {
   title: string;
   /** microCMS 側で未設定の場合がある */
   description?: string;
-  content: string;
+  content?: string;
   eyecatch?: {
     url: string;
     height: number;

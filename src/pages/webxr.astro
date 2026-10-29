@@ -16,7 +16,7 @@ const IMG = "\u0000img:";
 
 // Turn article HTML into plain text, keeping one paragraph per line for the in-XR reader.
 // Images become their own lines so the reader can place them between paragraphs
-const toParagraphs = (html: string) =>
+const toParagraphs = (html = "") =>
   html
     .replace(/<img[^>]*?src="([^"]+)"[^>]*>/gi, (_, src) => `\n${IMG}${src}\n`)
     .replace(/<\/(p|h[1-6]|li|pre|blockquote|div)>|<br\s*\/?>/gi, "\n")

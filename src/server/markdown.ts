@@ -48,7 +48,7 @@ const fromBlog = (post: Blog): Doc => ({
   id: post.id,
   title: post.title,
   description: post.description,
-  content: post.content,
+  content: post.content ?? "",
   category: post.category?.name,
   publishedAt: post.publishedAt ?? post.createdAt,
   revisedAt: post.revisedAt,
@@ -57,7 +57,7 @@ const fromBlog = (post: Blog): Doc => ({
 const fromScrap = (scrap: Scrap): Doc => ({
   id: scrap.id,
   title: scrap.title,
-  content: scrap.content,
+  content: scrap.content ?? "",
   category: scrap.category,
   publishedAt: scrap.publishedAt ?? scrap.createdAt,
   revisedAt: scrap.revisedAt,
