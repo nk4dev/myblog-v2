@@ -16,4 +16,5 @@ export type Blog = {
     width: number;
   };
   category?: Category;
+  seo_word?: string
 } & MicroCMSDate & { id: string };

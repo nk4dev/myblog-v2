@@ -16,7 +16,13 @@ if (!post) {
 }
 ---
 
-<Layout markdown type="article" title={post.title} description={post.description || excerpt(post.content) || post.title}>
+<Layout
+  markdown
+  type="article"
+  title={post.title}
+  description={post.description || excerpt(post.content) || post.title}
+  metaKeywords={post.seo_word}
+>
   <Article
     title={post.title}
     content={post.content}

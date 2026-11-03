@@ -28,5 +28,5 @@ pnpm-debug.log*
 
 ## anothor dir / files
 skills/
-.vscode/
+.vscode/*
 .idea

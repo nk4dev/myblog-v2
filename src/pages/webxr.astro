@@ -21,7 +21,9 @@ const toParagraphs = (html = "") =>
     .replace(/<img[^>]*?src="([^"]+)"[^>]*>/gi, (_, src) => `\n${IMG}${src}\n`)
     .replace(/<\/(p|h[1-6]|li|pre|blockquote|div)>|<br\s*\/?>/gi, "\n")
     .split("\n")
-    .map((line) => (line.startsWith(IMG) ? line.replace(/&amp;/g, "&") : stripHtml(line)))
+    .map((line) =>
+      line.startsWith(IMG) ? line.replace(/&amp;/g, "&") : stripHtml(line),
+    )
     .filter(Boolean)
     .join("\n");
 
@@ -37,9 +39,13 @@ const scene = {
   posts: latest.map((post) => ({
     title: post.title,
     description: post.description ?? "",
-    body: (post.eyecatch ? `${IMG}${post.eyecatch.url}\n` : "") + toParagraphs(post.content),
+    body:
+      (post.eyecatch ? `${IMG}${post.eyecatch.url}\n` : "") +
+      toParagraphs(post.content),
     category: post.category?.name ?? "",
-    date: new Date(post.publishedAt ?? post.createdAt).toLocaleDateString("ja-JP"),
+    date: new Date(post.publishedAt ?? post.createdAt).toLocaleDateString(
+      "ja-JP",
+    ),
     url: `/blog/${post.id}`,
   })),
 };
@@ -50,23 +56,33 @@ const buttonClass =
 
 <Layout
   title="WebXR"
-  description="Nknight AMAMIYA (nk4dev) のブログを WebXR で紹介するページ。VR / AR 空間に並んだパネルから最新記事を読めます。"
+  description="A page showcasing Nknight AMAMIYA (nk4dev)’s blog in WebXR. You can read the latest posts via panels arranged within a VR/AR environment."
 >
   <div class="space-y-8">
     <section class="space-y-3">
       <h1 class="text-4xl font-extrabold lg:text-5xl">WebXR</h1>
       <p class="max-w-[60ch]">
-        このブログを 3D 空間で紹介するページです。周りに並んだパネルにプロフィールと最新記事が表示され、パネルを選ぶとその記事に移動します。画面ではドラッグで見回し、クリックで記事を開けます。
+        このブログを 3D
+        空間で紹介するページです。周りに並んだパネルにプロフィールと最新記事が表示され、パネルを選ぶとその記事に移動します。画面ではドラッグで見回し、クリックで記事を開けます。
       </p>
-      <p id="xr-status" class="text-sm text-[var(--ink-soft)]">WebXR の対応状況を確認しています…</p>
+      <p id="xr-status" class="text-sm text-[var(--ink-soft)]">
+        WebXR の対応状況を確認しています…
+      </p>
     </section>
 
     <div class="flex flex-wrap gap-3">
-      <button id="xr-vr" class={buttonClass} disabled>Enter VR</button>
-      <button id="xr-ar" class={buttonClass} disabled>Enter AR</button>
+      <button id="xr-vr" class={buttonClass} disabled>
+        Enter VR
+      </button>
+      <button id="xr-ar" class={buttonClass} disabled>
+        Enter AR
+      </button>
     </div>
 
-    <canvas id="xr-canvas" class="aspect-video w-full cursor-grab touch-none rounded-lg bg-black"></canvas>
+    <canvas
+      id="xr-canvas"
+      class="aspect-video w-full cursor-grab touch-none rounded-lg bg-black"
+    ></canvas>
 
     <section>
       <h2 class="mb-6 text-2xl font-bold">パネルに並んでいる記事</h2>
@@ -82,14 +98,29 @@ const buttonClass =
   </div>
 </Layout>
 
-<script type="application/json" id="xr-data" set:html={JSON.stringify(scene).replace(/</g, "\\u003c")} />
-
+<script
+  type="application/json"
+  id="xr-data"
+  set:html={JSON.stringify(scene).replace(/</g, "\\u003c")}
+/>
 <script>
   // Dependency-free WebXR + WebGL scene: blog panels arranged in an arc around the viewer
 
-  type Post = { title: string; description: string; body: string; category: string; date: string; url: string };
-  type SceneData = { profile: { name: string; handle: string; bio: string; avatar: string }; posts: Post[] };
-  const scene: SceneData = JSON.parse(document.getElementById("xr-data")!.textContent!);
+  type Post = {
+    title: string;
+    description: string;
+    body: string;
+    category: string;
+    date: string;
+    url: string;
+  };
+  type SceneData = {
+    profile: { name: string; handle: string; bio: string; avatar: string };
+    posts: Post[];
+  };
+  const scene: SceneData = JSON.parse(
+    document.getElementById("xr-data")!.textContent!,
+  );
 
   const VERT = `
     attribute vec3 aPos;
@@ -120,12 +151,60 @@ const buttonClass =
 
   // One color per cube face, 4 vertices each
   const FACES: [number[][], number[]][] = [
-    [[[-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]], [0.95, 0.3, 0.3]],
-    [[[1, -1, -1], [-1, -1, -1], [-1, 1, -1], [1, 1, -1]], [0.3, 0.9, 0.4]],
-    [[[-1, 1, 1], [1, 1, 1], [1, 1, -1], [-1, 1, -1]], [0.3, 0.5, 0.95]],
-    [[[-1, -1, -1], [1, -1, -1], [1, -1, 1], [-1, -1, 1]], [0.95, 0.85, 0.3]],
-    [[[1, -1, 1], [1, -1, -1], [1, 1, -1], [1, 1, 1]], [0.8, 0.4, 0.9]],
-    [[[-1, -1, -1], [-1, -1, 1], [-1, 1, 1], [-1, 1, -1]], [0.3, 0.9, 0.9]],
+    [
+      [
+        [-1, -1, 1],
+        [1, -1, 1],
+        [1, 1, 1],
+        [-1, 1, 1],
+      ],
+      [0.95, 0.3, 0.3],
+    ],
+    [
+      [
+        [1, -1, -1],
+        [-1, -1, -1],
+        [-1, 1, -1],
+        [1, 1, -1],
+      ],
+      [0.3, 0.9, 0.4],
+    ],
+    [
+      [
+        [-1, 1, 1],
+        [1, 1, 1],
+        [1, 1, -1],
+        [-1, 1, -1],
+      ],
+      [0.3, 0.5, 0.95],
+    ],
+    [
+      [
+        [-1, -1, -1],
+        [1, -1, -1],
+        [1, -1, 1],
+        [-1, -1, 1],
+      ],
+      [0.95, 0.85, 0.3],
+    ],
+    [
+      [
+        [1, -1, 1],
+        [1, -1, -1],
+        [1, 1, -1],
+        [1, 1, 1],
+      ],
+      [0.8, 0.4, 0.9],
+    ],
+    [
+      [
+        [-1, -1, -1],
+        [-1, -1, 1],
+        [-1, 1, 1],
+        [-1, 1, -1],
+      ],
+      [0.3, 0.9, 0.9],
+    ],
   ];
 
   const EYE = 1.4;
@@ -136,7 +215,10 @@ const buttonClass =
   const vrButton = document.getElementById("xr-vr") as HTMLButtonElement;
   const arButton = document.getElementById("xr-ar") as HTMLButtonElement;
 
-  const gl = canvas.getContext("webgl", { xrCompatible: true, alpha: false }) as WebGLRenderingContext;
+  const gl = canvas.getContext("webgl", {
+    xrCompatible: true,
+    alpha: false,
+  }) as WebGLRenderingContext;
 
   function compile(type: number, src: string) {
     const shader = gl.createShader(type)!;
@@ -161,17 +243,15 @@ const buttonClass =
 
   const cubeData: number[] = [];
   for (const [quad, color] of FACES) {
-    for (const i of [0, 1, 2, 0, 2, 3]) cubeData.push(...quad[i], ...color, 0, 0);
+    for (const i of [0, 1, 2, 0, 2, 3])
+      cubeData.push(...quad[i], ...color, 0, 0);
   }
   const cubeBuffer = makeBuffer(cubeData);
   // Unit quad facing +Z, centered on the origin
   const quadBuffer = makeBuffer([
-    -0.5, -0.5, 0, 1, 1, 1, 0, 0,
-    0.5, -0.5, 0, 1, 1, 1, 1, 0,
-    0.5, 0.5, 0, 1, 1, 1, 1, 1,
-    -0.5, -0.5, 0, 1, 1, 1, 0, 0,
-    0.5, 0.5, 0, 1, 1, 1, 1, 1,
-    -0.5, 0.5, 0, 1, 1, 1, 0, 1,
+    -0.5, -0.5, 0, 1, 1, 1, 0, 0, 0.5, -0.5, 0, 1, 1, 1, 1, 0, 0.5, 0.5, 0, 1,
+    1, 1, 1, 1, -0.5, -0.5, 0, 1, 1, 1, 0, 0, 0.5, 0.5, 0, 1, 1, 1, 1, 1, -0.5,
+    0.5, 0, 1, 1, 1, 0, 1,
   ]);
 
   const aPos = gl.getAttribLocation(program, "aPos");
@@ -211,7 +291,17 @@ const buttonClass =
   // The cube is drawn with a plain white texture so only its vertex colors show
   const whiteTexture = gl.createTexture()!;
   gl.bindTexture(gl.TEXTURE_2D, whiteTexture);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+  gl.texImage2D(
+    gl.TEXTURE_2D,
+    0,
+    gl.RGBA,
+    1,
+    1,
+    0,
+    gl.RGBA,
+    gl.UNSIGNED_BYTE,
+    new Uint8Array([255, 255, 255, 255]),
+  );
 
   // ---- Panel textures drawn with the 2D canvas API ----
 
@@ -219,7 +309,12 @@ const buttonClass =
   const TEX_WIDTH = 1024;
 
   /** Wrap text character by character so Japanese without spaces still breaks */
-  function wrap(ctx: CanvasRenderingContext2D, text: string, maxWidth: number, maxLines: number) {
+  function wrap(
+    ctx: CanvasRenderingContext2D,
+    text: string,
+    maxWidth: number,
+    maxLines: number,
+  ) {
     const lines: string[] = [];
     let line = "";
     for (const char of text) {
@@ -261,7 +356,13 @@ const buttonClass =
     return { c, ctx };
   }
 
-  function drawLines(ctx: CanvasRenderingContext2D, lines: string[], x: number, y: number, lineHeight: number) {
+  function drawLines(
+    ctx: CanvasRenderingContext2D,
+    lines: string[],
+    x: number,
+    y: number,
+    lineHeight: number,
+  ) {
     lines.forEach((l, i) => ctx.fillText(l, x, y + i * lineHeight));
   }
 
@@ -279,10 +380,12 @@ const buttonClass =
   };
 
   function profilePanel(): Panel {
-    const width = 1.6, height = 0.9;
+    const width = 1.6,
+      height = 0.9;
     const { c, ctx } = panelCanvas(width, height);
     const texture = gl.createTexture()!;
-    const pad = 64, avatar = 200;
+    const pad = 64,
+      avatar = 200;
     const drawText = () => {
       ctx.fillStyle = "#fff";
       ctx.font = `800 72px ${FONT}`;
@@ -292,7 +395,13 @@ const buttonClass =
       ctx.fillText(scene.profile.handle, pad * 2 + avatar, pad + 130);
       ctx.fillStyle = "#e6e8f0";
       ctx.font = `400 38px ${FONT}`;
-      drawLines(ctx, wrap(ctx, scene.profile.bio, c.width - pad * 2, 4), pad, pad + avatar + 48, 56);
+      drawLines(
+        ctx,
+        wrap(ctx, scene.profile.bio, c.width - pad * 2, 4),
+        pad,
+        pad + avatar + 48,
+        56,
+      );
     };
     drawText();
     uploadTexture(texture, c);
@@ -313,19 +422,30 @@ const buttonClass =
   }
 
   function postPanel(post: Post, angle: number): Panel {
-    const width = 1.1, height = 0.8;
+    const width = 1.1,
+      height = 0.8;
     const { c, ctx } = panelCanvas(width, height);
     const pad = 64;
     ctx.fillStyle = "#8fb4ff";
     ctx.font = `600 36px ${FONT}`;
-    ctx.fillText([post.category, post.date].filter(Boolean).join("  ·  "), pad, pad);
+    ctx.fillText(
+      [post.category, post.date].filter(Boolean).join("  ·  "),
+      pad,
+      pad,
+    );
     ctx.fillStyle = "#fff";
     ctx.font = `800 60px ${FONT}`;
     const titleLines = wrap(ctx, post.title, c.width - pad * 2, 3);
     drawLines(ctx, titleLines, pad, pad + 70, 78);
     ctx.fillStyle = "#c4c9da";
     ctx.font = `400 34px ${FONT}`;
-    drawLines(ctx, wrap(ctx, post.description, c.width - pad * 2, 3), pad, pad + 100 + titleLines.length * 78, 50);
+    drawLines(
+      ctx,
+      wrap(ctx, post.description, c.width - pad * 2, 3),
+      pad,
+      pad + 100 + titleLines.length * 78,
+      50,
+    );
     ctx.fillStyle = "#a9b0c8";
     ctx.font = `600 32px ${FONT}`;
     ctx.fillText("選択して読む →", pad, c.height - pad - 32);
@@ -334,8 +454,14 @@ const buttonClass =
     return { width, height, angle, y: EYE - 0.05, texture, url: post.url };
   }
 
-  function linkPanel(label: string, sub: string, url: string, angle: number): Panel {
-    const width = 1.1, height = 0.8;
+  function linkPanel(
+    label: string,
+    sub: string,
+    url: string,
+    angle: number,
+  ): Panel {
+    const width = 1.1,
+      height = 0.8;
     const { c, ctx } = panelCanvas(width, height);
     ctx.textAlign = "center";
     ctx.fillStyle = "#fff";
@@ -350,8 +476,14 @@ const buttonClass =
   }
 
   /** Small button panel placed below the main row */
-  function buttonPanel(label: string, angle: number, action: () => void, xrOnly = false): Panel {
-    const width = 0.5, height = 0.18;
+  function buttonPanel(
+    label: string,
+    angle: number,
+    action: () => void,
+    xrOnly = false,
+  ): Panel {
+    const width = 0.5,
+      height = 0.18;
     const { c, ctx } = panelCanvas(width, height);
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -375,18 +507,38 @@ const buttonClass =
     panel.action = () => openReader(post);
     gallery.push(panel);
   });
-  gallery.push(linkPanel("Scraps", "短いメモ書きへ →", "/scraps/", (Math.ceil(scene.posts.length / 2) + 1) * STEP));
-  gallery.push(linkPanel("Blog", "すべての記事へ →", "/blog/", -(Math.floor(scene.posts.length / 2) + 1) * STEP));
+  gallery.push(
+    linkPanel(
+      "Scraps",
+      "短いメモ書きへ →",
+      "/scraps/",
+      (Math.ceil(scene.posts.length / 2) + 1) * STEP,
+    ),
+  );
+  gallery.push(
+    linkPanel(
+      "Blog",
+      "すべての記事へ →",
+      "/blog/",
+      -(Math.floor(scene.posts.length / 2) + 1) * STEP,
+    ),
+  );
   gallery.push(buttonPanel("通常モードに戻る", 0, exitXr, true));
 
   // ---- In-scene article reader ----
 
-  const READER_W = 1.8, READER_H = 1.1;
+  const READER_W = 1.8,
+    READER_H = 1.1;
   const reader = panelCanvas(READER_W, READER_H);
   const readerPanel: Panel = {
-    width: READER_W, height: READER_H, angle: 0, y: EYE + 0.05, texture: gl.createTexture()!,
+    width: READER_W,
+    height: READER_H,
+    angle: 0,
+    y: EYE + 0.05,
+    texture: gl.createTexture()!,
   };
-  const READER_PAD = 56, LINE_H = 50;
+  const READER_PAD = 56,
+    LINE_H = 50;
   let readerPost: Post | null = null;
   // A page row is either a line of text or an image with its drawn height
   type Row = string | { img: HTMLImageElement; height: number };
@@ -400,10 +552,18 @@ const buttonClass =
     panelCanvasOn(c);
     ctx.fillStyle = "#8fb4ff";
     ctx.font = `600 26px ${FONT}`;
-    ctx.fillText(`${readerPost!.date}  ·  ${readerPage + 1} / ${readerPages.length}`, READER_PAD, READER_PAD - 16);
+    ctx.fillText(
+      `${readerPost!.date}  ·  ${readerPage + 1} / ${readerPages.length}`,
+      READER_PAD,
+      READER_PAD - 16,
+    );
     ctx.fillStyle = "#fff";
     ctx.font = `800 40px ${FONT}`;
-    ctx.fillText(wrap(ctx, readerPost!.title, c.width - READER_PAD * 2, 1)[0] ?? "", READER_PAD, READER_PAD + 22);
+    ctx.fillText(
+      wrap(ctx, readerPost!.title, c.width - READER_PAD * 2, 1)[0] ?? "",
+      READER_PAD,
+      READER_PAD + 22,
+    );
     ctx.fillStyle = "#e6e8f0";
     ctx.font = `400 30px ${FONT}`;
     let y = READER_PAD + 90;
@@ -430,7 +590,9 @@ const buttonClass =
       img.onload = () => resolve(img);
       img.onerror = () => resolve(null);
       // Ask microCMS for a size that fits the reader texture
-      img.src = src.includes("microcms-assets.io") ? `${src}${src.includes("?") ? "&" : "?"}w=1024` : src;
+      img.src = src.includes("microcms-assets.io")
+        ? `${src}${src.includes("?") ? "&" : "?"}w=1024`
+        : src;
     });
   }
 
@@ -446,7 +608,9 @@ const buttonClass =
 
     const paras = post.body.split("\n");
     const images = await Promise.all(
-      paras.map((p) => (p.startsWith(IMG_MARK) ? loadImage(p.slice(IMG_MARK.length)) : null)),
+      paras.map((p) =>
+        p.startsWith(IMG_MARK) ? loadImage(p.slice(IMG_MARK.length)) : null,
+      ),
     );
     if (readerPost !== post) return;
 
@@ -457,13 +621,18 @@ const buttonClass =
     const rows: { row: Row; h: number }[] = [];
     paras.forEach((para, i) => {
       if (!para.startsWith(IMG_MARK)) {
-        for (const line of wrap(ctx, para, maxW, Infinity)) rows.push({ row: line, h: LINE_H });
+        for (const line of wrap(ctx, para, maxW, Infinity))
+          rows.push({ row: line, h: LINE_H });
         rows.push({ row: "", h: LINE_H / 2 });
         return;
       }
       const img = images[i];
       if (!img) return;
-      const height = Math.min(areaH - LINE_H, img.naturalHeight * (maxW / img.naturalWidth), 360);
+      const height = Math.min(
+        areaH - LINE_H,
+        img.naturalHeight * (maxW / img.naturalWidth),
+        360,
+      );
       rows.push({ row: { img, height }, h: height + LINE_H / 2 });
     });
     readerPages = [[]];
@@ -494,7 +663,11 @@ const buttonClass =
     readerPanel,
     buttonPanel("← 前へ", -0.52, () => turnPage(-1)),
     buttonPanel("一覧に戻る", -0.26, () => (panels = gallery)),
-    buttonPanel("ブラウザで開く", 0, () => readerPost && go({ ...readerPanel, url: readerPost.url })),
+    buttonPanel(
+      "ブラウザで開く",
+      0,
+      () => readerPost && go({ ...readerPanel, url: readerPost.url }),
+    ),
     buttonPanel("次へ →", 0.52, () => turnPage(1)),
     buttonPanel("通常モードに戻る", 0.26, exitXr, true),
   ];
@@ -505,12 +678,25 @@ const buttonClass =
 
   // `grow` enlarges the quad and `radius` lets the hovered panel pop toward the viewer
   function panelMatrix(p: Panel, grow = 1, radius = RADIUS) {
-    const c = Math.cos(p.angle), s = Math.sin(p.angle);
+    const c = Math.cos(p.angle),
+      s = Math.sin(p.angle);
     return new Float32Array([
-      c * p.width * grow, 0, s * p.width * grow, 0,
-      0, p.height * grow, 0, 0,
-      -s, 0, c, 0,
-      s * radius, p.y, -c * radius, 1,
+      c * p.width * grow,
+      0,
+      s * p.width * grow,
+      0,
+      0,
+      p.height * grow,
+      0,
+      0,
+      -s,
+      0,
+      c,
+      0,
+      s * radius,
+      p.y,
+      -c * radius,
+      1,
     ]);
   }
 
@@ -519,45 +705,111 @@ const buttonClass =
     const w = 0.004;
     // Any vector not parallel to dir gives a perpendicular basis
     const up: Vec3 = Math.abs(dir[1]) > 0.9 ? [1, 0, 0] : [0, 1, 0];
-    let x: Vec3 = [up[1] * dir[2] - up[2] * dir[1], up[2] * dir[0] - up[0] * dir[2], up[0] * dir[1] - up[1] * dir[0]];
+    let x: Vec3 = [
+      up[1] * dir[2] - up[2] * dir[1],
+      up[2] * dir[0] - up[0] * dir[2],
+      up[0] * dir[1] - up[1] * dir[0],
+    ];
     const n = Math.hypot(...x);
     x = [x[0] / n, x[1] / n, x[2] / n];
-    const y: Vec3 = [dir[1] * x[2] - dir[2] * x[1], dir[2] * x[0] - dir[0] * x[2], dir[0] * x[1] - dir[1] * x[0]];
+    const y: Vec3 = [
+      dir[1] * x[2] - dir[2] * x[1],
+      dir[2] * x[0] - dir[0] * x[2],
+      dir[0] * x[1] - dir[1] * x[0],
+    ];
     const h = length / 2;
     return new Float32Array([
-      x[0] * w, x[1] * w, x[2] * w, 0,
-      y[0] * w, y[1] * w, y[2] * w, 0,
-      dir[0] * h, dir[1] * h, dir[2] * h, 0,
-      origin[0] + dir[0] * h, origin[1] + dir[1] * h, origin[2] + dir[2] * h, 1,
+      x[0] * w,
+      x[1] * w,
+      x[2] * w,
+      0,
+      y[0] * w,
+      y[1] * w,
+      y[2] * w,
+      0,
+      dir[0] * h,
+      dir[1] * h,
+      dir[2] * h,
+      0,
+      origin[0] + dir[0] * h,
+      origin[1] + dir[1] * h,
+      origin[2] + dir[2] * h,
+      1,
     ]);
   }
 
   function cursorMatrix(at: Vec3) {
     const k = 0.012;
-    return new Float32Array([k, 0, 0, 0, 0, k, 0, 0, 0, 0, k, 0, at[0], at[1], at[2], 1]);
+    return new Float32Array([
+      k,
+      0,
+      0,
+      0,
+      0,
+      k,
+      0,
+      0,
+      0,
+      0,
+      k,
+      0,
+      at[0],
+      at[1],
+      at[2],
+      1,
+    ]);
   }
 
   // Scale, rotate around Y and X, then translate above the profile panel
   function cubeMatrix(t: number, scale: number) {
-    const a = t * 0.0008, b = t * 0.0005;
-    const ca = Math.cos(a), sa = Math.sin(a), cb = Math.cos(b), sb = Math.sin(b);
+    const a = t * 0.0008,
+      b = t * 0.0005;
+    const ca = Math.cos(a),
+      sa = Math.sin(a),
+      cb = Math.cos(b),
+      sb = Math.sin(b);
     return new Float32Array([
-      ca * scale, 0, -sa * scale, 0,
-      sa * sb * scale, cb * scale, ca * sb * scale, 0,
-      sa * cb * scale, -sb * scale, ca * cb * scale, 0,
-      0, EYE + 0.75, -RADIUS, 1,
+      ca * scale,
+      0,
+      -sa * scale,
+      0,
+      sa * sb * scale,
+      cb * scale,
+      ca * sb * scale,
+      0,
+      sa * cb * scale,
+      -sb * scale,
+      ca * cb * scale,
+      0,
+      0,
+      EYE + 0.75,
+      -RADIUS,
+      1,
     ]);
   }
 
   const FOCAL = 1 / Math.tan((35 * Math.PI) / 180);
 
   function perspective(aspect: number) {
-    const near = 0.1, far = 100;
+    const near = 0.1,
+      far = 100;
     return new Float32Array([
-      FOCAL / aspect, 0, 0, 0,
-      0, FOCAL, 0, 0,
-      0, 0, (far + near) / (near - far), -1,
-      0, 0, (2 * far * near) / (near - far), 0,
+      FOCAL / aspect,
+      0,
+      0,
+      0,
+      0,
+      FOCAL,
+      0,
+      0,
+      0,
+      0,
+      (far + near) / (near - far),
+      -1,
+      0,
+      0,
+      (2 * far * near) / (near - far),
+      0,
     ]);
   }
 
@@ -565,13 +817,18 @@ const buttonClass =
 
   /** Return the nearest clickable panel hit by the ray, if any */
   function pick(origin: Vec3, dir: Vec3) {
-    let best: Panel | null = null, bestT = Infinity;
+    let best: Panel | null = null,
+      bestT = Infinity;
     for (const p of panels) {
       if ((!p.url && !p.action) || (p.xrOnly && !xrSession)) continue;
-      const c = Math.cos(p.angle), s = Math.sin(p.angle);
+      const c = Math.cos(p.angle),
+        s = Math.sin(p.angle);
       // Move the ray into the panel's local frame
-      const ox = origin[0] - s * RADIUS, oy = origin[1] - p.y, oz = origin[2] + c * RADIUS;
-      const lz = -s * ox + c * oz, dz = -s * dir[0] + c * dir[2];
+      const ox = origin[0] - s * RADIUS,
+        oy = origin[1] - p.y,
+        oz = origin[2] + c * RADIUS;
+      const lz = -s * ox + c * oz,
+        dz = -s * dir[0] + c * dir[2];
       if (Math.abs(dz) < 1e-6) continue;
       const t = -lz / dz;
       if (t <= 0 || t >= bestT) continue;
@@ -587,7 +844,8 @@ const buttonClass =
 
   let hovered: Panel | null = null;
   // Controller ray shown in immersive sessions, ending at the hit point when there is one
-  let beam: { origin: Vec3; dir: Vec3; length: number; hit: boolean } | null = null;
+  let beam: { origin: Vec3; dir: Vec3; length: number; hit: boolean } | null =
+    null;
 
   function drawScene(proj: Float32Array, view: Float32Array, t: number) {
     gl.uniformMatrix4fv(uProj, false, proj);
@@ -600,12 +858,22 @@ const buttonClass =
     if (beam) {
       gl.uniform1f(uFlat, 1);
       gl.uniform3fv(uFlatColor, beam.hit ? ACCENT : [0.8, 0.8, 0.85]);
-      gl.uniformMatrix4fv(uModel, false, beamMatrix(beam.origin, beam.dir, beam.length));
+      gl.uniformMatrix4fv(
+        uModel,
+        false,
+        beamMatrix(beam.origin, beam.dir, beam.length),
+      );
       gl.drawArrays(gl.TRIANGLES, 0, 36);
       if (beam.hit) {
-        const d = beam.dir, o = beam.origin, l = beam.length;
+        const d = beam.dir,
+          o = beam.origin,
+          l = beam.length;
         gl.uniform3fv(uFlatColor, [1, 1, 1]);
-        gl.uniformMatrix4fv(uModel, false, cursorMatrix([o[0] + d[0] * l, o[1] + d[1] * l, o[2] + d[2] * l]));
+        gl.uniformMatrix4fv(
+          uModel,
+          false,
+          cursorMatrix([o[0] + d[0] * l, o[1] + d[1] * l, o[2] + d[2] * l]),
+        );
         gl.drawArrays(gl.TRIANGLES, 0, 36);
       }
       gl.uniform1f(uFlat, 0);
@@ -627,7 +895,11 @@ const buttonClass =
       }
       gl.bindTexture(gl.TEXTURE_2D, p.texture);
       gl.uniform1f(uTint, active ? 0.08 : 0);
-      gl.uniformMatrix4fv(uModel, false, panelMatrix(p, active ? 1.06 : 1, radius));
+      gl.uniformMatrix4fv(
+        uModel,
+        false,
+        panelMatrix(p, active ? 1.06 : 1, radius),
+      );
       gl.drawArrays(gl.TRIANGLES, 0, 6);
     }
   }
@@ -645,20 +917,44 @@ const buttonClass =
   let yaw = 0;
 
   function inlineView() {
-    const c = Math.cos(yaw), s = Math.sin(yaw);
-    return new Float32Array([c, 0, s, 0, 0, 1, 0, 0, -s, 0, c, 0, 0, -EYE, 0, 1]);
+    const c = Math.cos(yaw),
+      s = Math.sin(yaw);
+    return new Float32Array([
+      c,
+      0,
+      s,
+      0,
+      0,
+      1,
+      0,
+      0,
+      -s,
+      0,
+      c,
+      0,
+      0,
+      -EYE,
+      0,
+      1,
+    ]);
   }
 
   function inlineRay(e: PointerEvent): [Vec3, Vec3] {
     const rect = canvas.getBoundingClientRect();
     const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     const ny = 1 - ((e.clientY - rect.top) / rect.height) * 2;
-    const dx = (nx * (rect.width / rect.height)) / FOCAL, dy = ny / FOCAL;
-    const c = Math.cos(yaw), s = Math.sin(yaw);
-    return [[0, EYE, 0], [c * dx - s, dy, -s * dx - c]];
+    const dx = (nx * (rect.width / rect.height)) / FOCAL,
+      dy = ny / FOCAL;
+    const c = Math.cos(yaw),
+      s = Math.sin(yaw);
+    return [
+      [0, EYE, 0],
+      [c * dx - s, dy, -s * dx - c],
+    ];
   }
 
-  let dragStart: number | null = null, dragMoved = 0;
+  let dragStart: number | null = null,
+    dragMoved = 0;
   canvas.addEventListener("pointerdown", (e) => {
     dragStart = e.clientX;
     dragMoved = 0;
@@ -672,7 +968,11 @@ const buttonClass =
       yaw += dx * 0.005;
     }
     hovered = pick(...inlineRay(e))?.panel ?? null;
-    canvas.style.cursor = hovered ? "pointer" : dragStart !== null ? "grabbing" : "grab";
+    canvas.style.cursor = hovered
+      ? "pointer"
+      : dragStart !== null
+        ? "grabbing"
+        : "grab";
   });
   canvas.addEventListener("pointerup", (e) => {
     // Treat a short press as a click rather than a drag
@@ -683,7 +983,8 @@ const buttonClass =
 
   function drawInline(t: number) {
     if (!xrSession) {
-      const w = canvas.clientWidth * devicePixelRatio, h = canvas.clientHeight * devicePixelRatio;
+      const w = canvas.clientWidth * devicePixelRatio,
+        h = canvas.clientHeight * devicePixelRatio;
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w;
         canvas.height = h;
@@ -704,15 +1005,23 @@ const buttonClass =
 
   function rayFromPose(pose: XRPose | undefined): [Vec3, Vec3] | null {
     if (!pose) return null;
-    const m = pose.transform.matrix, p = pose.transform.position;
-    return [[p.x, p.y, p.z], [-m[8], -m[9], -m[10]]];
+    const m = pose.transform.matrix,
+      p = pose.transform.position;
+    return [
+      [p.x, p.y, p.z],
+      [-m[8], -m[9], -m[10]],
+    ];
   }
 
   async function startSession(mode: XRSessionMode) {
     if (xrSession) return xrSession.end();
-    const session = await navigator.xr!.requestSession(mode, { requiredFeatures: ["local-floor"] });
+    const session = await navigator.xr!.requestSession(mode, {
+      requiredFeatures: ["local-floor"],
+    });
     xrSession = session;
-    await session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
+    await session.updateRenderState({
+      baseLayer: new XRWebGLLayer(session, gl),
+    });
     const refSpace = await session.requestReferenceSpace("local-floor");
     const transparent = mode === "immersive-ar";
 
@@ -724,7 +1033,9 @@ const buttonClass =
       arButton.textContent = "Enter AR";
     });
     session.addEventListener("select", (e) => {
-      const ray = rayFromPose(e.frame.getPose(e.inputSource.targetRaySpace, refSpace));
+      const ray = rayFromPose(
+        e.frame.getPose(e.inputSource.targetRaySpace, refSpace),
+      );
       if (ray) go(pick(...ray)?.panel ?? null);
     });
     (mode === "immersive-vr" ? vrButton : arButton).textContent = "Exit";
@@ -734,11 +1045,16 @@ const buttonClass =
       const pose = frame.getViewerPose(refSpace);
       if (!pose) return;
       // Highlight whatever the first pointing input is aimed at
-      const source = [...session.inputSources].find((s) => s.targetRayMode !== "screen");
-      const ray = source && rayFromPose(frame.getPose(source.targetRaySpace, refSpace));
+      const source = [...session.inputSources].find(
+        (s) => s.targetRayMode !== "screen",
+      );
+      const ray =
+        source && rayFromPose(frame.getPose(source.targetRaySpace, refSpace));
       const hit = ray ? pick(...ray) : null;
       hovered = hit?.panel ?? null;
-      beam = ray ? { origin: ray[0], dir: ray[1], length: hit ? hit.t : 4, hit: !!hit } : null;
+      beam = ray
+        ? { origin: ray[0], dir: ray[1], length: hit ? hit.t : 4, hit: !!hit }
+        : null;
 
       const layer = session.renderState.baseLayer!;
       gl.bindFramebuffer(gl.FRAMEBUFFER, layer.framebuffer);
@@ -756,7 +1072,8 @@ const buttonClass =
 
   async function init() {
     if (!navigator.xr) {
-      status.textContent = "このブラウザは WebXR に対応していません。プレビューのみ表示しています。";
+      status.textContent =
+        "このブラウザは WebXR に対応していません。プレビューのみ表示しています。";
       return;
     }
     const [vr, ar] = await Promise.all([
@@ -766,8 +1083,12 @@ const buttonClass =
     vrButton.disabled = !vr;
     arButton.disabled = !ar;
     status.textContent = `対応状況 — VR: ${vr ? "○" : "×"} / AR: ${ar ? "○" : "×"}`;
-    vrButton.addEventListener("click", () => startSession("immersive-vr").catch(console.error));
-    arButton.addEventListener("click", () => startSession("immersive-ar").catch(console.error));
+    vrButton.addEventListener("click", () =>
+      startSession("immersive-vr").catch(console.error),
+    );
+    arButton.addEventListener("click", () =>
+      startSession("immersive-ar").catch(console.error),
+    );
   }
   init();
 </script>
