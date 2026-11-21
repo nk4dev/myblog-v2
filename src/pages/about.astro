@@ -8,7 +8,9 @@ import {
   repos,
   techStack,
   langs,
+  hobby,
 } from "../data/profile";
+import { hostname } from "astro:schema";
 
 // Sections share one layout: the heading in a left rail on wide screens, the content on the right
 const sectionClass =
@@ -78,6 +80,23 @@ const headingClass = "text-2xl font-bold";
         ))}
       </ol>
     </section>
+    <section class={sectionClass}>
+      <h2 class={headingClass}>
+        <T k="about.hobby" />
+      </h2>
+      <ol class="space-y-3 border-l-2 border-[var(--brand)] pl-5">
+        {hobby.map((step) => (
+          <li class="grid gap-x-6 sm:grid-cols-[4rem_1fr]">
+            <span class="tabular font-bold text-[var(--link)]">
+              <T text={step.label} />
+            </span>
+            <span>
+              <T text={step.text} />
+            </span>
+          </li>
+        ))}
+      </ol>
+    </section>
 
     <section class={sectionClass}>
       <h2 class={headingClass}>
@@ -117,10 +136,11 @@ const headingClass = "text-2xl font-bold";
                 : { target: "_blank", rel: "noopener noreferrer" })}
             >
               {contact.label}
+
+              <span class="text-sm break-all text-[var(--ink-soft)]">
+                {contact.handle}
+              </span>
             </a>
-            <span class="text-sm break-all text-[var(--ink-soft)]">
-              {contact.handle}
-            </span>
           </li>
         ))}
       </ul>
