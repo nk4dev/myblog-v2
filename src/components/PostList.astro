@@ -1,29 +1,85 @@
 ---
-/** 日付つきの記事一覧。日付を左の列にそろえて、更新の記録として読めるようにする */
+/** Post list ordered with fixed-width dates on the left for easy scanning */
 type Props = {
   posts: {
     id: string;
     title: string;
+    description?: string;
     publishedAt?: string;
     createdAt: string;
     category?: string;
     /** Link for the category label; plain text when omitted */
     categoryHref?: string;
+    tags?: { label: string; href?: string }[];
   }[];
   basePath: string;
+  /** Show summary excerpt and tag pills below each title */
+  detailed?: boolean;
 };
 
-const { posts, basePath } = Astro.props;
+const { posts, basePath, detailed = false } = Astro.props;
 
-// YYYY-MM-DD（日本時間）
+// YYYY-MM-DD in Japan time
 const formatDate = (iso: string) =>
   new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tokyo" }).format(new Date(iso));
 ---
 
-<ol class="space-y-3">
+<ol class={detailed ? "divide-y divide-[var(--ink-soft)]/20" : "space-y-3"}>
   {
     posts.map((post) => {
       const date = post.publishedAt ?? post.createdAt;
+      if (detailed) {
+        return (
+          <li class="grid gap-x-6 gap-y-1 py-5 first:pt-0 sm:grid-cols-[7rem_1fr]">
+            <time datetime={date} class="tabular text-sm leading-7 text-[var(--ink-soft)] sm:pt-0.5">
+              {formatDate(date)}
+            </time>
+            <div class="min-w-0">
+              <h2 class="text-lg font-bold leading-snug">
+                <a href={`${basePath}/${post.id}/`} class="mark">
+                  {post.title}
+                </a>
+              </h2>
+              {post.description && (
+                <p class="mt-1.5 line-clamp-2 text-sm leading-relaxed text-[var(--ink-soft)]">
+                  {post.description}
+                </p>
+              )}
+              {(post.category || (post.tags && post.tags.length > 0)) && (
+                <div class="mt-2.5 flex flex-wrap items-center gap-1.5 text-xs">
+                  {post.category &&
+                    (post.categoryHref ? (
+                      <a
+                        href={post.categoryHref}
+                        class="rounded border border-[var(--brand)]/40 px-2 py-0.5 font-medium text-[var(--link)] transition-colors hover:bg-[var(--mark)]"
+                      >
+                        {post.category}
+                      </a>
+                    ) : (
+                      <span class="rounded border border-[var(--brand)]/40 px-2 py-0.5 font-medium text-[var(--link)]">
+                        {post.category}
+                      </span>
+                    ))}
+                  {post.tags?.map((tag) =>
+                    tag.href ? (
+                      <a
+                        href={tag.href}
+                        class="rounded bg-[var(--mark)]/35 px-2 py-0.5 text-[var(--ink-soft)] transition-colors hover:bg-[var(--mark)] hover:text-[var(--ink)]"
+                      >
+                        #{tag.label}
+                      </a>
+                    ) : (
+                      <span class="rounded bg-[var(--mark)]/35 px-2 py-0.5 text-[var(--ink-soft)]">
+                        #{tag.label}
+                      </span>
+                    ),
+                  )}
+                </div>
+              )}
+            </div>
+          </li>
+        );
+      }
       return (
         <li class="grid gap-x-6 sm:grid-cols-[7rem_1fr]">
           <time datetime={date} class="tabular text-sm leading-7 text-[var(--ink-soft)] sm:text-base sm:leading-8">

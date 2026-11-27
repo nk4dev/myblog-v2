@@ -1,27 +1,45 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import Article from "../../components/Article.astro";
-import { getScrapDetail } from "../../lib/microcms";
-import { excerpt } from "../../lib/excerpt";
+import RelatedPosts from "../../components/RelatedPosts.astro";
+import { getAllBlogs, getScrapDetail } from "../../lib/microcms";
+import { tagPath } from "../../lib/blog-tags";
+import { getRelatedPostsForScrap } from "../../lib/related-posts";
+import { resolveScrapSeoMeta } from "../../lib/seo-meta";
 
 // Rendered on demand so content changes in microCMS show up without a rebuild
 export const prerender = false;
 
 const { id } = Astro.params;
-const scrap = await getScrapDetail(id!);
+const [scrap, allBlogs] = await Promise.all([
+  getScrapDetail(id!),
+  getAllBlogs().catch(() => []),
+]);
 
 if (!scrap) {
   return new Response(null, { status: 404 });
 }
+
+const seo = resolveScrapSeoMeta(scrap);
+const relatedPosts = getRelatedPostsForScrap(scrap, allBlogs, 3);
 ---
 
-<Layout markdown type="article" title={scrap.title} description={excerpt(scrap.content) || scrap.title}>
+<Layout
+  markdown
+  type="article"
+  title={scrap.title}
+  description={seo.description}
+  metaKeywords={seo.keywords}
+>
   <Article
     title={scrap.title}
     content={scrap.content}
     publishedAt={scrap.publishedAt ?? scrap.createdAt}
     revisedAt={scrap.revisedAt}
     category={scrap.category}
+    tags={seo.tags.slice(0, 6).map((tag) => ({ label: tag, href: tagPath(tag) }))}
     back={{ href: "/scraps/", label: "scraps.back" }}
-  />
+  >
+    <RelatedPosts slot="after" posts={relatedPosts} />
+  </Article>
 </Layout>

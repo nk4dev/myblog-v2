@@ -3,6 +3,7 @@ import Layout from "../../../../layouts/Layout.astro";
 import BlogList from "../../../../components/BlogList.astro";
 import { getAllBlogs } from "../../../../lib/microcms";
 import { categoryPath, collectCategories, toPages } from "../../../../lib/blog-pages";
+import { collectTags } from "../../../../lib/blog-tags";
 
 // Page 1 of a category's posts; later pages are category/[id]/page/[page].astro
 // Rendered on demand so content changes in microCMS show up without a rebuild
@@ -10,6 +11,7 @@ export const prerender = false;
 
 const allPosts = await getAllBlogs();
 const categories = collectCategories(allPosts);
+const tags = collectTags(allPosts).slice(0, 15);
 // Only categories that have posts get a page
 const category = categories.find((c) => c.category.id === Astro.params.id)?.category;
 if (!category) {
@@ -36,6 +38,7 @@ const lastPage = pages.length;
     posts={posts}
     total={total}
     categories={categories}
+    tags={tags}
     activeCategory={category.id}
     base={categoryPath(category.id).slice(0, -1)}
     page={1}

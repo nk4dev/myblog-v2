@@ -4,6 +4,7 @@ import PostList from "../components/PostList.astro";
 import T from "../components/T.astro";
 import { getAllBlogs, getAllScraps } from "../lib/microcms";
 import { categoryPath } from "../lib/blog-pages";
+import { CORE_POST_IDS, getFeaturedPosts } from "../lib/related-posts";
 
 // Rendered on demand so content changes in microCMS show up without a rebuild
 export const prerender = false;
@@ -11,12 +12,21 @@ export const prerender = false;
 const [blogs, scraps] = await Promise.all([getAllBlogs(), getAllScraps()]);
 const latest = blogs.slice(0, 5);
 const latestScraps = scraps.slice(0, 3);
+const latestIds = new Set(latest.map((post) => post.id));
+const coreIdSet = new Set<string>(CORE_POST_IDS);
+const featured = getFeaturedPosts(blogs, 4);
+const showFeatured =
+  featured.length > 0 &&
+  featured.some((post) => !latestIds.has(post.id) || coreIdSet.has(post.id));
 
 // 名前は 1 文字ずつ span に分けてアニメーションさせる（単語の途中では折り返さない）
 const nameWords = ["Nknight", "AMAMIYA"];
 ---
 
-<Layout description="Nknight AMAMIYA's Website">
+<Layout
+  description="Nknight AMAMIYA (nk4dev) の個人サイト・技術ブログ。Ubuntu / Linux での VRChat・ALCOM・WiVRn 環境構築、AI / Agent Skills、Web 開発や自作アプリをまとめています。"
+  metaKeywords="Nknight AMAMIYA, nk4dev, Linux, VRChat, ALCOM, WiVRn, Agent Skills, Web開発"
+>
   <!-- 広い画面ではプロフィールを左に固定し、右に新着を並べる -->
   <div class="grid grid-cols-1 gap-16 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
     <section class="flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-10 lg:sticky lg:top-8 lg:flex-col lg:items-start lg:self-start">
@@ -83,6 +93,12 @@ const nameWords = ["Nknight", "AMAMIYA"];
         <p class="mt-2 text-lg text-[var(--ink-soft)]">
           I&apos;m web developer
         </p>
+        <nav aria-label="Quick links" class="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+          <a href="/about/" class="mark font-medium text-[var(--link)]">About</a>
+          <a href="/blog/" class="mark font-medium text-[var(--link)]">Blog</a>
+          <a href="/apps/" class="mark font-medium text-[var(--link)]">Apps</a>
+          <a href="/dev/" class="mark font-medium text-[var(--link)]">Dev</a>
+        </nav>
       </div>
     </section>
 
@@ -106,6 +122,21 @@ const nameWords = ["Nknight", "AMAMIYA"];
           <T k="home.allPosts" />
         </a>
       </section>
+      {showFeatured && (
+        <section>
+          <h2 class="mb-6 text-2xl font-bold">
+            <T text={{ ja: "注目の記事", en: "Featured posts" }} />
+          </h2>
+          <PostList
+            posts={featured.map((post) => ({
+              ...post,
+              category: post.category?.name,
+              categoryHref: post.category && categoryPath(post.category.id),
+            }))}
+            basePath="/blog"
+          />
+        </section>
+      )}
       {latestScraps.length > 0 && (
         <section>
           <h2 class="mb-6 text-2xl font-bold">

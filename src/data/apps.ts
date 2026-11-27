@@ -9,6 +9,12 @@ export type App = {
   image?: { src: string; width: number; height: number };
   /** Extra links such as the source repository */
   links?: { label: Localized; url: string }[];
+  /** Explicit blog post slug when an app has a dedicated guide post */
+  blogSlug?: string;
+  /** Optional external documentation URL */
+  docsUrl?: string;
+  /** Alternative names/slugs used to match related microCMS blog posts */
+  aliases?: string[];
 };
 
 export const apps: App[] = [
@@ -30,6 +36,7 @@ export const apps: App[] = [
         url: "https://github.com/nknighta/ytimage-dl",
       },
     ],
+    aliases: ["ytimage-dl", "ytimage"],
   },
   {
     name: "Grove Player",
@@ -38,5 +45,12 @@ export const apps: App[] = [
       ja: "手元の動画ファイルを再生するプレイヤー。コマ送り、速度変更、スクリーンショットに対応しています。",
       en: "A player for local video files, with frame stepping, speed control and screenshots.",
     },
+    links: [
+      {
+        label: { ja: "リポジトリ", en: "Repository" },
+        url: "https://github.com/nk4dev/grove-player",
+      },
+    ],
+    aliases: ["grove-player", "grove"],
   },
 ];

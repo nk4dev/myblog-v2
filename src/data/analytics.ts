@@ -9,4 +9,4 @@ export const GA_MEASUREMENT_ID = "G-9TG7JEDDCX";
  * this site carries site_name with this value. Register "site_name" as an event-scoped custom
  * dimension in GA (Admin → Custom definitions) to filter and compare by it in reports.
  */
-export const GA_SITE_NAME = "new-blog";
+export const GA_SITE_NAME = "nknighta.me";

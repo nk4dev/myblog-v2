@@ -1,14 +1,19 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import Article from "../../components/Article.astro";
-import { getProjectDetail } from "../../lib/microcms";
+import RelatedPosts from "../../components/RelatedPosts.astro";
+import { getAllBlogs, getProjectDetail } from "../../lib/microcms";
 import { excerpt } from "../../lib/excerpt";
+import { getRelatedPostsForProject } from "../../lib/related-posts";
 
 // Rendered on demand so content changes in microCMS show up without a rebuild
 export const prerender = false;
 
 const { id } = Astro.params;
-const project = await getProjectDetail(id!);
+const [project, allBlogs] = await Promise.all([
+  getProjectDetail(id!),
+  getAllBlogs().catch(() => []),
+]);
 
 if (!project) {
   return new Response(null, { status: 404 });
@@ -18,6 +23,7 @@ const image = project.image?.[0];
 // Some projects link back to their own page here; that link adds nothing
 const ownURL = new URL(`/dev/${project.id}`, Astro.site).href;
 const showURL = project.url && project.url.replace(/\/$/, "") !== ownURL;
+const relatedPosts = getRelatedPostsForProject(project, allBlogs, 3);
 ---
 
 <Layout
@@ -45,5 +51,6 @@ const showURL = project.url && project.url.replace(/\/$/, "") !== ownURL;
         </p>
       )
     }
+    <RelatedPosts slot="after" posts={relatedPosts} />
   </Article>
 </Layout>

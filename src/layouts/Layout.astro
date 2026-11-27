@@ -110,7 +110,7 @@ const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? 
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
-    <meta name="keywords" content={metaKeywords} />
+    {metaKeywords && <meta name="keywords" content={metaKeywords} />}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -120,6 +120,7 @@ const ogImage = `https://og-img.nknighta.me/?text=${encodeURIComponent(title ?? 
     <Analytics enabled={!noindex} />
     <!-- Discovery for agents: the JSON API catalog (RFC 9727) -->
     <link rel="api-catalog" href="/.well-known/api-catalog" />
+    <slot name="head" />
   </head>
   <body class="mx-auto flex min-h-dvh max-w-7xl flex-col px-4 py-8 sm:px-8 lg:px-12">
     <Loader />

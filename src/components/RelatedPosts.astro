@@ -1,0 +1,85 @@
+---
+import T from "./T.astro";
+import { categoryPath } from "../lib/blog-pages";
+import { extractPostTags, tagPath } from "../lib/blog-tags";
+import { excerpt } from "../lib/excerpt";
+import type { Localized } from "../i18n/ui";
+import type { Blog } from "../types/blog";
+
+/** Reusable related-articles section rendered below article and scrap bodies */
+type Props = {
+  posts: Blog[];
+  heading?: Localized;
+};
+
+const { posts, heading = { ja: "関連記事", en: "Related posts" } } =
+  Astro.props;
+
+// YYYY-MM-DD in Japan time
+const formatDate = (iso: string) =>
+  new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tokyo" }).format(
+    new Date(iso),
+  );
+---
+
+{posts.length > 0 && (
+  <section
+    aria-labelledby="related-posts-heading"
+    class="mt-14 border-t border-[var(--ink-soft)]/30 pt-8"
+  >
+    <h2 id="related-posts-heading" class="mb-5 text-xl font-bold">
+      <T text={heading} />
+    </h2>
+    <ul class="grid gap-4">
+      {posts.map((post) => {
+        const date = post.publishedAt ?? post.createdAt;
+        const summary = post.description?.trim() || excerpt(post.content, 100);
+        const tags = extractPostTags(post, { max: 3 });
+        return (
+          <li class="relative rounded-md border border-[var(--ink-soft)]/25 p-4 transition-colors hover:border-[var(--link)]/60">
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[var(--ink-soft)]">
+              <time datetime={date} class="tabular">
+                {formatDate(date)}
+              </time>
+              {post.category && (
+                <a
+                  href={categoryPath(post.category.id)}
+                  class="relative z-10 font-medium hover:text-[var(--ink)] hover:underline underline-offset-4"
+                >
+                  {post.category.name}
+                </a>
+              )}
+            </div>
+            <h3 class="mt-1 text-base font-bold leading-snug">
+              <a
+                href={`/blog/${post.id}/`}
+                class="mark after:absolute after:inset-0"
+              >
+                {post.title}
+              </a>
+            </h3>
+            {summary && (
+              <p class="mt-1.5 line-clamp-2 text-sm leading-relaxed text-[var(--ink-soft)]">
+                {summary}
+              </p>
+            )}
+            {tags.length > 0 && (
+              <ul class="relative z-10 mt-2.5 flex flex-wrap gap-1.5">
+                {tags.map((tag) => (
+                  <li>
+                    <a
+                      href={tagPath(tag)}
+                      class="inline-block rounded border border-[var(--brand)]/30 px-2 py-0.5 text-xs text-[var(--ink-soft)] transition-colors hover:border-[var(--link)]/60 hover:text-[var(--ink)]"
+                    >
+                      #{tag}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  </section>
+)}

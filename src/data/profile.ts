@@ -13,7 +13,15 @@ export const techStack = ["Astro", "Tailwind CSS", "Hono", "Cloudflare Workers",
 
 export const langs = ["TypeScript"];
 
-export const repos = [
+export type RepoItem = {
+  name: string;
+  url: string;
+  /** Internal /apps/ path when the project also has a web app page on this site */
+  appHref?: string;
+  desc: Localized;
+};
+
+export const repos: RepoItem[] = [
   {
     name: "VX3",
     url: "https://github.com/nk4dev/vx3",
@@ -30,6 +38,7 @@ export const repos = [
   {
     name: "Grove Player",
     url: "https://github.com/nk4dev/grove-player",
+    appHref: "/apps/grove/",
     desc: { ja: "個人開発の動画/音楽プレイヤーアプリ。", en: "A personal video/music player app." },
   },
   {

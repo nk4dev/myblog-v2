@@ -5,9 +5,15 @@ export type Category = {
   name: string;
 } & MicroCMSDate;
 
+/** Optional tag item when configured as a relation or string array in microCMS */
+export type Tag = {
+  id?: string;
+  name: string;
+};
+
 export type Blog = {
   title: string;
-  /** microCMS 側で未設定の場合がある */
+  /** Optional on microCMS; may be unset on older posts */
   description?: string;
   content?: string;
   eyecatch?: {
@@ -16,5 +22,8 @@ export type Blog = {
     width: number;
   };
   category?: Category;
-  seo_word?: string
+  /** Optional tags from microCMS if configured in the schema */
+  tags?: (string | Tag)[];
+  authorId?: string;
+
 } & MicroCMSDate & { id: string };

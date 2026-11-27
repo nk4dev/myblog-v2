@@ -16,7 +16,7 @@ export const socialLinks: readonly SocialLink[] = [
   {
     slug: "g",
     label: "GitHub",
-    url: "https://github.com/nk4dev",
+    url: "/rd2/github?utm_source=slash_link&utm_medium=g",
     title: "GitHub (@nk4dev)",
     description: "Nknight AMAMIYA (nk4dev) の GitHub プロフィールとリポジトリ",
   },

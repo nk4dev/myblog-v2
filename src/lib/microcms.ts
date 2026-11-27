@@ -21,7 +21,17 @@ export type PageOptions = { limit?: number; offset?: number };
 /** Fetch every item, even beyond microCMS's 100-item limit per request */
 const getAll = async <E extends Endpoint>(endpoint: E): Promise<Content[E][]> => {
   if (!client) return mocks[endpoint];
-  return await client.getAllContents<Content[E]>({ endpoint });
+  try {
+    return await client.getAllContents<Content[E]>({ endpoint });
+  } catch (err) {
+    console.error("[microCMS getAll failed]", {
+          endpoint,
+          serviceDomain: MICROCMS_SERVICE_DOMAIN,
+          hasApiKey: Boolean(MICROCMS_API_KEY),
+          err,
+        });
+        throw err;
+  }
 };
 
 /** Fetch one page of items, in the same shape as a microCMS list response */

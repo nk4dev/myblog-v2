@@ -3,23 +3,34 @@ import Layout from "../../layouts/Layout.astro";
 import BlogList from "../../components/BlogList.astro";
 import { getAllBlogs } from "../../lib/microcms";
 import { collectCategories, toPages } from "../../lib/blog-pages";
+import { collectTags, filterPostsByTag } from "../../lib/blog-tags";
 
 // Rendered on demand so content changes in microCMS show up without a rebuild
 export const prerender = false;
 
 // Page 1 of the list; later pages are blog/page/[page].astro
 const posts = await getAllBlogs();
+const activeTag = Astro.url.searchParams.get("tag")?.trim() || undefined;
+const allTags = collectTags(posts).slice(0, 15);
+const filtered = activeTag ? filterPostsByTag(posts, activeTag) : posts;
 const pages = toPages(posts);
 ---
 
-<Layout markdown title="Blog" description="Nknight AMAMIYA (nk4dev) 's blog">
+<Layout
+  markdown
+  title="Blog"
+  description="Nknight AMAMIYA (nk4dev) の技術ブログ記事一覧。Ubuntu / Linux での VRChat・ALCOM・WiVRn 環境構築、VRCBrowser、Agent Skills、Web 開発などの記事をまとめています。"
+  metaKeywords="Linux, Ubuntu, VRChat, ALCOM, WiVRn, VRCBrowser, Agent Skills, Web開発"
+>
   <BlogList
     heading="Blog"
-    posts={pages[0]}
-    total={posts.length}
+    posts={activeTag ? filtered : pages[0]}
+    total={activeTag ? filtered.length : posts.length}
     categories={collectCategories(posts)}
+    tags={allTags}
+    activeTag={activeTag}
     base="/blog"
     page={1}
-    lastPage={pages.length}
+    lastPage={activeTag ? 1 : pages.length}
   />
 </Layout>

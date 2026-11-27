@@ -3,6 +3,7 @@ import Layout from "../../../layouts/Layout.astro";
 import BlogList from "../../../components/BlogList.astro";
 import { getAllBlogs } from "../../../lib/microcms";
 import { collectCategories, toPages } from "../../../lib/blog-pages";
+import { collectTags } from "../../../lib/blog-tags";
 
 // Pages 2 and later of the blog list. Page 1 lives at /blog/
 // Rendered on demand so content changes in microCMS show up without a rebuild
@@ -19,6 +20,7 @@ if (String(page) !== Astro.params.page || page < 2 || page > pages.length) {
 const posts = pages[page - 1];
 const total = allPosts.length;
 const categories = collectCategories(allPosts);
+const tags = collectTags(allPosts).slice(0, 15);
 const lastPage = pages.length;
 ---
 
@@ -35,6 +37,7 @@ const lastPage = pages.length;
     posts={posts}
     total={total}
     categories={categories}
+    tags={tags}
     base="/blog"
     page={page}
     lastPage={lastPage}

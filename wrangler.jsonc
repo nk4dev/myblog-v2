@@ -16,7 +16,6 @@
 		// Run it for them so requests with Accept: text/markdown get Markdown (src/server/markdown.ts).
 		// Keep this in step with the pages that are not rendered on demand (prerender = false)
 		"run_worker_first": [
-			"/about/*",
 			"/apps/*",
 			"/developers/*",
 			"/links/*",

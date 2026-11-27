@@ -42,6 +42,34 @@ export const mockBlogs: Blog[] = [
     publishedAt: "2026-01-03T00:00:00.000Z",
     revisedAt: "2026-01-03T00:00:00.000Z",
   },
+  {
+    id: "vrc-on-ubuntu",
+    title: "Ubuntu / Linux で ALCOM と WiVRn を使って VRChat を遊ぶ",
+    description:
+      "Ubuntu などの Linux 環境で ALCOM を使ったパッケージ管理と WiVRn による VR 接続、Allow Untrusted URLs の設定手順をまとめます。",
+    content:
+      "<p>Linux 上で VRChat を快適に動かすには、ALCOM でのツール管理と WiVRn による OpenXR ストリーミングが便利です。動画プレイヤー等で外部 URL を開く際は Allow Untrusted URLs の設定も確認します。</p>",
+    category: { id: "vrchat", name: "VRChat", createdAt: "2026-01-04T00:00:00.000Z", updatedAt: "2026-01-04T00:00:00.000Z", publishedAt: "2026-01-04T00:00:00.000Z", revisedAt: "2026-01-04T00:00:00.000Z" },
+    seo_word: "ALCOM, Linux, Ubuntu, WiVRn, VRChat, Allow Untrusted URLs",
+    createdAt: "2026-01-04T00:00:00.000Z",
+    updatedAt: "2026-01-04T00:00:00.000Z",
+    publishedAt: "2026-01-04T00:00:00.000Z",
+    revisedAt: "2026-01-04T00:00:00.000Z",
+  },
+  {
+    id: "agent-skills-guide",
+    title: "Agent Skills と SKILL.md の frontmatter・.agents/skills 配置ガイド",
+    description:
+      "AI エージェント向けの Agent Skills 仕様と SKILL.md の YAML frontmatter、.agents/skills ディレクトリ構成のポイントを整理します。",
+    content:
+      "<p>Agent Skills は SKILL.md に YAML frontmatter（name / description）と手順を記述し、.agents/skills 配下や /.well-known/agent-skills/index.json で公開します。</p>",
+    category: { id: "tech", name: "技術", createdAt: "2026-01-05T00:00:00.000Z", updatedAt: "2026-01-05T00:00:00.000Z", publishedAt: "2026-01-05T00:00:00.000Z", revisedAt: "2026-01-05T00:00:00.000Z" },
+    seo_word: "Agent Skills, SKILL.md, frontmatter, .agents/skills, Antigravity",
+    createdAt: "2026-01-05T00:00:00.000Z",
+    updatedAt: "2026-01-05T00:00:00.000Z",
+    publishedAt: "2026-01-05T00:00:00.000Z",
+    revisedAt: "2026-01-05T00:00:00.000Z",
+  },
 ];
 
 /** MICROCMS_SERVICE_DOMAIN / MICROCMS_API_KEY 未設定時に使うダミーのスクラップ。 */

@@ -3,9 +3,11 @@ import PostList from "./PostList.astro";
 import Pagination from "./Pagination.astro";
 import T from "./T.astro";
 import { categoryPath } from "../lib/blog-pages";
+import { extractPostTags, tagPath } from "../lib/blog-tags";
+import { excerpt } from "../lib/excerpt";
 import type { Blog, Category } from "../types/blog";
 
-/** One page of the blog list, with the category menu in the sidebar */
+/** One page of the blog list, with the category and tag menus in the sidebar */
 type Props = {
   heading: string;
   /** Posts on this page */
@@ -15,15 +17,20 @@ type Props = {
   categories: { category: Category; count: number }[];
   /** Category being listed; omitted for the full list */
   activeCategory?: string;
+  /** Available topic tags with post counts */
+  tags?: { tag: string; count: number }[];
+  /** Active tag filter (?tag=...) */
+  activeTag?: string;
   /** List URL without the trailing slash, for the page links */
   base: string;
   page: number;
   lastPage: number;
 };
 
-const { heading, posts, total, categories, activeCategory, base, page, lastPage } = Astro.props;
+const { heading, posts, total, categories, activeCategory, tags = [], activeTag, base, page, lastPage } = Astro.props;
 
 const menuLink = "mark inline-flex gap-2";
+const activeTagLower = activeTag?.trim().toLowerCase();
 ---
 
 <div class="grid grid-cols-1 gap-x-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]">
@@ -43,8 +50,8 @@ const menuLink = "mark inline-flex gap-2";
             <li>
               <a
                 href="/blog/"
-                class:list={[menuLink, !activeCategory && "font-bold text-[var(--link)]"]}
-                aria-current={activeCategory ? undefined : "true"}
+                class:list={[menuLink, !activeCategory && !activeTagLower && "font-bold text-[var(--link)]"]}
+                aria-current={!activeCategory && !activeTagLower ? "true" : undefined}
               >
                 <T k="blog.allCategories" />
               </a>
@@ -65,15 +72,64 @@ const menuLink = "mark inline-flex gap-2";
         </nav>
       )
     }
+    {
+      tags.length > 0 && (
+        <nav aria-labelledby="tag-menu" class="mt-8">
+          <h2 id="tag-menu" class="mb-2 text-sm font-bold tracking-wide text-[var(--ink-soft)] uppercase">
+            <T text={{ ja: "タグ", en: "Tags" }} />
+          </h2>
+          <ul class="flex flex-wrap gap-1.5">
+            {tags.map(({ tag, count }) => {
+              const isActive = tag.toLowerCase() === activeTagLower;
+              return (
+                <li>
+                  <a
+                    href={tagPath(tag)}
+                    class:list={[
+                      "inline-flex items-center gap-1 rounded border px-2 py-0.5 text-xs transition-colors",
+                      isActive
+                        ? "border-[var(--brand)] bg-[var(--brand)] font-bold text-white"
+                        : "border-[var(--brand)]/30 text-[var(--ink-soft)] hover:border-[var(--link)]/60 hover:text-[var(--ink)]",
+                    ]}
+                    aria-current={isActive ? "true" : undefined}
+                  >
+                    <span>#{tag}</span>
+                    <span class="tabular opacity-75">{count}</span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      )
+    }
   </div>
   <div>
     {
+      activeTag && (
+        <div class="mb-6 flex flex-wrap items-center justify-between gap-2 border-b border-[var(--ink-soft)]/25 pb-3">
+          <p class="text-sm font-bold">
+            #{activeTag}
+          </p>
+          <a href="/blog/" class="mark text-sm font-medium text-[var(--link)]">
+            <T text={{ ja: "絞り込みを解除", en: "Clear filter" }} />
+          </a>
+        </div>
+      )
+    }
+    {
       posts.length > 0 ? (
         <PostList
+          detailed
           posts={posts.map((post) => ({
             ...post,
+            description: post.description?.trim() || excerpt(post.content, 140),
             category: post.category?.name,
             categoryHref: post.category && categoryPath(post.category.id),
+            tags: extractPostTags(post, { max: 4 }).map((tag) => ({
+              label: tag,
+              href: tagPath(tag),
+            })),
           }))}
           basePath="/blog"
         />

@@ -25,13 +25,15 @@ const discovery = [
   { path: "/api/openapi.json", note: "OpenAPI 3.1 description of the API" },
   { path: "/.well-known/api-catalog", note: "API catalog (RFC 9727)" },
   { path: "/.well-known/agent-skills/index.json", note: "Agent Skills discovery index" },
+  { path: "/.well-known/agent-skills/nknighta-me/SKILL.md", note: "Agent Skill definition (SKILL.md with YAML frontmatter)" },
   { path: "/llms.txt", note: "Guide to the site for LLMs, with links to every Markdown page" },
 ];
 ---
 
 <Layout
   title="Developers"
-  description="nknighta.me の JSON API と、AI エージェント向けの Markdown・ディスカバリーエンドポイントの説明です。"
+  description="nknighta.me の JSON API、Markdown エンドポイント、Agent Skills（SKILL.md / YAML frontmatter / .well-known/agent-skills/index.json）、WebMCP の開発者向けドキュメントです。"
+  metaKeywords="Agent Skills, SKILL.md, frontmatter, .agents/skills, JSON API, Markdown, WebMCP, llms.txt"
 >
   <div class="space-y-12">
     <div>
@@ -99,6 +101,10 @@ const discovery = [
         <p>
           Please keep requests moderate, do not use /preview/, and link to the HTML page when quoting. Contact:
           <a href="mailto:nknighta@varius.technology" class={linkClass}>nknighta@varius.technology</a>
+        </p>
+        <p class="flex flex-wrap gap-x-5 gap-y-1 text-sm">
+          <a href="/llmassets/" class={linkClass}>LLM Assets</a>
+          <a href="/blog/" class={linkClass}>Blog</a>
         </p>
       </div>
     </section>

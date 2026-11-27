@@ -1,28 +1,62 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import Article from "../../components/Article.astro";
-import { getBlogDetail } from "../../lib/microcms";
-import { excerpt } from "../../lib/excerpt";
+import RelatedPosts from "../../components/RelatedPosts.astro";
+import { getAllBlogs, getBlogDetail } from "../../lib/microcms";
 import { categoryPath } from "../../lib/blog-pages";
+import { tagPath } from "../../lib/blog-tags";
+import { getRelatedPosts } from "../../lib/related-posts";
+import { resolveBlogSeoMeta } from "../../lib/seo-meta";
+import { canonicalURL } from "../../lib/share";
 
 // Rendered on demand so content changes in microCMS show up without a rebuild
 export const prerender = false;
 
 const { id } = Astro.params;
-const post = await getBlogDetail(id!);
+const [post, allPosts] = await Promise.all([
+  getBlogDetail(id!),
+  getAllBlogs().catch(() => []),
+]);
 
 if (!post) {
   return new Response(null, { status: 404 });
 }
+
+const seo = resolveBlogSeoMeta(post);
+const relatedPosts = getRelatedPosts(post, allPosts, 3);
+const pageURL = canonicalURL(Astro.url, Astro.site);
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: post.title,
+  description: seo.description,
+  datePublished: post.publishedAt ?? post.createdAt,
+  dateModified: post.revisedAt ?? post.updatedAt ?? post.publishedAt ?? post.createdAt,
+  url: pageURL.href,
+  image:
+    post.eyecatch?.url ??
+    `https://og-img.nknighta.me/?text=${encodeURIComponent(post.title)}`,
+  keywords: seo.keywords || undefined,
+  author: {
+    "@type": "Person",
+    name: "Nknight AMAMIYA",
+    url: new URL("/about/", Astro.site).href,
+  },
+};
 ---
 
 <Layout
   markdown
   type="article"
   title={post.title}
-  description={post.description || excerpt(post.content) || post.title}
-  metaKeywords={post.seo_word}
+  description={seo.description}
+  metaKeywords={seo.keywords}
 >
+  <script
+    type="application/ld+json"
+    slot="head"
+    set:html={JSON.stringify(jsonLd).replace(/</g, "\\u003c")}
+  />
   <Article
     title={post.title}
     content={post.content}
@@ -30,7 +64,10 @@ if (!post) {
     revisedAt={post.revisedAt}
     category={post.category?.name}
     categoryHref={post.category && categoryPath(post.category.id)}
+    tags={seo.tags.slice(0, 6).map((tag) => ({ label: tag, href: tagPath(tag) }))}
     eyecatch={post.eyecatch}
     back={{ href: "/blog/", label: "blog.back" }}
-  />
+  >
+    <RelatedPosts slot="after" posts={relatedPosts} />
+  </Article>
 </Layout>
