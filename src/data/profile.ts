@@ -5,13 +5,22 @@ import type { Localized } from "../i18n/ui";
 
 export const bio: Localized = {
   ja: "個人でWeb3方面をメインにWebアプリケーション開発やLLMの開発をやっています。",
-  en: "I work independently, focusing primarily on Web3-related projects, including the development of web applications and LLMs."
+  en: "I work independently, focusing primarily on Web3-related projects, including the development of web applications and LLMs.",
 };
 
 // The stack this site is built on (see package.json)
-export const techStack = ["Astro", "Tailwind CSS", "Hono", "Cloudflare Workers", "microCMS", "Bun"];
+export const techStack = [
+  "Astro",
+  "Tailwind CSS",
+  "Hono",
+  "Cloudflare Workers",
+  "microCMS",
+  "Bun",
+  "Node",
+  "Nextjs"
+];
 
-export const langs = ["TypeScript"];
+export const langs = ["TypeScript", "JavaScript","Solidity(little bit)"];
 
 export type RepoItem = {
   name: string;
@@ -33,18 +42,28 @@ export const repos: RepoItem[] = [
   {
     name: "OSS-WEATHER",
     url: "https://apps.nknighta.me/oss-map-weather/",
-    desc: { ja: "地図の上に天気を重ねて見られる小さなOSSツール。", en: "A small OSS tool that overlays weather info on a map." },
+    desc: {
+      ja: "地図の上に天気を重ねて見られる小さなOSSツール。",
+      en: "A small OSS tool that overlays weather info on a map.",
+    },
   },
   {
     name: "Grove Player",
     url: "https://github.com/nk4dev/grove-player",
+<<<<<<< HEAD
     appHref: "/apps/grove/",
     desc: { ja: "個人開発の動画/音楽プレイヤーアプリ。", en: "A personal video/music player app." },
+=======
+    desc: { ja: "HTMLベースの動画プレイヤー", en: "HTML based video player" },
+>>>>>>> 057a539b6ba7d204366eb34ac79557bde0d54043
   },
   {
     name: "IndexLanguage",
     url: "https://github.com/nk4dev/IndexLanguage",
-    desc: { ja: "趣味で作っている自作プログラミング言語。", en: "A programming language I'm building for fun." },
+    desc: {
+      ja: "趣味で作っている自作プログラミング言語。",
+      en: "A programming language I'm building for fun.",
+    },
   },
 ];
 
@@ -54,16 +73,65 @@ export const contacts = [
   { label: "GitHub", handle: "@nk4dev", url: "/g/" },
   { label: "Instagram", handle: "@ama_p0627", url: "/i/" },
   { label: "Qiita", handle: "@amamiya_dev", url: "/q/" },
+  ,
+  {
+    label: "Zenn",
+    handle: "@amamiya_dev",
+    url: "https://zenn.dev/nknight_amamiya",
+  },
   { label: "VRChat", handle: "Nknight AMAMIYA", url: "/vrchat/" },
-  { label: "Email", handle: "nknighta@varius.technology", url: "mailto:nknighta@varius.technology" },
+  {
+    label: "Email",
+    handle: "nknighta@varius.technology",
+    url: "mailto:nknighta@varius.technology",
+  },
 ];
 
 export const history = [
   {
     age: { ja: "18歳", en: "18" },
-    text: { ja: "VMwareの仮想マシンをきっかけにプログラミングの世界へ", en: "Entering the world of programming through VMware virtual machines" },
+    text: {
+      ja: "VMwareの仮想マシンをきっかけにプログラミングの世界へ",
+      en: "Entering the world of programming through VMware virtual machines",
+    },
   },
-  { age: { ja: "20歳", en: "20" }, text: { ja: "Web開発とGitHubでの開発を始める", en: "Started web development and coding on GitHub" } },
-  { age: { ja: "21歳", en: "21" }, text: { ja: "このサイトを公開", en: "Published this site" } },
-  { age: { ja: "23歳", en: "23" }, text: { ja: "VRChatをやりはじめる", en: "Started VRChat life" } },
+  {
+    age: { ja: "20歳", en: "20" },
+    text: {
+      ja: "Web開発とGitHubでの開発を始める",
+      en: "Started web development and coding on GitHub",
+    },
+  },
+  {
+    age: { ja: "21歳", en: "21" },
+    text: { ja: "このサイトを公開", en: "Published this site" },
+  },
+  {
+    age: { ja: "23歳", en: "23" },
+    text: { ja: "VRChatをやりはじめる", en: "Started VRChat life" },
+  },
+];
+
+export const hobby = [
+  {
+    label: { ja: "車", en: "Drive Car" },
+    text: {
+      ja: "エンジニアを目指す前は自動車デザイナーを目指してた。海外のレーシングカーとかすき",
+      en: "Before I set my sights on becoming an engineer, I aspired to be an automotive designer. I’ve always had a soft spot for things like international racing cars.",
+    },
+  },
+  {
+    label: { ja: "プログラミング", en: "Programming" },
+    text: {
+      ja: "主にWeb系をメインでやってます。またWeb3関係も",
+      en: "I primarily work in the web sector, and I’m also involved in Web3-related projects.",
+    },
+  },
+  {
+    label: { ja: "音楽", en: "Play music" },
+    text: {
+      ja: "元吹奏楽部",
+      en: "Former member of a concert band",
+    },
+  },
 ];

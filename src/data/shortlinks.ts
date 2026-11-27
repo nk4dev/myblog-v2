@@ -34,9 +34,10 @@ export const shortLinkMetaMap: Record<string, ShortLinkMeta> = {
     description: "Nknight AMAMIYA (nk4dev) の GitHub",
   },
   "/vrchat": {
-    url: "https://vrchat.com/home/user/usr_3c0e5ebc-16db-4f61-bdfb-88ff8385a7d4",
+    url: "https://vrc-meikan.com/profile/11e503fa-63d2-445f-9b6a-812853492eb4",
     title: "VRChat (Nknight AMAMIYA)",
-    description: "Nknight AMAMIYA の VRChat プロフィール",
+    description: "Nknight AMAMIYA の VRChat profile(on VRC 名鑑)",
+    image: "https://nknighta.me/static/vrcmeikan-ogp.jpg"
   },
   "/vrcmeikan": {
     url: "https://vrc-meikan.com/profile/11e503fa-63d2-445f-9b6a-812853492eb4",
@@ -63,6 +64,11 @@ export const shortLinkMetaMap: Record<string, ShortLinkMeta> = {
     url: "https://github.com/nk4dev?tab=repositories&q=vx",
     title: "vx Repositories (GitHub)",
     description: "vx related repositories on GitHub",
+  },
+  "/vx": {
+    url: "https://vx.nknighta.me",
+    title: "VX3 SDK documentation",
+    description: "VX3 sdk docs by nk4dev",
   },
   "/l/xnv": {
     url: "https://github.com/nknighta/xnv",
