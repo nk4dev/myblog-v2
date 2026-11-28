@@ -50,12 +50,8 @@ export const repos: RepoItem[] = [
   {
     name: "Grove Player",
     url: "https://github.com/nk4dev/grove-player",
-<<<<<<< HEAD
     appHref: "/apps/grove/",
     desc: { ja: "個人開発の動画/音楽プレイヤーアプリ。", en: "A personal video/music player app." },
-=======
-    desc: { ja: "HTMLベースの動画プレイヤー", en: "HTML based video player" },
->>>>>>> 057a539b6ba7d204366eb34ac79557bde0d54043
   },
   {
     name: "IndexLanguage",
