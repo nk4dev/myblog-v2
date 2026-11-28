@@ -12,7 +12,7 @@ window.dataLayer = window.dataLayer || \[\]; function gtag(){dataLayer.push(argu
 
 [Nknight AMAMIYA](https://nknighta.me/)
 
-[Blog](https://nknighta.me/blog)[Apps](https://nknighta.me/apps)
+[Blog](https://nknighta.me/blog/) [Apps](https://nknighta.me/apps/)
 
 ![icon](https://images.microcms-assets.io/assets/a2939c8d25434ae5a1f853f2dc239a0f/b625a5435e8d4d18ab6c0b5499405b30/icon.jpeg?w=170&h=170&q=50&fm=webp)
 
@@ -20,7 +20,7 @@ Hello!
 
 I'm Nknight AMAMIYA.
 
-[Who are you?](https://nknighta.me/whoareyou?im=amamiya)
+[Who are you?](https://nknighta.me/about/)
 
 # Skills
 
@@ -40,7 +40,7 @@ Watchers
 
 IndexLanguage
 
-](https://github.com/nknighta/IndexLanguage)[and more ...](https://nknighta.me/repos)
+](https://github.com/nknighta/IndexLanguage)[and more ...](https://nknighta.me/dev/)
 
 # Contact
 
@@ -49,6 +49,6 @@ IndexLanguage
 
 (c) Nknight AMAMIYA 2021
 
-[varius.technology](https://varius.technology/)[nknighta.me](https://nknighta.me)
+[varius.technology](https://varius.technology/)[nknighta.me](https://nknighta.me/)
 
 \- Mail -[nknighta@varius.technology](mailto:nknighta@varius.technology)

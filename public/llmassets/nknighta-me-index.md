@@ -16,7 +16,7 @@ twitterSite: @ama_dev_1
 
 Hello! I'm**Nknight AMAMIYA**!
 
-[About Me](https://nknighta.me/whoareyou?im=amamiya)
+[About Me](https://nknighta.me/about/)
 
 ## Skills
 
@@ -35,7 +35,7 @@ Hello! I'm**Nknight AMAMIYA**!
 *   [OSS-WEATHER](https://github.github.io/oss-map-weather/)
 *   [Grove Player](https://github.com/nknighta/grove-player)
 *   [IndexLanguage](https://github.com/nknighta/IndexLanguage)
-*   [その他多数…](https://nknighta.me/repos)
+*   [その他多数…](https://nknighta.me/dev/)
 
 ## Contact
 
@@ -46,8 +46,8 @@ Hello! I'm**Nknight AMAMIYA**!
 
 ## Related Links
 
-*   [Blog](https://nknighta.me/blog)
-*   [Apps](https://nknighta.me/apps)
+*   [Blog](https://nknighta.me/blog/)
+*   [Apps](https://nknighta.me/apps/)
 *   [varius.technology](https://varius.technology/)
 
 ---

@@ -1,7 +1,7 @@
 ---
 title: Blog | nknighta
 description: Nknight AMAMIYA'S Blog
-url: https://nknighta.me/blog
+url: https://nknighta.me/blog/
 image: https://nknighta.me/images/og.png
 siteName: Blog | nknighta
 type: website
@@ -11,14 +11,14 @@ twitterSite: @ama_dev_1
 # Nknight AMAMIYA
 
 ## ブログ
-[ブログ](https://nknighta.me/blog)
-[アプリ](https://nknighta.me/apps)
+[ブログ](https://nknighta.me/blog/)
+[アプリ](https://nknighta.me/apps/)
 
 ### カテゴリー
-*   [xnv](https://nknighta.me/blog/category/xnv)
-*   [vx](https://nknighta.me/blog/category/vx)
-*   [nextjs](https://nknighta.me/blog/category/nextjs)
-*   [更新情報](https://nknighta.me/blog/category/u78aqp7lgux)
+*   [xnv](https://nknighta.me/blog/category/xnv/)
+*   [vx](https://nknighta.me/blog/category/vx/)
+*   [nextjs](https://nknighta.me/blog/category/nextjs/)
+*   [更新情報](https://nknighta.me/blog/category/u78aqp7lgux/)
 
 ---
 
@@ -89,7 +89,7 @@ VX関連のリポジトリ名を変更しました。
 
 自作言語IndexLangについて、WebAssemblyやRustを用いたテストを進めています。IndexLangは、目次のように可読性の高い言語を目指しています。
 
-*   **コミット:** [https://github.com/nknighta/IndexLanguage/commit/f81d2ca69cf789b0c6c56802c8dc8f0e618529fc](https://github.com/nknighta/IndexLanguage/commit/f81d2ca69cf789b0c6c56802c8dc8f0e618529fc)
+*   **コミット:** [https://github.com/nknighta/IndexLanguage/commit/f81d2ca69cf789b0c6c56802c8dc8f0e618529fc](https://github.com/nknighta.me/IndexLanguage/commit/f81d2ca69cf789b0c6c56802c8dc8f0e618529fc)
 
 ### SNSたち
 2025-03-26 - Nknight AMAMIYA
